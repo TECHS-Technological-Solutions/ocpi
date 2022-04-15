@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "ocpi"
+version = "0.1.0"
+description = ""
+authors = ["HAkhavan71 <hakh.27@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.67.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+pytest-cov = "^2.10.1"
+prospector = "^1.7.7"
+bandit = "^1.7.4"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

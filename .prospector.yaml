@@ -1,0 +1,65 @@
+inherits:
+  - strictness_veryhigh
+  - full_pep8
+
+ignore-paths:
+  - bin
+  - config
+  - docs
+  - coverage
+  - requirements
+  - venv
+  - env
+  - node_modules
+  - manage.py
+  - alembic
+  - app/external_services/railgun_service.py
+
+doc-warnings: false
+test-warnings: true
+
+uses:
+  - celery
+
+pylint:
+  disable:
+    - wildcard-import
+    - relative-import
+    - invalid-name
+    - unused-wildcard-import
+    - wrong-import-position
+    - too-few-public-methods
+    - old-style-class
+    - no-init
+    - no-self-use
+    - unused-argument
+    - too-many-arguments
+    - too-many-instance-attributes
+    - attribute-defined-outside-init
+    - redefined-builtin
+    - too-many-ancestors
+    - arguments-differ
+    - abstract-method
+    - too-many-function-args
+    - assignment-from-none
+    - redefined-outer-name
+    - too-many-lines
+    - inconsistent-return-statements
+    - unsubscriptable-object
+    - cell-var-from-loop
+  options:
+    max-locals: 25
+    max-line-length: 120
+
+pep8:
+  disable:
+    - E402
+    - E125
+  options:
+    max-line-length: 120
+
+pyflakes:
+  disable:
+    - F403
+    - F401
+    - F999
