@@ -3,7 +3,6 @@ OCPI data types based on https://github.com/ocpi/ocpi/blob/master/types.asciidoc
 """
 
 from datetime import datetime
-from enum import Enum
 
 
 class String(str):
@@ -24,11 +23,11 @@ class String(str):
     @classmethod
     def validate(cls, v):
         if not isinstance(v, str):
-            raise TypeError('excpected string but received %s', type(v))
+            raise TypeError(f'excpected string but received {type(v)}')
         try:
             encoded_v = v.encode('UTF-8')
-        except UnicodeError:
-            raise ValueError('invalid string format')
+        except UnicodeError as e:
+            raise ValueError('invalid string format') from e
         return cls(encoded_v)
 
     def __repr__(self):
@@ -53,7 +52,7 @@ class CiString(str):
     @classmethod
     def validate(cls, v):
         if not isinstance(v, str):
-            raise TypeError('excpected string but received %s', type(v))
+            raise TypeError(f'excpected string but received {type(v)}')
         if not v.isascii():
             raise ValueError('invalid cistring format')
         return cls(v.lower())
@@ -107,7 +106,7 @@ class DateTime(datetime):
     @classmethod
     def validate(cls, v):
         if not isinstance(v, datetime):
-            raise TypeError('excpected datetime but received %s', type(v))
+            raise TypeError(f'excpected datetime but received {type(v)}')
         format_string = '%Y-%m-%dT%H:%M:%S.%f%z'
         formated_v = datetime.strptime(v, format_string)
         return cls(formated_v)
@@ -135,7 +134,7 @@ class DisplayText(dict):
     @classmethod
     def validate(cls, v):
         if not isinstance(v, dict):
-            raise TypeError('excpected dict but received %s', type(v))
+            raise TypeError(f'excpected dict but received {type(v)}')
         if 'language' not in v:
             raise TypeError('property "language" required')
         if 'text' not in v:
@@ -162,7 +161,7 @@ class Number(float):
     @classmethod
     def validate(cls, v):
         if not any([isinstance(v, float), isinstance(v, int)]):
-            TypeError('excpected float but received %s', type(v))
+            TypeError(f'excpected float but received {type(v)}')
         return cls(float(v))
 
     def __repr__(self):
@@ -197,13 +196,3 @@ class Price(dict):
 
     def __repr__(self):
         return f'Price({super().__repr__()})'
-
-
-class RoleEnum(Enum, str):
-    CPO = 'Charge Point Operator Role.'
-    EMSP = 'eMobility Service Provider Role.'
-    HUB = 'Hub role.'
-    NAP = 'National Access Point Role (national Database with all Location information of a country).'
-    NSP = 'Navigation Service Provider Role, role like an eMSP (probably only interested in Location information).'
-    OTHER = 'Other role.'
-    SCSP = 'Smart Charging Service Provider Role.'
