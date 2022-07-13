@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class RoleEnum(Enum, str):
+class RoleEnum(str, Enum):
     """
     https://github.com/ocpi/ocpi/blob/master/types.asciidoc#151-role-enum
     """
@@ -14,7 +14,7 @@ class RoleEnum(Enum, str):
     SCSP = 'Smart Charging Service Provider Role.'
 
 
-class ModuleID(Enum, str):
+class ModuleID(str, Enum):
     """
     https://github.com/ocpi/ocpi/blob/master/version_information_endpoint.asciidoc#124-moduleid-enum
     """
