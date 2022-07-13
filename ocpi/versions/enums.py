@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class VersionNumber(Enum, str):
+class VersionNumber(str, Enum):
     """
     https://github.com/ocpi/ocpi/blob/master/version_information_endpoint.asciidoc#125-versionnumber-enum
     """
@@ -12,7 +12,7 @@ class VersionNumber(Enum, str):
     _2_2_1 = 'OCPI version 2.2.1 (this version)'
 
 
-class InterfaceRole(Enum, str):
+class InterfaceRole(str, Enum):
     """
     https://github.com/ocpi/ocpi/blob/master/version_information_endpoint.asciidoc#123-interfacerole-enum
     """
