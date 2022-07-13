@@ -80,7 +80,7 @@ class URL(String):
         v = String(v)
         if len(v) > 255:
             raise TypeError('url too long')
-        cls(v)
+        return cls(v)
 
     def __repr__(self):
         return f'URL({super().__repr__()})'
@@ -108,7 +108,7 @@ class DateTime(datetime):
         if not isinstance(v, datetime):
             raise TypeError(f'excpected datetime but received {type(v)}')
         format_string = '%Y-%m-%dT%H:%M:%S.%f%z'
-        formated_v = datetime.strptime(v, format_string)
+        formated_v = datetime.strftime(v, format_string)
         return cls(formated_v)
 
     def __repr__(self):
