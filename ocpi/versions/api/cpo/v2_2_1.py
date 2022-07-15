@@ -14,7 +14,7 @@ router = APIRouter()
 def get_versions():
     return OCPIResponse(
         data=Version(
-            version=VersionNumber._2_2_1,
+            version=VersionNumber.v_2_2_1,
             url=URL(f'https://{settings.HOST}/cpo/2.2.1')
         ).dict(),
         **status.OCPI_1000_GENERIC_SUCESS_CODE,
@@ -25,7 +25,7 @@ def get_versions():
 def get_version_details():
     return OCPIResponse(
         data=VersionDetail(
-            version=VersionNumber._2_2_1,
+            version=VersionNumber.v_2_2_1,
             endpoints=ENDPOINTS
         ).dict(),
         **status.OCPI_1000_GENERIC_SUCESS_CODE,
