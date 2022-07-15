@@ -1,9 +1,10 @@
+from typing import List
+
 from pydantic import BaseModel
 
+from versions.enums import VersionNumber, InterfaceRole
 from ocpi.core.data_types import URL
 from ocpi.core.enums import ModuleID
-
-from .enums import VersionNumber, InterfaceRole
 
 
 class Version(BaseModel):
@@ -21,3 +22,8 @@ class Endpoint(BaseModel):
     identifier: ModuleID
     role: InterfaceRole
     url: URL
+
+
+class VersionDetail(BaseModel):
+    version: VersionNumber
+    endpoints: List[Endpoint]
