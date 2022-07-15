@@ -25,10 +25,10 @@ class String(str):
         if not isinstance(v, str):
             raise TypeError(f'excpected string but received {type(v)}')
         try:
-            encoded_v = v.encode('UTF-8')
+            v.encode('UTF-8')
         except UnicodeError as e:
             raise ValueError('invalid string format') from e
-        return cls(encoded_v)
+        return cls(v)
 
     def __repr__(self):
         return f'String({super().__repr__()})'
@@ -86,7 +86,7 @@ class URL(String):
         return f'URL({super().__repr__()})'
 
 
-class DateTime(datetime):
+class DateTime(str):
     """
     All timestamps are formatted as string(25) following RFC 3339, with some additional limitations.
     All timestamps SHALL be in UTC.
