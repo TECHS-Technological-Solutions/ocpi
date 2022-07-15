@@ -5,11 +5,11 @@ class VersionNumber(str, Enum):
     """
     https://github.com/ocpi/ocpi/blob/master/version_information_endpoint.asciidoc#125-versionnumber-enum
     """
-    _2_0 = '2.0'
-    _2_1 = '2.1'
-    _2_1_1 = '2.1.1'
-    _2_2 = '2.2'
-    _2_2_1 = '2.2.1'
+    v_2_0 = '2.0'
+    v_2_1 = '2.1'
+    v_2_1_1 = '2.1.1'
+    v_2_2 = '2.2'
+    v_2_2_1 = '2.2.1'
 
 
 class InterfaceRole(str, Enum):

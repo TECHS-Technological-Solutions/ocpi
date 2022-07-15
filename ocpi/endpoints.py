@@ -8,7 +8,7 @@ ENDPOINTS = [
     Endpoint(
         identifier=ModuleID.Locations,
         role=InterfaceRole.Receiver,
-        url=URL(f'https://{settings.HOST}/cpo/{VersionNumber._2_2_1}/{ModuleID.Locations}')
+        url=URL(f'https://{settings.HOST}/cpo/{VersionNumber.v_2_2_1}/{ModuleID.Locations}')
     ),
 
 ]
