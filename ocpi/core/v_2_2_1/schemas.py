@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from core.data_types import String, DateTime
+from core.v_2_2_1.data_types import String, DateTime
 
 
 class OCPIResponse(BaseModel):
