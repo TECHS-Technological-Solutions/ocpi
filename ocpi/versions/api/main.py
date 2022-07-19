@@ -1,11 +1,12 @@
 from fastapi import APIRouter
 
-from versions.schemas import Version, VersionDetail, URL
-from versions.enums import VersionNumber
-from ocpi.core.schemas import OCPIResponse
+from ocpi.versions.schemas import Version, VersionDetail, URL
+from ocpi.versions.enums import VersionNumber
+
+from ocpi.core.v_2_2_1.schemas import OCPIResponse
 from ocpi.core.config import settings
+from ocpi.core.v_2_2_1 import status
 from ocpi.endpoints import ENDPOINTS
-from ocpi.core import status
 
 router = APIRouter()
 
@@ -26,7 +27,7 @@ def get_version_details():
     return OCPIResponse(
         data=VersionDetail(
             version=VersionNumber.v_2_2_1,
-            endpoints=ENDPOINTS
+            endpoints=ENDPOINTS[VersionNumber.v_2_2_1]
         ).dict(),
         **status.OCPI_1000_GENERIC_SUCESS_CODE,
     )
