@@ -135,7 +135,7 @@ class Capability(str, Enum):
     # This EVSE supports token groups, two or more tokens work as one,
     # so that a session can be started with one token and stopped with another
     # (handy when a card and key-fob are given to the EV-driver).
-    token_group_capable = 'TOKEN_GROUP_CAPABLE'
+    token_group_capable = 'TOKEN_GROUP_CAPABLE'  # nosec
     # Connectors have mechanical lock that can be requested by the eMSP to be unlocked.
     unlook_capable = 'UNLOCK_CAPABLE'
 
