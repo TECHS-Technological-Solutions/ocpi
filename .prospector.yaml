@@ -13,7 +13,6 @@ ignore-paths:
   - node_modules
   - manage.py
   - alembic
-  - app/external_services/railgun_service.py
 
 doc-warnings: false
 test-warnings: true
@@ -43,18 +42,15 @@ pylint:
     - too-many-function-args
     - assignment-from-none
     - redefined-outer-name
-    - too-many-lines
-    - inconsistent-return-statements
-    - unsubscriptable-object
-    - cell-var-from-loop
+    - no-self-argument
   options:
     max-locals: 25
     max-line-length: 120
 
-pep8:
+pycodestyle:
   disable:
     - E402
-    - E125
+    - N805
   options:
     max-line-length: 120
 
