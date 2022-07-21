@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter
-from ocpi.adaptor.v_2_2_1.adaptor import Adaptor
+from ocpi.adaptor.v_2_2_1 import Adaptor
 
 from ocpi.crud import CRUD
 from ocpi.core.v_2_2_1.data_types import CiString
