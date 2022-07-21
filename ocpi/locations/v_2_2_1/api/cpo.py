@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter
-from ocpi.adaptor.v_2_2_1 import Adaptor
+from ocpi.adapter.v_2_2_1 import Adapter
 
 from ocpi.crud import CRUD
 from ocpi.core.v_2_2_1.data_types import CiString
@@ -18,20 +18,20 @@ def get_locations():
     data_list = CRUD.list(ModuleID.Locations)
     locations = []
     for data in data_list:
-        locations.append(Adaptor.location_adaptor(data))
+        locations.append(Adapter.location_adapter(data))
     return locations
 
 
 @router.get("/{location_id}", response_model=Location)
 def get_location(location_id: CiString):
     data = CRUD.get(ModuleID.Locations, location_id)
-    return Adaptor.location_adaptor(data)
+    return Adapter.location_adapter(data)
 
 
 @router.get("/{location_id}/{evse_uid}", response_model=EVSE)
 def get_evse(location_id: CiString, evse_uid: CiString):
     data = CRUD.get(ModuleID.Locations, location_id)
-    location = Adaptor.location_adaptor(data)
+    location = Adapter.location_adapter(data)
     for evse in location.evses:
         if evse.uid == evse_uid:
             return evse
@@ -40,7 +40,7 @@ def get_evse(location_id: CiString, evse_uid: CiString):
 @router.get("/{location_id}/{evse_uid}/{connector_id}", response_model=Connector)
 def get_connector(location_id: CiString, evse_uid: CiString, connector_id: CiString):
     data = CRUD.get(ModuleID.Locations, location_id)
-    location = Adaptor.location_adaptor(data)
+    location = Adapter.location_adapter(data)
     for evse in location.evses:
         if evse.uid == evse_uid:
             for connector in evse.connectors:

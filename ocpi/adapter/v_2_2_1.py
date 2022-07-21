@@ -1,7 +1,7 @@
 from ocpi.locations.v_2_2_1.schemas import Location
 
 
-class Adaptor:
+class Adapter:
     @classmethod
-    def location_adaptor(cls, data) -> Location:
+    def location_adapter(cls, data) -> Location:
         pass
