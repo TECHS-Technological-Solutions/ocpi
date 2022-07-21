@@ -6,6 +6,7 @@ from ocpi.versions.enums import VersionNumber, InterfaceRole
 
 ENDPOINTS = {
     VersionNumber.v_2_2_1: [
+        # locations
         Endpoint(
             identifier=ModuleID.Locations,
             role=InterfaceRole.Receiver,
