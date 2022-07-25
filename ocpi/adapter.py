@@ -5,3 +5,7 @@ class Adapter:
     @classmethod
     def location_adapter(cls, data) -> Location:
         pass
+
+
+def get_adapter():
+    return Adapter

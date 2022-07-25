@@ -1,12 +1,12 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, validator
 
-from tokens.v_2_2_1.enums import TokenType
-from locations.v_2_2_1.enums import (
+from ocpi.tokens.v_2_2_1.enums import TokenType
+from ocpi.locations.v_2_2_1.enums import (
     EnergySourceCategory, ParkingType, ParkingRestriction, Facility, Status, Capability,
     ConnectorFormat, ConnectorType, PowerType, ImageCategory, EnvironmentalImpactCategory
 )
-from ocpi.core.v_2_2_1.data_types import URL, CiString, DisplayText, Number, String, DateTime
+from ocpi.core.data_types import URL, CiString, DisplayText, Number, String, DateTime
 
 
 def length_validator(field: str, string: str, length: int):
@@ -16,7 +16,7 @@ def length_validator(field: str, string: str, length: int):
 
 class PublishTokenType(BaseModel):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#mod_locations_publish_token_class
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#mod_locations_publish_token_class
     """
     uid: CiString
     type: TokenType
@@ -47,7 +47,7 @@ class PublishTokenType(BaseModel):
 
 class Image(BaseModel):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#1415-image-class
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#1415-image-class
     """
     url: URL
     thumbnail: URL
@@ -64,7 +64,7 @@ class Image(BaseModel):
 
 class GeoLocation(BaseModel):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#mod_locations_geolocation_class
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#mod_locations_geolocation_class
     """
     latitude: String
     longitude: String
@@ -82,14 +82,14 @@ class GeoLocation(BaseModel):
 
 class AdditionalGeoLocation(GeoLocation):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#mod_locations_additionalgeolocation_class
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#mod_locations_additionalgeolocation_class
     """
     name: DisplayText
 
 
 class Connector(BaseModel):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#133-connector-object
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#133-connector-object
     """
     id: CiString
     standard: ConnectorType
@@ -115,7 +115,7 @@ class Connector(BaseModel):
 
 class StatusSchedule(BaseModel):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#1423-statusschedule-class
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#1423-statusschedule-class
     """
     period_begin: DateTime
     period_end: DateTime
@@ -124,7 +124,7 @@ class StatusSchedule(BaseModel):
 
 class EVSE(BaseModel):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#mod_locations_evse_object
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#mod_locations_evse_object
     """
     uid: CiString
     evse_id: CiString
@@ -163,7 +163,7 @@ class EVSE(BaseModel):
 
 class BusinessDetails(BaseModel):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#mod_locations_businessdetails_class
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#mod_locations_businessdetails_class
     """
     name: String
     website: URL
@@ -177,7 +177,7 @@ class BusinessDetails(BaseModel):
 
 class RegularHours(BaseModel):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#1421-regularhours-class
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#1421-regularhours-class
     """
     weekday: int
     period_begin: String
@@ -186,7 +186,7 @@ class RegularHours(BaseModel):
 
 class ExceptionalPeriod(BaseModel):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#1411-exceptionalperiod-class
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#1411-exceptionalperiod-class
     """
     period_begin: DateTime
     period_end: DateTime
@@ -194,17 +194,17 @@ class ExceptionalPeriod(BaseModel):
 
 class Hours(BaseModel):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#mod_locations_hours_class
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#mod_locations_hours_class
     """
     twentyfourseven: bool
-    regular_hours: RegularHours
-    exceptional_openings: ExceptionalPeriod
-    exceptional_closings: ExceptionalPeriod
+    regular_hours: List[RegularHours]
+    exceptional_openings: Optional[List[ExceptionalPeriod]]
+    exceptional_closings: Optional[List[ExceptionalPeriod]]
 
 
 class EnergySource(BaseModel):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#147-energysource-class
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#147-energysource-class
     """
     source: EnergySourceCategory
     percentage: Number
@@ -212,7 +212,7 @@ class EnergySource(BaseModel):
 
 class EnvironmentalImpact(BaseModel):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#149-environmentalimpact-class
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#149-environmentalimpact-class
     """
     category: EnvironmentalImpactCategory
     amount: Number
@@ -220,11 +220,11 @@ class EnvironmentalImpact(BaseModel):
 
 class EnergyMix(BaseModel):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#mod_locations_energymix_class
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#mod_locations_energymix_class
     """
     is_green_energy: bool
-    energy_source: EnergySource
-    environ_impact: EnvironmentalImpact
+    energy_sources: List[EnergySource]
+    environ_impact: Optional[EnvironmentalImpact]
     supplier_name: String
     energy_product_name: String
 
@@ -241,7 +241,7 @@ class EnergyMix(BaseModel):
 
 class Location(BaseModel):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#131-location-object
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#131-location-object
     """
     country_code: CiString
     party_id: CiString
@@ -262,7 +262,7 @@ class Location(BaseModel):
     operator: BusinessDetails
     suboperator: BusinessDetails
     owner: BusinessDetails
-    facilities: Facility
+    facilities: Optional[List[Facility]]
     time_zone: String
     opening_times: Hours
     charging_when_closed: bool

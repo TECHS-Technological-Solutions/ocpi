@@ -1,5 +1,5 @@
 """
-OCPI status codes based on https://github.com/ocpi/ocpi/blob/master/status_codes.asciidoc
+OCPI status codes based on https://github.com/ocpi/ocpi/blob/2.2.1/status_codes.asciidoc
 """
 
 # 1xxx: Success

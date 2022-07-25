@@ -3,7 +3,7 @@ from enum import Enum
 
 class RoleEnum(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/types.asciidoc#151-role-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/types.asciidoc#151-role-enum
     """
     CPO = 'Charge Point Operator Role.'
     EMSP = 'eMobility Service Provider Role.'
@@ -16,7 +16,7 @@ class RoleEnum(str, Enum):
 
 class ModuleID(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/version_information_endpoint.asciidoc#124-moduleid-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/version_information_endpoint.asciidoc#124-moduleid-enum
     """
     CDRs = 'cdrs'
     ChargingProfiles = 'chargingprofiles'

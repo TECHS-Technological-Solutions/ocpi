@@ -1,5 +1,5 @@
-from ocpi.core.v_2_2_1.enums import ModuleID
-from ocpi.core.v_2_2_1.data_types import URL
+from ocpi.core.enums import ModuleID
+from ocpi.core.data_types import URL
 from ocpi.core.config import settings
 from ocpi.versions.schemas import Endpoint
 from ocpi.versions.enums import VersionNumber, InterfaceRole
