@@ -1,9 +1,7 @@
 from uuid import uuid4
 
-from ocpi.main import get_application
-from ocpi.core.enums import RoleEnum
+from ocpi import get_application, enums
 from ocpi.versions.enums import VersionNumber
-from ocpi.core.enums import ModuleID
 from ocpi.locations.v_2_2_1.schemas import Location
 
 LOCATIONS = [
@@ -178,11 +176,11 @@ LOCATIONS = [
 
 class CRUD:
     @classmethod
-    def get(cls, module: ModuleID, id):
+    def get(cls, module: enums.ModuleID, id):
         return LOCATIONS[0]
 
     @classmethod
-    def list(cls, module: ModuleID) -> list:
+    def list(cls, module: enums.ModuleID) -> list:
         return LOCATIONS
 
 
@@ -192,4 +190,4 @@ class Adapter:
         return Location(**data)
 
 
-app = get_application(VersionNumber.v_2_2_1, [RoleEnum.CPO], CRUD, Adapter)
+app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.CPO], CRUD, Adapter)
