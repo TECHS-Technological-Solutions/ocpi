@@ -1,4 +1,4 @@
-from ocpi.core.v_2_2_1.enums import ModuleID
+from ocpi.core.enums import ModuleID
 
 
 class CRUD:
@@ -21,3 +21,7 @@ class CRUD:
     @classmethod
     def delete(cls, module: ModuleID, id):
         pass
+
+
+def get_crud():
+    return CRUD
