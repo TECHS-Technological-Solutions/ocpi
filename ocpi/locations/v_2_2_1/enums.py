@@ -3,7 +3,7 @@ from enum import Enum
 
 class ParkingRestriction(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#1417-parkingrestriction-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#1417-parkingrestriction-enum
     """
     # Reserved parking spot for electric vehicles.
     ev_only = 'EV_ONLY'
@@ -19,7 +19,7 @@ class ParkingRestriction(str, Enum):
 
 class ParkingType(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#1418-parkingtype-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#1418-parkingtype-enum
     """
     # Location on a parking facility/rest area along a motorway, freeway, interstate, highway etc.
     along_motorway = 'ALONG_MOTORWAY'
@@ -37,7 +37,7 @@ class ParkingType(str, Enum):
 
 class Facility(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#1412-facility-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#1412-facility-enum
     """
     # A hotel.
     hotel = 'HOTEL'
@@ -83,7 +83,7 @@ class Facility(str, Enum):
 
 class Status(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#1422-status-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#1422-status-enum
     """
     # The EVSE/Connector is able to start a new charging session.
     available = 'AVAILABLE'
@@ -107,7 +107,7 @@ class Status(str, Enum):
 
 class Capability(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#143-capability-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#143-capability-enum
     """
     # The EVSE supports charging profiles.
     charging_profile_capable = 'CHARGING_PROFILE_CAPABLE'
@@ -142,7 +142,7 @@ class Capability(str, Enum):
 
 class ConnectorType(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#145-connectortype-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#145-connectortype-enum
     """
     # The connector type is CHAdeMO, DC
     chadmeo = 'CHADEMO'
@@ -228,7 +228,7 @@ class ConnectorType(str, Enum):
 
 class ConnectorFormat(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#144-connectorformat-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#144-connectorformat-enum
     """
     # The connector is a socket; the EV user needs to bring a fitting plug.
     socket = 'SOCKET'
@@ -238,7 +238,7 @@ class ConnectorFormat(str, Enum):
 
 class PowerType(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#1419-powertype-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#1419-powertype-enum
     """
     # AC single phase.
     ac_1_phase = 'AC_1_PHASE'
@@ -254,7 +254,7 @@ class PowerType(str, Enum):
 
 class ImageCategory(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#1416-imagecategory-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#1416-imagecategory-enum
     """
     # Photo of the physical device that contains one or more EVSEs.
     charger = 'CHARGER'
@@ -276,7 +276,7 @@ class ImageCategory(str, Enum):
 
 class EnergySourceCategory(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#148-energysourcecategory-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#148-energysourcecategory-enum
     """
     # Nuclear power sources.
     nuclear = 'NUCLEAR'
@@ -298,7 +298,7 @@ class EnergySourceCategory(str, Enum):
 
 class EnvironmentalImpactCategory(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_locations.asciidoc#1410-environmentalimpactcategory-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#1410-environmentalimpactcategory-enum
     """
     # Produced nuclear waste in grams per kilowatthour.
     nuclear_waste = 'NUCLEAR_WASTE'

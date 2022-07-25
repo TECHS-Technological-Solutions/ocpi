@@ -3,7 +3,7 @@ from enum import Enum
 
 class VersionNumber(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/version_information_endpoint.asciidoc#125-versionnumber-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/version_information_endpoint.asciidoc#125-versionnumber-enum
     """
     v_2_0 = '2.0'
     v_2_1 = '2.1'
@@ -14,7 +14,7 @@ class VersionNumber(str, Enum):
 
 class InterfaceRole(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/version_information_endpoint.asciidoc#123-interfacerole-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/version_information_endpoint.asciidoc#123-interfacerole-enum
     """
     # Sender Interface implementation.
     # Interface implemented by the owner of data,

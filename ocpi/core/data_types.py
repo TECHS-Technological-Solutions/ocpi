@@ -1,5 +1,5 @@
 """
-OCPI data types based on https://github.com/ocpi/ocpi/blob/master/types.asciidoc
+OCPI data types based on https://github.com/ocpi/ocpi/blob/2.2.1/types.asciidoc
 """
 
 from datetime import datetime
@@ -105,10 +105,7 @@ class DateTime(str):
 
     @classmethod
     def validate(cls, v):
-        if not isinstance(v, datetime):
-            raise TypeError(f'excpected datetime but received {type(v)}')
-        format_string = '%Y-%m-%dT%H:%M:%S.%f%z'
-        formated_v = datetime.strftime(v, format_string)
+        formated_v = datetime.fromisoformat(v)
         return cls(formated_v)
 
     def __repr__(self):
