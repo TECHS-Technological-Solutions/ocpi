@@ -131,7 +131,7 @@ class EVSE(BaseModel):
     status: Status
     status_schedule: Optional[StatusSchedule]
     capabilities: List[Capability] = []
-    connectors: List[Connector] = []
+    connectors: List[Connector]
     floor_level: Optional[String]
     coordinates: Optional[GeoLocation]
     physical_reference: Optional[String]
@@ -261,7 +261,7 @@ class Location(BaseModel):
     directions: List[DisplayText] = []
     operator: Optional[BusinessDetails]
     suboperator: Optional[BusinessDetails]
-    owner: BusinessDetails
+    owner: Optional[BusinessDetails]
     facilities: List[Facility] = []
     time_zone: String
     opening_times: Optional[Hours]
