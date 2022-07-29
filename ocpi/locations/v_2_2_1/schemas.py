@@ -18,11 +18,11 @@ class PublishTokenType(BaseModel):
     """
     https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#mod_locations_publish_token_class
     """
-    uid: CiString
-    type: TokenType
-    visual_number: String
-    issuer: String
-    group_id: CiString
+    uid: Optional[CiString]
+    type: Optional[TokenType]
+    visual_number: Optional[String]
+    issuer: Optional[String]
+    group_id: Optional[CiString]
 
     @validator('uid')
     def validate_uid(cls, v):
@@ -50,11 +50,11 @@ class Image(BaseModel):
     https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#1415-image-class
     """
     url: URL
-    thumbnail: URL
+    thumbnail: Optional[URL]
     category: ImageCategory
     type: CiString
-    width: int
-    height: int
+    width: Optional[int]
+    height: Optional[int]
 
     @validator('type')
     def validate_type(cls, v):
@@ -84,7 +84,7 @@ class AdditionalGeoLocation(GeoLocation):
     """
     https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#mod_locations_additionalgeolocation_class
     """
-    name: DisplayText
+    name: Optional[DisplayText]
 
 
 class Connector(BaseModel):
@@ -97,9 +97,9 @@ class Connector(BaseModel):
     power_type: PowerType
     max_voltage: int
     max_amperage: int
-    max_electric_power: int
-    tariff_ids: CiString
-    terms_and_conditions: URL
+    max_electric_power: Optional[int]
+    tariff_ids: List[CiString] = []
+    terms_and_conditions: Optional[URL]
     last_updated: DateTime
 
     @validator('id')
@@ -118,7 +118,7 @@ class StatusSchedule(BaseModel):
     https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#1423-statusschedule-class
     """
     period_begin: DateTime
-    period_end: DateTime
+    period_end: Optional[DateTime]
     status: Status
 
 
@@ -127,17 +127,17 @@ class EVSE(BaseModel):
     https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#mod_locations_evse_object
     """
     uid: CiString
-    evse_id: CiString
+    evse_id: Optional[CiString]
     status: Status
-    status_schedule: StatusSchedule
-    capabilities: List[Capability]
-    connectors: List[Connector]
-    floor_level: String
-    coordinates: GeoLocation
-    physical_reference: String
-    directions: DisplayText
-    parking_restrictions: ParkingRestriction
-    images: Image
+    status_schedule: Optional[StatusSchedule]
+    capabilities: List[Capability] = []
+    connectors: List[Connector] = []
+    floor_level: Optional[String]
+    coordinates: Optional[GeoLocation]
+    physical_reference: Optional[String]
+    directions: List[DisplayText] = []
+    parking_restrictions: List[ParkingRestriction] = []
+    images: List[Image] = []
     last_updated: DateTime
 
     @validator('uid')
@@ -166,8 +166,8 @@ class BusinessDetails(BaseModel):
     https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#mod_locations_businessdetails_class
     """
     name: String
-    website: URL
-    logo: Image
+    website: Optional[URL]
+    logo: Optional[Image]
 
     @validator('name')
     def validate_name(cls, v):
@@ -198,8 +198,8 @@ class Hours(BaseModel):
     """
     twentyfourseven: bool
     regular_hours: List[RegularHours]
-    exceptional_openings: Optional[List[ExceptionalPeriod]]
-    exceptional_closings: Optional[List[ExceptionalPeriod]]
+    exceptional_openings: List[ExceptionalPeriod] = []
+    exceptional_closings: List[ExceptionalPeriod] = []
 
 
 class EnergySource(BaseModel):
@@ -247,27 +247,27 @@ class Location(BaseModel):
     party_id: CiString
     id: CiString
     publish: bool
-    publish_allowed_to: PublishTokenType
-    name: String
+    publish_allowed_to: List[PublishTokenType] = []
+    name: Optional[String]
     address: String
     city: String
-    postal_code: String
-    state: String
+    postal_code: Optional[String]
+    state: Optional[String]
     country: String
     coordinates: GeoLocation
-    related_locations: AdditionalGeoLocation
-    parking_type: ParkingType
-    evses: List[EVSE]
-    directions: DisplayText
-    operator: BusinessDetails
-    suboperator: BusinessDetails
+    related_locations: List[AdditionalGeoLocation] = []
+    parking_type: Optional[ParkingType]
+    evses: List[EVSE] = []
+    directions: List[DisplayText] = []
+    operator: Optional[BusinessDetails]
+    suboperator: Optional[BusinessDetails]
     owner: BusinessDetails
-    facilities: Optional[List[Facility]]
+    facilities: List[Facility] = []
     time_zone: String
-    opening_times: Hours
-    charging_when_closed: bool
-    images: Image
-    energy_mix: EnergyMix
+    opening_times: Optional[Hours]
+    charging_when_closed: Optional[bool]
+    images: List[Image] = []
+    energy_mix: Optional[EnergyMix]
     last_updated: DateTime
 
     @validator('country_code')
