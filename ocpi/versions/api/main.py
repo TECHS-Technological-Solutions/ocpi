@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.get("/versions", response_model=OCPIResponse)
-def get_versions():
+async def get_versions():
     return OCPIResponse(
         data=[
             Version(
@@ -25,7 +25,7 @@ def get_versions():
 
 
 @router.get("/2.2.1/details", response_model=OCPIResponse)
-def get_version_details():
+async def get_version_details():
     return OCPIResponse(
         data=[
             VersionDetail(
