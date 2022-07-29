@@ -66,7 +66,7 @@ async def get_evse(location_id: CiString, evse_uid: CiString, crud=Depends(get_c
 
 @router.get("/{location_id}/{evse_uid}/{connector_id}", response_model=OCPIResponse)
 async def get_connector(location_id: CiString, evse_uid: CiString, connector_id: CiString,
-                  crud=Depends(get_crud), adapter=Depends(get_adapter)):
+                        crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
         data = await crud.get(ModuleID.Locations, location_id)
         location = adapter.location_adapter(data)
