@@ -14,9 +14,9 @@ router = APIRouter(
 
 
 @router.get("/", response_model=OCPIResponse)
-def get_locations(crud=Depends(get_crud), adapter=Depends(get_adapter)):
+async def get_locations(crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
-        data_list = crud.list(ModuleID.Locations)
+        data_list = await crud.list(ModuleID.Locations)
         locations = []
         for data in data_list:
             locations.append(adapter.location_adapter(data).dict())
@@ -32,9 +32,9 @@ def get_locations(crud=Depends(get_crud), adapter=Depends(get_adapter)):
 
 
 @router.get("/{location_id}", response_model=OCPIResponse)
-def get_location(location_id: CiString, crud=Depends(get_crud), adapter=Depends(get_adapter)):
+async def get_location(location_id: CiString, crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
-        data = crud.get(ModuleID.Locations, location_id)
+        data = await crud.get(ModuleID.Locations, location_id)
         return OCPIResponse(
             data=[adapter.location_adapter(data).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
@@ -47,9 +47,9 @@ def get_location(location_id: CiString, crud=Depends(get_crud), adapter=Depends(
 
 
 @router.get("/{location_id}/{evse_uid}", response_model=OCPIResponse)
-def get_evse(location_id: CiString, evse_uid: CiString, crud=Depends(get_crud), adapter=Depends(get_adapter)):
+async def get_evse(location_id: CiString, evse_uid: CiString, crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
-        data = crud.get(ModuleID.Locations, location_id)
+        data = await crud.get(ModuleID.Locations, location_id)
         location = adapter.location_adapter(data)
         for evse in location.evses:
             if evse.uid == evse_uid:
@@ -65,10 +65,10 @@ def get_evse(location_id: CiString, evse_uid: CiString, crud=Depends(get_crud), 
 
 
 @router.get("/{location_id}/{evse_uid}/{connector_id}", response_model=OCPIResponse)
-def get_connector(location_id: CiString, evse_uid: CiString, connector_id: CiString,
+async def get_connector(location_id: CiString, evse_uid: CiString, connector_id: CiString,
                   crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
-        data = crud.get(ModuleID.Locations, location_id)
+        data = await crud.get(ModuleID.Locations, location_id)
         location = adapter.location_adapter(data)
         for evse in location.evses:
             if evse.uid == evse_uid:
