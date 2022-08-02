@@ -19,7 +19,7 @@ def start():
     string = "You are connecting to %s charge point via %s"
     typer.echo(string % (cp_serial_number, central_system_url))
     # TODO: Random function is just to check functionality of typer command, later we will implement real connection
-    connection = random.choice([True, False])
+    connection = random.choice([True, False])  # nosec
     if not connection:
         typer.echo('Connection was unsuccessful. In order to try again you need to call start command.')
         raise typer.Abort()
