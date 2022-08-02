@@ -7,6 +7,8 @@ authors = ["HAkhavan71 <hakh.27@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 fastapi = "^0.67.0"
+typer = "^0.6.1"
+questionary = "^1.10.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
