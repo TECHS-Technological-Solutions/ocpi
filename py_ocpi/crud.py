@@ -1,4 +1,4 @@
-from ocpi.core.enums import ModuleID
+from py_ocpi.core.enums import ModuleID
 
 
 class CRUD:
