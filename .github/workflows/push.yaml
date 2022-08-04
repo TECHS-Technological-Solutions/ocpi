@@ -24,7 +24,7 @@ jobs:
           make install
       - name: Run linter
         run: |
-          poetry run prospector ./ocpi --profile .prospector.yaml
+          poetry run prospector ./py_ocpi --profile .prospector.yaml
   test:
     runs-on: ubuntu-latest
     steps:
@@ -60,4 +60,4 @@ jobs:
           make install
       - name: Run bandit
         run: |
-          poetry run bandit -r ./ocpi
+          poetry run bandit -r ./py_ocpi
