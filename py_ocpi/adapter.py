@@ -1,4 +1,4 @@
-from ocpi.locations.v_2_2_1.schemas import Location
+from py_ocpi.locations.v_2_2_1.schemas import Location
 
 
 class Adapter:
