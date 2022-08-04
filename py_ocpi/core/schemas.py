@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 from pydantic import BaseModel
 
-from ocpi.core.data_types import String, DateTime
+from py_ocpi.core.data_types import String, DateTime
 
 
 class OCPIResponse(BaseModel):

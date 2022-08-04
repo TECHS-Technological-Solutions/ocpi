@@ -3,19 +3,19 @@ from typing import Any, List
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
-from ocpi.credentials.v_2_2_1.api import cpo_router as credentials_cpo_2_2_1_router
-from ocpi.locations.v_2_2_1.api import cpo_router as locations_cpo_2_2_1_router
-from ocpi.sessions.v_2_2_1.api import cpo_router as sessions_cpo_2_2_1_router
-from ocpi.commands.v_2_2_1.api import cpo_router as commands_cpo_2_2_1_router
-from ocpi.tariffs.v_2_2_1.api import cpo_router as tariffs_cpo_2_2_1_router
-from ocpi.tokens.v_2_2_1.api import cpo_router as tokens_cpo_2_2_1_router
-from ocpi.cdrs.v_2_2_1.api import cpo_router as cdrs_cpo_2_2_1_router
-from ocpi.versions.api import router as versions_router
-from ocpi.versions.enums import VersionNumber
-from ocpi.adapter import get_adapter
-from ocpi.crud import get_crud
-from ocpi.core.enums import RoleEnum
-from ocpi.core.config import settings
+from py_ocpi.credentials.v_2_2_1.api import cpo_router as credentials_cpo_2_2_1_router
+from py_ocpi.locations.v_2_2_1.api import cpo_router as locations_cpo_2_2_1_router
+from py_ocpi.sessions.v_2_2_1.api import cpo_router as sessions_cpo_2_2_1_router
+from py_ocpi.commands.v_2_2_1.api import cpo_router as commands_cpo_2_2_1_router
+from py_ocpi.tariffs.v_2_2_1.api import cpo_router as tariffs_cpo_2_2_1_router
+from py_ocpi.tokens.v_2_2_1.api import cpo_router as tokens_cpo_2_2_1_router
+from py_ocpi.cdrs.v_2_2_1.api import cpo_router as cdrs_cpo_2_2_1_router
+from py_ocpi.versions.api import router as versions_router
+from py_ocpi.versions.enums import VersionNumber
+from py_ocpi.adapter import get_adapter
+from py_ocpi.crud import get_crud
+from py_ocpi.core.enums import RoleEnum
+from py_ocpi.core.config import settings
 
 
 def get_application(

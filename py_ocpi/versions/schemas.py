@@ -2,9 +2,9 @@ from typing import List
 
 from pydantic import BaseModel
 
-from ocpi.versions.enums import VersionNumber, InterfaceRole
-from ocpi.core.data_types import URL
-from ocpi.core.enums import ModuleID
+from py_ocpi.versions.enums import VersionNumber, InterfaceRole
+from py_ocpi.core.data_types import URL
+from py_ocpi.core.enums import ModuleID
 
 
 class Version(BaseModel):

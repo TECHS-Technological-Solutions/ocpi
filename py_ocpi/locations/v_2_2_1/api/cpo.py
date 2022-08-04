@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends
 from pydantic import ValidationError
 
-from ocpi.adapter import get_adapter
-from ocpi.crud import get_crud
-from ocpi.core import status
-from ocpi.core.schemas import OCPIResponse
-from ocpi.core.data_types import CiString
-from ocpi.core.enums import ModuleID
+from py_ocpi.adapter import get_adapter
+from py_ocpi.crud import get_crud
+from py_ocpi.core import status
+from py_ocpi.core.schemas import OCPIResponse
+from py_ocpi.core.data_types import CiString
+from py_ocpi.core.enums import ModuleID
 
 router = APIRouter(
     prefix='/locations',

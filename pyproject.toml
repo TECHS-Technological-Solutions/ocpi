@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ocpi"
+name = "py_ocpi"
 version = "0.1.0"
 description = "Python Implementation of OCPI"
 authors = ["HAkhavan71 <hakh.27@gmail.com>"]
