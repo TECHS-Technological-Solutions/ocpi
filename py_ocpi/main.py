@@ -34,12 +34,12 @@ def get_application(
         allow_headers=["*"],
     )
     if version == VersionNumber.v_2_2_1:
+        _app.include_router(
+            versions_router,
+            prefix='/ocpi',
+        )
         if RoleEnum.CPO in roles:
             _cpo_router = APIRouter(
-            )
-
-            _cpo_router.include_router(
-                versions_router
             )
             _cpo_router.include_router(
                 locations_cpo_2_2_1_router
@@ -65,7 +65,7 @@ def get_application(
 
             _app.include_router(
                 _cpo_router,
-                prefix='/cpo',
+                prefix='/ocpi/cpo',
                 tags=['CPO']
             )
 

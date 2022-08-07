@@ -13,7 +13,7 @@ keywords = ["ocpi"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-fastapi = "^0.67.0"
+fastapi = "^0.68.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
