@@ -22,9 +22,14 @@ def get_application(
     version: VersionNumber,
     roles: List[RoleEnum],
     crud: Any,
-    adapter: Any
+    adapter: Any,
+    prefix: str = 'ocpi',
 ):
-    _app = FastAPI(title=settings.PROJECT_NAME)
+    _app = FastAPI(
+        title=settings.PROJECT_NAME,
+        docs_url=f'/{prefix}/docs',
+        openapi_url=f"/{prefix}/openapi.json"
+    )
 
     _app.add_middleware(
         CORSMiddleware,
@@ -36,7 +41,7 @@ def get_application(
     if version == VersionNumber.v_2_2_1:
         _app.include_router(
             versions_router,
-            prefix='/ocpi',
+            prefix=f'/{prefix}',
         )
         if RoleEnum.CPO in roles:
             _cpo_router = APIRouter(
@@ -65,7 +70,7 @@ def get_application(
 
             _app.include_router(
                 _cpo_router,
-                prefix='/ocpi/cpo',
+                prefix=f'/{prefix}/cpo',
                 tags=['CPO']
             )
 
