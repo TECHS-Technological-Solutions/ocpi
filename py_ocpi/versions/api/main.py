@@ -17,7 +17,7 @@ async def get_versions():
         data=[
             Version(
                 version=VersionNumber.v_2_2_1,
-                url=URL(f'https://{settings.HOST}/{settings.OCPI_PREFIX}/cpo/2.2.1')
+                url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/cpo/2.2.1')
             ).dict(),
         ],
         **status.OCPI_1000_GENERIC_SUCESS_CODE,
