@@ -6,6 +6,7 @@ from py_ocpi.core.utils import get_list, get_auth_token
 from py_ocpi.core import status
 from py_ocpi.core.exceptions import AuthorizationOCPIError
 from py_ocpi.core.schemas import OCPIResponse
+from py_ocpi.core.config import settings
 from py_ocpi.core.data_types import CiString
 from py_ocpi.core.enums import ModuleID
 from py_ocpi.core.dependencies import get_crud, get_adapter, pagination_filters
