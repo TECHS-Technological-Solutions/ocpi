@@ -1,4 +1,3 @@
-
 from typing import List, Union
 
 from pydantic import AnyHttpUrl, BaseSettings, validator

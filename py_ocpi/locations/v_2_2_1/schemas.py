@@ -11,7 +11,7 @@ from py_ocpi.core.data_types import URL, CiString, DisplayText, Number, String, 
 
 def length_validator(field: str, string: str, length: int):
     if len(string) > length:
-        raise ValueError('%s length must be lower or equal to %s', field, length)
+        raise ValueError(f'{field} length must be lower or equal to {length}')
 
 
 class PublishTokenType(BaseModel):
