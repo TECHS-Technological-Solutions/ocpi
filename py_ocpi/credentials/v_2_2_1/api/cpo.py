@@ -36,7 +36,7 @@ async def post_credentials(credentials: Credentials, crud=Depends(get_crud), ada
     try:
         # Check if the client is already registered
         credentials_client_token = credentials.token
-        server_cred = crud.get(ServerCredentials, credentials_client_token)
+        server_cred = await crud.get(ServerCredentials, credentials_client_token)
         if server_cred:
             raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client is already registered")
 
@@ -52,14 +52,14 @@ async def post_credentials(credentials: Credentials, crud=Depends(get_crud), ada
             # TODO: Think of passing url and business details of server
             #  because in respond client should get the server details
             endpoints = response_endpoints.json()['data'][0]
-            server_cred = crud.create(ServerCredentials(
+            server_cred = await crud.create(ServerCredentials(
                 cred_token_b=credentials.token,
                 versions=versions,
                 endpoints=endpoints
             ))
 
             # Generate new credentials for sender
-            new_credentials = crud.create(Credentials(
+            new_credentials = await crud.create(Credentials(
                 token=uuid.uuid4(),
                 url=server_cred.url,
                 roles=server_cred.roles
@@ -80,7 +80,7 @@ async def update_credentials(credentials: Credentials, crud=Depends(get_crud), a
     try:
         # Check if the client is already registered
         credentials_client_token = credentials.token
-        server_cred = crud.get(ServerCredentials, credentials_client_token)
+        server_cred = await crud.get(ServerCredentials, credentials_client_token)
         if not server_cred:
             raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client is not registered")
 
@@ -94,11 +94,11 @@ async def update_credentials(credentials: Credentials, crud=Depends(get_crud), a
 
             # Update server credentials to access client's system
             endpoints = response_endpoints.json()['data'][0]
-            crud.update(server_cred, {'versions': versions, 'endpoints': endpoints})
+            server_cred = await crud.update(server_cred, {'versions': versions, 'endpoints': endpoints})
 
             # Generate new credentials token
             cred_token_c = uuid.uuid4()
-            new_credentials = crud.create(Credentials(
+            new_credentials = await crud.create(Credentials(
                 token=cred_token_c,
                 url=server_cred.url,
                 roles=server_cred.roles
