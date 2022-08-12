@@ -9,7 +9,7 @@ ENDPOINTS = {
         # locations
         Endpoint(
             identifier=ModuleID.Locations,
-            role=InterfaceRole.Receiver,
+            role=InterfaceRole.Sender,
             url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/cpo'
                     f'/{VersionNumber.v_2_2_1}/{ModuleID.Locations}')
         ),
