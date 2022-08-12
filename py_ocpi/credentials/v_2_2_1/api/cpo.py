@@ -1,6 +1,5 @@
 import uuid
-
-import requests
+import httpx
 
 from fastapi import APIRouter, Depends, HTTPException, status as fastapistatus
 from pydantic import ValidationError
@@ -10,7 +9,7 @@ from py_ocpi.crud import get_crud
 from py_ocpi.adapter import get_adapter
 from py_ocpi.core import status
 from py_ocpi.core.enums import ModuleID
-from py_ocpi.credentials.v_2_2_1.schemas import Credentials
+from py_ocpi.credentials.v_2_2_1.schemas import Credentials, ServerCredentials
 
 router = APIRouter(
     prefix='/credentials',
@@ -20,12 +19,9 @@ router = APIRouter(
 @router.get("/", response_model=OCPIResponse)
 async def get_credentials(crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
-        data_list = await crud.list(ModuleID.CredentialsAndRegistrations)
-        credentials = []
-        for data in data_list:
-            credentials.append(adapter.credentials_adapter(data).dict())
+        data = await crud.get(ModuleID.CredentialsAndRegistrations)
         return OCPIResponse(
-            data=credentials,
+            data=[adapter.credentials_adapter(data).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
         )
     except ValidationError:
@@ -40,18 +36,34 @@ async def post_credentials(credentials: Credentials, crud=Depends(get_crud), ada
     try:
         # Check if the client is already registered
         credentials_client_token = credentials.token
-        server_cred = crud.get(ModuleID.CredentialsAndRegistrations, credentials.token)
+        server_cred = crud.get(ServerCredentials, credentials_client_token)
         if server_cred:
-            raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client has been already registered")
+            raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client is already registered")
 
         # Retrieve the versions and endpoints from the client
-        response_versions = requests.get(credentials.url, auth=credentials_client_token)
-        response_endpoints = requests.get(response_versions.json()['data']['url'], auth=credentials_client_token)
+        async with httpx.AsyncClient() as client:
+            response_versions = await client.get(credentials.url, headers=credentials_client_token)
+            versions = response_versions.json()['data'][0]
+            response_endpoints = await client.get(versions['url'], headers=credentials_client_token)
 
-        # Generate new credentials token
         if response_endpoints.status_code == fastapistatus.HTTP_200_OK:
-            cred_token_c = uuid.uuid4()
-            new_credentials = crud.update(server_cred, {'token': cred_token_c})
+
+            # Store client credentials
+            # TODO: Think of passing url and business details of server
+            #  because in respond client should get the server details
+            endpoints = response_endpoints.json()['data'][0]
+            server_cred = crud.create(ServerCredentials(
+                cred_token_b=credentials.token,
+                versions=versions,
+                endpoints=endpoints
+            ))
+
+            # Generate new credentials for sender
+            new_credentials = crud.create(Credentials(
+                token=uuid.uuid4(),
+                url=server_cred.url,
+                roles=server_cred.roles
+            ))
             return OCPIResponse(
                 data=[adapter.credentials_adapter(new_credentials).dict()],
                 **status.OCPI_1000_GENERIC_SUCESS_CODE
@@ -68,25 +80,29 @@ async def update_credentials(credentials: Credentials, crud=Depends(get_crud), a
     try:
         # Check if the client is already registered
         credentials_client_token = credentials.token
-        server_cred = crud.get(ModuleID.CredentialsAndRegistrations, credentials.token)
+        server_cred = crud.get(ServerCredentials, credentials_client_token)
         if not server_cred:
-            raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client has not been already registered")
+            raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client is not registered")
 
-        # Switch to the version that contains clients credentials
-        response_server_version = requests.get(server_cred.url, auth=server_cred.token)
-        server_versions = response_server_version.json()['data']['version']
-        response_client_versions = requests.get(credentials.url, auth=credentials_client_token)
-        client_version = response_client_versions.json()['data']['version']
-        if not server_versions == client_version:
-            server_cred = crud.update(server_cred, {'url': credentials.url})
+        # Retrieve the versions and endpoints from the client
+        async with httpx.AsyncClient() as client:
+            response_versions = await client.get(credentials.url, headers=credentials_client_token)
+            versions = response_versions.json()['data'][0]
+            response_endpoints = await client.get(versions['url'], headers=credentials_client_token)
 
-        # Fetch client endpoints
-        response_endpoints = requests.get(response_client_versions.json()['data']['url'], auth=credentials_client_token)
-
-        # Generate new credentials token
         if response_endpoints.status_code == fastapistatus.HTTP_200_OK:
+
+            # Update server credentials to access client's system
+            endpoints = response_endpoints.json()['data'][0]
+            crud.update(server_cred, {'versions': versions, 'endpoints': endpoints})
+
+            # Generate new credentials token
             cred_token_c = uuid.uuid4()
-            new_credentials = crud.update(server_cred, {'token': cred_token_c})
+            new_credentials = crud.create(Credentials(
+                token=cred_token_c,
+                url=server_cred.url,
+                roles=server_cred.roles
+            ))
             return OCPIResponse(
                 data=[adapter.credentials_adapter(new_credentials).dict()],
                 **status.OCPI_1000_GENERIC_SUCESS_CODE
