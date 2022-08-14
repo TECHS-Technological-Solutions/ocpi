@@ -5,6 +5,8 @@ OCPI data types based on https://github.com/ocpi/ocpi/blob/2.2.1/types.asciidoc
 from datetime import datetime
 from typing import Type
 
+from pydantic.fields import ModelField
+
 
 class StringBase(str):
     """
@@ -24,7 +26,7 @@ class StringBase(str):
         )
 
     @classmethod
-    def validate(cls, v, field):
+    def validate(cls, v, field: ModelField):
         if not isinstance(v, str):
             raise TypeError(f'excpected string but received {type(v)}')
         try:
@@ -32,7 +34,7 @@ class StringBase(str):
         except UnicodeError as e:
             raise ValueError('invalid string format') from e
         if len(v) > cls.max_length:
-            raise ValueError(f'{field} length must be lower or equal to {cls.max_length}')
+            raise ValueError(f'{field.name} length must be lower or equal to {cls.max_length}')
         return cls(v)
 
     def __repr__(self):
@@ -62,13 +64,13 @@ class CiStringBase(str):
         )
 
     @classmethod
-    def validate(cls, v, field):
+    def validate(cls, v, field: ModelField):
         if not isinstance(v, str):
             raise TypeError(f'excpected string but received {type(v)}')
         if not v.isascii():
             raise ValueError('invalid cistring format')
         if len(v) > cls.max_length:
-            raise ValueError(f'{field} length must be lower or equal to {cls.max_length}')
+            raise ValueError(f'{field.name} length must be lower or equal to {cls.max_length}')
         return cls(v.lower())
 
     def __repr__(self):
@@ -95,7 +97,7 @@ class URL(str):
         )
 
     @classmethod
-    def validate(cls, v, field):
+    def validate(cls, v, field: ModelField):
         v = String(255).validate(v, field)
         return cls(v)
 

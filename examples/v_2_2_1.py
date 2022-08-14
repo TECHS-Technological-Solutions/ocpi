@@ -10,13 +10,15 @@ LOCATIONS = [
         'party_id': 'AAA',
         'id': str(uuid4()),
         'publish': True,
-        'publish_allowed_to': {
-            'uid': str(uuid4()),
-            'type': 'APP_USER',
-            'visual_number': '1',
-            'issuer': 'issuer',
-            'group_id': 'group_id',
-        },
+        'publish_allowed_to': [
+            {
+                'uid': str(uuid4()),
+                'type': 'APP_USER',
+                'visual_number': '1',
+                'issuer': 'issuer',
+                'group_id': 'group_id',
+            },
+        ],
         'name': 'name',
         'address': 'address',
         'city': 'city',
@@ -27,14 +29,16 @@ LOCATIONS = [
             'latitude': 'latitude',
             'longitude': 'longitude',
         },
-        'related_locations': {
-            'latitude': 'latitude',
-            'longitude': 'longitude',
-            'name': {
-                'language': 'en',
-                'text': 'name'
-            }
-        },
+        'related_locations': [
+            {
+                'latitude': 'latitude',
+                'longitude': 'longitude',
+                'name': {
+                    'language': 'en',
+                    'text': 'name'
+                }
+            },
+        ],
         'parking_type': 'ON_STREET',
         'evses': [
             {
@@ -58,7 +62,7 @@ LOCATIONS = [
                         'max_voltage': 100,
                         'max_amperage': 100,
                         'max_electric_power': 100,
-                        'tariff_ids': str(uuid4()),
+                        'tariff_ids': [str(uuid4()),],
                         'terms_and_conditions': 'https://www.example.com',
                         'last_updated': '2022-01-01T00:00:00+00:00',
                     }
@@ -69,26 +73,32 @@ LOCATIONS = [
                     'longitude': 'longitude',
                 },
                 'physical_reference': 'pr',
-                'directions': {
-                    'language': 'en',
-                    'text': 'directions'
-                },
-                'parking_restrictions': 'EV_ONLY',
-                'images': {
-                    'url': 'https://www.example.com',
-                    'thumbnail': 'https://www.example.com',
-                    'category': 'CHARGER',
-                    'type': 'type',
-                    'width': 10,
-                    'height': 10
-                },
+                'directions': [
+                    {
+                        'language': 'en',
+                        'text': 'directions'
+                    },
+                ],
+                'parking_restrictions': ['EV_ONLY',],
+                'images': [
+                    {
+                        'url': 'https://www.example.com',
+                        'thumbnail': 'https://www.example.com',
+                        'category': 'CHARGER',
+                        'type': 'type',
+                        'width': 10,
+                        'height': 10
+                    },
+                ],
                 'last_updated': '2022-01-01T00:00:00+00:00'
             }
         ],
-        'directions': {
-            'language': 'en',
-            'text': 'directions'
-        },
+        'directions': [
+            {
+                'language': 'en',
+                'text': 'directions'
+            },
+        ],
         'operator': {
             'name': 'name',
             'website': 'https://www.example.com',
@@ -132,13 +142,13 @@ LOCATIONS = [
             'regular_hours': [
                 {
                     'weekday': 1,
-                    'period_begin': 'period_begin',
-                    'period_end': 'period_end',
+                    'period_begin': '8:00',
+                    'period_end': '22:00',
                 },
                 {
                     'weekday': 2,
-                    'period_begin': 'period_begin',
-                    'period_end': 'period_end',
+                    'period_begin': '8:00',
+                    'period_end': '22:00',
                 },
             ],
             'exceptional_openings': [
@@ -150,14 +160,16 @@ LOCATIONS = [
             'exceptional_closings': [],
         },
         'charging_when_closed': False,
-        'images': {
-            'url': 'https://www.example.com',
-            'thumbnail': 'https://www.example.com',
-            'category': 'CHARGER',
-            'type': 'type',
-            'width': 10,
-            'height': 10
-        },
+        'images': [
+            {
+                'url': 'https://www.example.com',
+                'thumbnail': 'https://www.example.com',
+                'category': 'CHARGER',
+                'type': 'type',
+                'width': 10,
+                'height': 10
+            },
+        ],
         'energy_mix': {
             'is_green_energy': True,
             'energy_sources': [
