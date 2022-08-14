@@ -176,12 +176,12 @@ LOCATIONS = [
 
 class CRUD:
     @classmethod
-    def get(cls, module: enums.ModuleID, id):
+    async def get(cls, module: enums.ModuleID, id):
         return LOCATIONS[0]
 
     @classmethod
-    def list(cls, module: enums.ModuleID) -> list:
-        return LOCATIONS
+    async def list(cls, module: enums.ModuleID, filters: dict) -> list:
+        return LOCATIONS, 1, True
 
 
 class Adapter:
