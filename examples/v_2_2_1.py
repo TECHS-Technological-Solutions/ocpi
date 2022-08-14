@@ -62,7 +62,7 @@ LOCATIONS = [
                         'max_voltage': 100,
                         'max_amperage': 100,
                         'max_electric_power': 100,
-                        'tariff_ids': [str(uuid4()),],
+                        'tariff_ids': [str(uuid4()), ],
                         'terms_and_conditions': 'https://www.example.com',
                         'last_updated': '2022-01-01T00:00:00+00:00',
                     }
@@ -79,7 +79,7 @@ LOCATIONS = [
                         'text': 'directions'
                     },
                 ],
-                'parking_restrictions': ['EV_ONLY',],
+                'parking_restrictions': ['EV_ONLY', ],
                 'images': [
                     {
                         'url': 'https://www.example.com',
