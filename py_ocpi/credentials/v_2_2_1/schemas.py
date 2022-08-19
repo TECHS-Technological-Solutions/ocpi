@@ -14,15 +14,15 @@ class CredentialsRole(BaseModel):
     """
     role: RoleEnum
     business_details: BusinessDetails
-    party_id: CiString(max_length=3)
-    country_code: CiString(max_length=2)
+    party_id: CiString(3)
+    country_code: CiString(2)
 
 
 class Credentials(BaseModel):
     """
     https://github.com/ocpi/ocpi/blob/2.2.1/credentials.asciidoc#131-credentials-object
     """
-    token: String(max_length=64)
+    token: String(64)
     url: URL
     roles: List[CredentialsRole]
 
