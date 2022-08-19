@@ -27,15 +27,16 @@ async def get_locations(response: Response,
         data_list, total, is_last_page = await crud.list(ModuleID.Locations, filters)
 
         link = ''
-        params = dict(**filters, offset=filters['offset'] + filters['limit'])
+        params = dict(**filters)
+        params['offset'] = filters['offset'] + filters['limit']
         if not is_last_page:
             link = (f'<https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/cpo'
                     f'/{VersionNumber.v_2_2_1}/{ModuleID.Locations}/?{urllib.parse.urlencode(params)}>; rel="next"')
 
         # set pagination headers
         response.headers['Link'] = link
-        response.headers['X-Total-Count'] = total
-        response.headers['X-Limit'] = filters['limit']
+        response.headers['X-Total-Count'] = str(total)
+        response.headers['X-Limit'] = str(filters['limit'])
 
         locations = []
         for data in data_list:
@@ -52,7 +53,7 @@ async def get_locations(response: Response,
 
 
 @router.get("/{location_id}", response_model=OCPIResponse)
-async def get_location(location_id: CiString, crud=Depends(get_crud), adapter=Depends(get_adapter)):
+async def get_location(location_id: CiString(36), crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
         data = await crud.get(ModuleID.Locations, location_id)
         return OCPIResponse(
@@ -67,7 +68,8 @@ async def get_location(location_id: CiString, crud=Depends(get_crud), adapter=De
 
 
 @router.get("/{location_id}/{evse_uid}", response_model=OCPIResponse)
-async def get_evse(location_id: CiString, evse_uid: CiString, crud=Depends(get_crud), adapter=Depends(get_adapter)):
+async def get_evse(location_id: CiString(36), evse_uid: CiString(48),
+                   crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
         data = await crud.get(ModuleID.Locations, location_id)
         location = adapter.location_adapter(data)
@@ -85,7 +87,7 @@ async def get_evse(location_id: CiString, evse_uid: CiString, crud=Depends(get_c
 
 
 @router.get("/{location_id}/{evse_uid}/{connector_id}", response_model=OCPIResponse)
-async def get_connector(location_id: CiString, evse_uid: CiString, connector_id: CiString,
+async def get_connector(location_id: CiString(36), evse_uid: CiString(48), connector_id: CiString(36),
                         crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
         data = await crud.get(ModuleID.Locations, location_id)

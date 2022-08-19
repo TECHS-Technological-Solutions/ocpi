@@ -3,7 +3,7 @@ from enum import Enum
 
 class CommandResponseType(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_commands.asciidoc#141-commandresponsetype-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_commands.asciidoc#141-commandresponsetype-enum
     """
     # The requested command is not supported by this CPO, Charge Point, EVSE etc.
     not_supported = 'NOT_SUPPORTED'
@@ -17,7 +17,7 @@ class CommandResponseType(str, Enum):
 
 class CommandResultType(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_commands.asciidoc#142-commandresulttype-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_commands.asciidoc#142-commandresulttype-enum
     """
     # Command request accepted by the Charge Point.
     accepted = 'ACCEPTED'
@@ -41,7 +41,7 @@ class CommandResultType(str, Enum):
 
 class CommandType(str, Enum):
     """
-    https://github.com/ocpi/ocpi/blob/master/mod_commands.asciidoc#143-commandtype-enum
+    https://github.com/ocpi/ocpi/blob/2.2.1/mod_commands.asciidoc#143-commandtype-enum
     """
     # Request the Charge Point to cancel a specific reservation.
     cancel_reservation = 'CANCEL_RESERVATION'
