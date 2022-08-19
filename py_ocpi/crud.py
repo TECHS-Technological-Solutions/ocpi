@@ -17,7 +17,7 @@ class CRUD:
         pass
 
     @classmethod
-    async def update(cls, module: ModuleID, data) -> Any:
+    async def update(cls, module: ModuleID, data, id) -> Any:
         pass
 
     @classmethod
