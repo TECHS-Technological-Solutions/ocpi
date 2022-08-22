@@ -42,7 +42,7 @@ class TariffElement(BaseModel):
     https://github.com/ocpi/ocpi/blob/2.2.1/mod_tariffs.asciidoc#144-tariffelement-class
     """
     price_components: List[PriceComponent]
-    restrictions: List[TariffRestrictions] = []
+    restrictions: Optional[TariffRestrictions]
 
 
 class Tariff(BaseModel):
