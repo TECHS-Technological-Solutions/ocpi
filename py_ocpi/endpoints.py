@@ -13,6 +13,13 @@ ENDPOINTS = {
             url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/cpo'
                     f'/{VersionNumber.v_2_2_1}/{ModuleID.Locations}')
         ),
+        # sessions
+        Endpoint(
+            identifier=ModuleID.Sessions,
+            role=InterfaceRole.Sender,
+            url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/cpo'
+                    f'/{VersionNumber.v_2_2_1}/{ModuleID.Sessions}')
+        ),
     ]
 
 }
