@@ -1,9 +1,9 @@
 from typing import List, Optional
 from pydantic import BaseModel
 
-from py_ocpi.cdrs.v_2_2_1.enums import AuthMethod
-from py_ocpi.cdrs.v_2_2_1.schemas import CdrToken, ChargingPeriod
-from py_ocpi.sessions.v_2_2_1.enums import ProfileType, SessionStatus
+from py_ocpi.cdrs.enums import AuthMethod
+from py_ocpi.cdrs.schemas import CdrToken, ChargingPeriod
+from py_ocpi.sessions.enums import ProfileType, SessionStatus
 from py_ocpi.core.data_types import CiString, Number, Price, String, DateTime
 
 

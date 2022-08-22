@@ -1,4 +1,3 @@
-import uuid
 import httpx
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status as fastapistatus
@@ -53,6 +52,7 @@ async def post_credentials(credentials: Credentials, crud=Depends(get_crud), ada
                                                   headers={'authorization': authorization_token})
 
         if response_endpoints.status_code == fastapistatus.HTTP_200_OK:
+
             # Store client credentials
             endpoints = response_endpoints.json()['data'][0]
             await crud.create(ModuleID.CredentialsAndRegistrations, ServerCredentials(
@@ -62,7 +62,7 @@ async def post_credentials(credentials: Credentials, crud=Depends(get_crud), ada
             ))
 
             # Generate new credentials for sender
-            new_credentials = await crud.create(ModuleID.CredentialsAndRegistrations, Credentials(url=versions['url']))
+            new_credentials = await crud.create(ModuleID.CredentialsAndRegistrations, {'url': versions['url']})
             return OCPIResponse(
                 data=[adapter.credentials_adapter(new_credentials).dict()],
                 **status.OCPI_1000_GENERIC_SUCESS_CODE
@@ -91,16 +91,17 @@ async def update_credentials(credentials: Credentials, crud=Depends(get_crud), a
             response_endpoints = await client.get(versions['url'], headers={'authorization': authorization_token})
 
         if response_endpoints.status_code == fastapistatus.HTTP_200_OK:
+
             # Update server credentials to access client's system
             endpoints = response_endpoints.json()['data'][0]
             await crud.update(ModuleID.CredentialsAndRegistrations,
-                              {'versions': versions,
-                               'endpoints': endpoints,
-                               'cred_token_b': credentials_client_token},
+                              ServerCredentials(cred_token_b=credentials.token,
+                                                versions=versions,
+                                                endpoints=endpoints),
                               server_cred.cred_token_b)
 
             # Generate new credentials token
-            new_credentials = await crud.create(ModuleID.CredentialsAndRegistrations, Credentials(url=versions['url']))
+            new_credentials = await crud.create(ModuleID.CredentialsAndRegistrations, {'url': versions['url']})
             return OCPIResponse(
                 data=[adapter.credentials_adapter(new_credentials).dict()],
                 **status.OCPI_1000_GENERIC_SUCESS_CODE
