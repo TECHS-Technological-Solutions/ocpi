@@ -12,8 +12,7 @@ from py_ocpi.tokens.v_2_2_1.api import cpo_router as tokens_cpo_2_2_1_router
 from py_ocpi.cdrs.v_2_2_1.api import cpo_router as cdrs_cpo_2_2_1_router
 from py_ocpi.versions.api import router as versions_router
 from py_ocpi.versions.enums import VersionNumber
-from py_ocpi.adapter import get_adapter
-from py_ocpi.crud import get_crud
+from py_ocpi.core.dependencies import get_crud, get_adapter
 from py_ocpi.core.enums import RoleEnum
 from py_ocpi.core.config import settings
 
@@ -42,7 +41,7 @@ def get_application(
             versions_router,
             prefix=f'/{settings.OCPI_PREFIX}',
         )
-        if RoleEnum.CPO in roles:
+        if RoleEnum.cpo in roles:
             _cpo_router = APIRouter(
             )
             _cpo_router.include_router(

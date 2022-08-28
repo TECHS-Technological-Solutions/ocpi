@@ -1,12 +1,12 @@
 from fastapi import APIRouter
 
+
 from py_ocpi.versions.schemas import Version, VersionDetail, URL
 from py_ocpi.versions.enums import VersionNumber
-
+from py_ocpi.core import status
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.config import settings
-from py_ocpi.core import status
-from py_ocpi.endpoints import ENDPOINTS
+from py_ocpi.core.endpoints import ENDPOINTS
 
 router = APIRouter()
 

@@ -188,11 +188,11 @@ LOCATIONS = [
 
 class CRUD:
     @classmethod
-    async def get(cls, module: enums.ModuleID, id):
+    async def get(cls, module: enums.ModuleID, id, *args, **kwargs):
         return LOCATIONS[0]
 
     @classmethod
-    async def list(cls, module: enums.ModuleID, filters: dict) -> list:
+    async def list(cls, module: enums.ModuleID, filters: dict, *args, **kwargs) -> list:
         return LOCATIONS, 1, True
 
 
@@ -202,4 +202,4 @@ class Adapter:
         return Location(**data)
 
 
-app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.CPO], CRUD, Adapter)
+app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], CRUD, Adapter)

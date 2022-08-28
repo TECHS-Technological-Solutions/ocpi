@@ -23,7 +23,3 @@ class CRUD:
     @classmethod
     async def delete(cls, module: ModuleID, id, *args, **kwargs) -> Any:
         ...
-
-
-def get_crud():
-    return CRUD

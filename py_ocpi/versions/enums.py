@@ -19,8 +19,8 @@ class InterfaceRole(str, Enum):
     # Sender Interface implementation.
     # Interface implemented by the owner of data,
     # so the Receiver can Pull information from the data Sender/owner.
-    Sender = 'SENDER'
+    sender = 'SENDER'
     # Receiver Interface implementation.
     # Interface implemented by the receiver of data,
     # so the Sender/owner can Push information to the Receiver.
-    Receiver = 'RECEIVER'
+    receiver = 'RECEIVER'

@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status as fastap
 from pydantic import ValidationError
 
 from py_ocpi.core.schemas import OCPIResponse
-from py_ocpi.crud import get_crud
-from py_ocpi.adapter import get_adapter
+from py_ocpi.core.utils import get_auth_token
+from py_ocpi.core.dependencies import get_crud, get_adapter
 from py_ocpi.core import status
 from py_ocpi.core.enums import ModuleID
 from py_ocpi.credentials.v_2_2_1.schemas import Credentials, ServerCredentials
@@ -17,11 +17,9 @@ router = APIRouter(
 
 @router.get("/", response_model=OCPIResponse)
 async def get_credentials(request: Request, crud=Depends(get_crud), adapter=Depends(get_adapter)):
-    headers = request.headers
-    headers_token = headers.get('authorization')
-    token = headers_token.split()[1]
+    token = get_auth_token(request)
     try:
-        data = await crud.get(ModuleID.CredentialsAndRegistrations, token)
+        data = await crud.get(ModuleID.credentials_and_registration, token)
         return OCPIResponse(
             data=[adapter.credentials_adapter(data).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
@@ -38,7 +36,7 @@ async def post_credentials(credentials: Credentials, crud=Depends(get_crud), ada
     try:
         # Check if the client is already registered
         credentials_client_token = credentials.token
-        server_cred = await crud.get(ModuleID.CredentialsAndRegistrations, credentials_client_token)
+        server_cred = await crud.get(ModuleID.credentials_and_registration, credentials_client_token)
         if server_cred:
             raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client is already registered")
 
@@ -55,14 +53,14 @@ async def post_credentials(credentials: Credentials, crud=Depends(get_crud), ada
 
             # Store client credentials
             endpoints = response_endpoints.json()['data'][0]
-            await crud.create(ModuleID.CredentialsAndRegistrations, ServerCredentials(
+            await crud.create(ModuleID.credentials_and_registration, ServerCredentials(
                 cred_token_b=credentials.token,
                 versions=versions,
                 endpoints=endpoints
             ))
 
             # Generate new credentials for sender
-            new_credentials = await crud.create(ModuleID.CredentialsAndRegistrations, {'url': versions['url']})
+            new_credentials = await crud.create(ModuleID.credentials_and_registration, {'url': versions['url']})
             return OCPIResponse(
                 data=[adapter.credentials_adapter(new_credentials).dict()],
                 **status.OCPI_1000_GENERIC_SUCESS_CODE
@@ -79,7 +77,7 @@ async def update_credentials(credentials: Credentials, crud=Depends(get_crud), a
     try:
         # Check if the client is already registered
         credentials_client_token = credentials.token
-        server_cred = await crud.get(ModuleID.CredentialsAndRegistrations, credentials_client_token)
+        server_cred = await crud.get(ModuleID.credentials_and_registration, credentials_client_token)
         if not server_cred:
             raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client is not registered")
 
@@ -94,14 +92,14 @@ async def update_credentials(credentials: Credentials, crud=Depends(get_crud), a
 
             # Update server credentials to access client's system
             endpoints = response_endpoints.json()['data'][0]
-            await crud.update(ModuleID.CredentialsAndRegistrations,
+            await crud.update(ModuleID.credentials_and_registration,
                               ServerCredentials(cred_token_b=credentials.token,
                                                 versions=versions,
                                                 endpoints=endpoints),
                               server_cred.cred_token_b)
 
             # Generate new credentials token
-            new_credentials = await crud.create(ModuleID.CredentialsAndRegistrations, {'url': versions['url']})
+            new_credentials = await crud.create(ModuleID.credentials_and_registration, {'url': versions['url']})
             return OCPIResponse(
                 data=[adapter.credentials_adapter(new_credentials).dict()],
                 **status.OCPI_1000_GENERIC_SUCESS_CODE
