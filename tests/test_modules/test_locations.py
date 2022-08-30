@@ -1,8 +1,12 @@
 from uuid import uuid4
 
-from py_ocpi import get_application, enums
-from py_ocpi.versions.enums import VersionNumber
+from fastapi.testclient import TestClient
+
+from py_ocpi.core import enums
 from py_ocpi.locations.v_2_2_1.schemas import Location
+from py_ocpi.main import get_application
+from py_ocpi.versions.enums import VersionNumber
+
 
 LOCATIONS = [
     {
@@ -202,4 +206,49 @@ class Adapter:
         return Location(**data)
 
 
-app = get_application([VersionNumber.v_2_2_1], [enums.RoleEnum.cpo], Crud, Adapter)
+def test_get_locations():
+
+    app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
+
+    client = TestClient(app)
+    response = client.get('/ocpi/cpo/2.2.1/locations')
+
+    assert response.status_code == 200
+    assert len(response.json()['data']) == 1
+    assert response.json()['data'][0]['id'] == LOCATIONS[0]["id"]
+
+
+def test_get_location():
+
+    app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
+
+    client = TestClient(app)
+    response = client.get(f'/ocpi/cpo/2.2.1/locations/{LOCATIONS[0]["id"]}')
+
+    assert response.status_code == 200
+    assert response.json()['data'][0]['id'] == LOCATIONS[0]["id"]
+
+
+def test_get_evse():
+
+    app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
+
+    client = TestClient(app)
+    response = client.get(f'/ocpi/cpo/2.2.1/locations/{LOCATIONS[0]["id"]}/{LOCATIONS[0]["evses"][0]["uid"]}')
+
+    assert response.status_code == 200
+    assert len(response.json()['data']) == 1
+    assert response.json()['data'][0]['uid'] == LOCATIONS[0]["evses"][0]["uid"]
+
+
+def test_get_connector():
+
+    app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
+
+    client = TestClient(app)
+    response = client.get(f'/ocpi/cpo/2.2.1/locations/{LOCATIONS[0]["id"]}/{LOCATIONS[0]["evses"][0]["uid"]}'
+                          f'/{LOCATIONS[0]["evses"][0]["connectors"][0]["id"]}')
+
+    assert response.status_code == 200
+    assert len(response.json()['data']) == 1
+    assert response.json()['data'][0]['id'] == LOCATIONS[0]["evses"][0]["connectors"][0]["id"]

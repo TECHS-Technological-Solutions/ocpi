@@ -3,7 +3,7 @@ from typing import Any, Tuple
 from py_ocpi.core.enums import ModuleID
 
 
-class CRUD:
+class Crud:
     @classmethod
     async def get(cls, module: ModuleID, id, *args, **kwargs) -> Any:
         ...

@@ -1,25 +1,19 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
-
-from py_ocpi.versions.schemas import Version, VersionDetail, URL
+from py_ocpi.versions.schemas import VersionDetail
 from py_ocpi.versions.enums import VersionNumber
 from py_ocpi.core import status
+from py_ocpi.core.dependencies import get_versions as _get_versions
 from py_ocpi.core.schemas import OCPIResponse
-from py_ocpi.core.config import settings
 from py_ocpi.core.endpoints import ENDPOINTS
 
 router = APIRouter()
 
 
 @router.get("/versions", response_model=OCPIResponse)
-async def get_versions():
+async def get_versions(versions=Depends(_get_versions)):
     return OCPIResponse(
-        data=[
-            Version(
-                version=VersionNumber.v_2_2_1,
-                url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/cpo/2.2.1')
-            ).dict(),
-        ],
+        data=versions,
         **status.OCPI_1000_GENERIC_SUCESS_CODE,
     )
 
