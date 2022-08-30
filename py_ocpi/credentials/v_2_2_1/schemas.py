@@ -4,8 +4,7 @@ from pydantic import BaseModel
 from py_ocpi.core.data_types import CiString, URL, String
 from py_ocpi.core.enums import RoleEnum
 from py_ocpi.locations.v_2_2_1.schemas import BusinessDetails
-from py_ocpi.versions.schemas import Version
-from py_ocpi.endpoints import ENDPOINTS
+from py_ocpi.versions.schemas import Version, Endpoint
 
 
 class CredentialsRole(BaseModel):
@@ -33,7 +32,7 @@ class ServerCredentials(BaseModel):
     # Client's versions
     versions: Version
     # Client's endpoints
-    endpoints: ENDPOINTS
+    endpoints: Endpoint
     # Server versions URL
     url: Optional[URL]
     # Server business details

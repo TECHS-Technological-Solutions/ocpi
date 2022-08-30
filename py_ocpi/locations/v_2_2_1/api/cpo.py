@@ -1,15 +1,13 @@
 from fastapi import APIRouter, Depends, Response
 from pydantic import ValidationError
 
-from py_ocpi.adapter import get_adapter
+from py_ocpi.versions.enums import VersionNumber
 from py_ocpi.core.utils import get_list
-from py_ocpi.crud import get_crud
-from py_ocpi.filters import pagination_filters
 from py_ocpi.core import status
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.data_types import CiString
 from py_ocpi.core.enums import ModuleID
-from py_ocpi.versions.enums import VersionNumber
+from py_ocpi.core.dependencies import get_crud, get_adapter, pagination_filters
 
 router = APIRouter(
     prefix='/locations',
@@ -22,7 +20,7 @@ async def get_locations(response: Response,
                         adapter=Depends(get_adapter),
                         filters: dict = Depends(pagination_filters)):
     try:
-        data_list = await get_list(response, filters, ModuleID.Locations,
+        data_list = await get_list(response, filters, ModuleID.locations,
                                    VersionNumber.v_2_2_1, crud)
 
         locations = []
@@ -42,7 +40,7 @@ async def get_locations(response: Response,
 @router.get("/{location_id}", response_model=OCPIResponse)
 async def get_location(location_id: CiString(36), crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
-        data = await crud.get(ModuleID.Locations, location_id)
+        data = await crud.get(ModuleID.locations, location_id)
         return OCPIResponse(
             data=[adapter.location_adapter(data).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
@@ -58,7 +56,7 @@ async def get_location(location_id: CiString(36), crud=Depends(get_crud), adapte
 async def get_evse(location_id: CiString(36), evse_uid: CiString(48),
                    crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
-        data = await crud.get(ModuleID.Locations, location_id)
+        data = await crud.get(ModuleID.locations, location_id)
         location = adapter.location_adapter(data)
         for evse in location.evses:
             if evse.uid == evse_uid:
@@ -77,7 +75,7 @@ async def get_evse(location_id: CiString(36), evse_uid: CiString(48),
 async def get_connector(location_id: CiString(36), evse_uid: CiString(48), connector_id: CiString(36),
                         crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
-        data = await crud.get(ModuleID.Locations, location_id)
+        data = await crud.get(ModuleID.locations, location_id)
         location = adapter.location_adapter(data)
         for evse in location.evses:
             if evse.uid == evse_uid:
