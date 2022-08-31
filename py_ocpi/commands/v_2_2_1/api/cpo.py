@@ -37,7 +37,7 @@ async def send_commands_receiver_interface(
 
 @router.post("/{command}/{uid}", response_model=OCPIResponse)
 async def receive_commands_sender_interface(command: CommandType, data: CommandResult,
-                                      crud=Depends(get_crud), adapter=Depends(get_adapter)):
+                                            crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
         response = await crud.create(ModuleID.commands, dict(**data.dict(), command=command))
         return OCPIResponse(
