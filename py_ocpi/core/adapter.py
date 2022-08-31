@@ -24,3 +24,7 @@ class Adapter:
     @classmethod
     def cdr_adapter(cls, data) -> Cdr:
         ...
+
+    @classmethod
+    def commands_adapter(cls, data):
+        ...
