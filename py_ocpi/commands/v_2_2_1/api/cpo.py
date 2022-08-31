@@ -17,7 +17,7 @@ router = APIRouter(
 
 
 @router.post("/{command}", response_model=OCPIResponse)
-def send_commands_receiver_interface(
+async def send_commands_receiver_interface(
         command: CommandType,
         data: Union[CancelReservation, ReserveNow, StartSession, StopSession, UnlockConnector],
         crud=Depends(get_crud), adapter=Depends(get_adapter)):
@@ -36,7 +36,7 @@ def send_commands_receiver_interface(
 
 
 @router.post("/{command}/{uid}", response_model=OCPIResponse)
-def receive_commands_sender_interface(command: CommandType, data: CommandResult,
+async def receive_commands_sender_interface(command: CommandType, data: CommandResult,
                                       crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
         response = await crud.create(ModuleID.commands, dict(**data.dict(), command=command))
