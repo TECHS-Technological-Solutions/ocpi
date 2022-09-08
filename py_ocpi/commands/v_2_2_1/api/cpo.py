@@ -23,9 +23,8 @@ async def send_commands_receiver_interface(
         crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
         response = await crud.create(ModuleID.commands, dict(**data.dict(), command=command))
-        command_response = await crud.create(ModuleID.commands, CommandResponse(**response))
         return OCPIResponse(
-            data=adapter.commands_adapter(command_response),
+            data=adapter.commands_adapter(response),
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
         )
     except ValidationError:
