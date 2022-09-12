@@ -8,8 +8,7 @@ from py_ocpi.core.enums import ModuleID
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core import status
 from py_ocpi.commands.v_2_2_1.enums import CommandType
-from py_ocpi.commands.v_2_2_1.schemas import (CancelReservation, ReserveNow, StartSession, StopSession, UnlockConnector,
-                                              CommandResponse, CommandResult)
+from py_ocpi.commands.v_2_2_1.schemas import CancelReservation, ReserveNow, StartSession, StopSession, UnlockConnector
 
 router = APIRouter(
     prefix='/commands',
@@ -17,28 +16,11 @@ router = APIRouter(
 
 
 @router.post("/{command}", response_model=OCPIResponse)
-async def send_commands_receiver_interface(
-        command: CommandType,
-        data: Union[CancelReservation, ReserveNow, StartSession, StopSession, UnlockConnector],
-        crud=Depends(get_crud), adapter=Depends(get_adapter)):
+async def receive_command(command: CommandType,
+                          data: Union[CancelReservation, ReserveNow, StartSession, StopSession, UnlockConnector],
+                          crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
-        response = await crud.create(ModuleID.commands, dict(**data.dict(), command=command))
-        return OCPIResponse(
-            data=adapter.commands_adapter(response),
-            **status.OCPI_1000_GENERIC_SUCESS_CODE,
-        )
-    except ValidationError:
-        return OCPIResponse(
-            data=[],
-            **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
-        )
-
-
-@router.post("/{command}/{uid}", response_model=OCPIResponse)
-async def receive_commands_sender_interface(command: CommandType, data: CommandResult,
-                                            crud=Depends(get_crud), adapter=Depends(get_adapter)):
-    try:
-        response = await crud.create(ModuleID.commands, dict(**data.dict(), command=command))
+        response = await crud.create(ModuleID.commands, command, data.dict())
         return OCPIResponse(
             data=adapter.commands_adapter(response),
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
