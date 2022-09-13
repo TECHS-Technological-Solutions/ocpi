@@ -50,4 +50,4 @@ class AuthorizationInfo(BaseModel):
     token: Token
     location: Optional[LocationReference]
     authorization_reference: Optional[CiString(36)]
-    info = Optional[DisplayText]
+    info: Optional[DisplayText]
