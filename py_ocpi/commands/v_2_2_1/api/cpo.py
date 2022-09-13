@@ -20,7 +20,7 @@ async def receive_command(command: CommandType,
                           data: Union[CancelReservation, ReserveNow, StartSession, StopSession, UnlockConnector],
                           crud=Depends(get_crud), adapter=Depends(get_adapter)):
     try:
-        response = await crud.create(ModuleID.commands, command, data.dict())
+        response = await crud.create(ModuleID.commands, data.dict(), command=command)
         return OCPIResponse(
             data=adapter.commands_adapter(response),
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
