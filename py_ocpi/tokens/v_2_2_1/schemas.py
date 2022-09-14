@@ -42,6 +42,23 @@ class Token(BaseModel):
     last_updated: DateTime
 
 
+class TokenUpdate(BaseModel):
+    country_code: Optional[CiString(2)]
+    party_id: Optional[CiString(3)]
+    uid: Optional[CiString(36)]
+    type: Optional[TokenType]
+    contract_id: Optional[CiString(36)]
+    visual_number: Optional[String(64)]
+    issuer: Optional[String(64)]
+    group_id: Optional[CiString(36)]
+    valid: Optional[bool]
+    whitelist: Optional[WhitelistType]
+    language: Optional[String(2)]
+    default_profile_type: Optional[ProfileType]
+    energy_contract: Optional[EnergyContract]
+    last_updated: DateTime
+
+
 class AuthorizationInfo(BaseModel):
     """
     https://github.com/ocpi/ocpi/blob/2.2.1/mod_tokens.asciidoc#131-authorizationinfo-object

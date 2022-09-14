@@ -28,3 +28,7 @@ class Adapter:
     @classmethod
     def commands_adapter(cls, data):
         ...
+
+    @classmethod
+    def token_adapter(cls, data) -> Cdr:
+        ...
