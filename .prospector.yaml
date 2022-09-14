@@ -1,0 +1,61 @@
+inherits:
+  - strictness_veryhigh
+  - full_pep8
+
+ignore-paths:
+  - bin
+  - config
+  - docs
+  - coverage
+  - requirements
+  - venv
+  - env
+  - node_modules
+  - manage.py
+  - alembic
+
+doc-warnings: false
+test-warnings: true
+
+uses:
+  - celery
+
+pylint:
+  disable:
+    - wildcard-import
+    - relative-import
+    - invalid-name
+    - unused-wildcard-import
+    - wrong-import-position
+    - too-few-public-methods
+    - old-style-class
+    - no-init
+    - no-self-use
+    - unused-argument
+    - too-many-arguments
+    - too-many-instance-attributes
+    - attribute-defined-outside-init
+    - redefined-builtin
+    - too-many-ancestors
+    - arguments-differ
+    - abstract-method
+    - too-many-function-args
+    - assignment-from-none
+    - redefined-outer-name
+    - no-self-argument
+  options:
+    max-locals: 25
+    max-line-length: 120
+
+pycodestyle:
+  disable:
+    - E402
+    - N805
+  options:
+    max-line-length: 120
+
+pyflakes:
+  disable:
+    - F403
+    - F401
+    - F999
