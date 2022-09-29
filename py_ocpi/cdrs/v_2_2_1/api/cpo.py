@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, Response, Request
+from fastapi import APIRouter, Depends, Response, Request, HTTPException
 from pydantic import ValidationError
 
 from py_ocpi.versions.enums import VersionNumber
 from py_ocpi.core.utils import get_auth_token, get_list
 from py_ocpi.core import status
+from py_ocpi.core.exceptions import AuthorizationOCPIError
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.enums import ModuleID
 from py_ocpi.core.dependencies import get_crud, get_adapter, pagination_filters
@@ -22,7 +23,7 @@ async def get_cdrs(response: Response,
     try:
         token = get_auth_token(request)
         data_list = await get_list(response, filters, ModuleID.cdrs,
-                                   VersionNumber.v_2_2_1, crud, token=token)
+                                   VersionNumber.v_2_2_1, crud, auth_token=token)
 
         cdrs = []
         for data in data_list:
@@ -36,3 +37,5 @@ async def get_cdrs(response: Response,
             data=[],
             **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
         )
+    except AuthorizationOCPIError as e:
+        raise HTTPException(403, e.__str__())

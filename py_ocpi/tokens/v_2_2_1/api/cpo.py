@@ -1,11 +1,12 @@
 from email.policy import default
-from fastapi import APIRouter, Request, Depends, Query
+from fastapi import APIRouter, Request, Depends, Query, HTTPException
 from pydantic import ValidationError
 
 from py_ocpi.core import status
 from py_ocpi.core.data_types import CiString
 from py_ocpi.core.enums import ModuleID
 from py_ocpi.core.schemas import OCPIResponse
+from py_ocpi.core.exceptions import AuthorizationOCPIError
 from py_ocpi.core.utils import get_auth_token
 from py_ocpi.core.dependencies import get_crud, get_adapter
 from py_ocpi.tokens.v_2_2_1.enums import TokenType
@@ -34,6 +35,8 @@ async def get_token(country_code: CiString(2), party_id: CiString(3), token_uid:
             data=[],
             **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
         )
+    except AuthorizationOCPIError as e:
+        raise HTTPException(403, e.__str__())
 
 
 @router.put("/{country_code}/{party_id}/{token_uid}", response_model=OCPIResponse)
@@ -55,6 +58,8 @@ async def add_token(country_code: CiString(2), party_id: CiString(3), token_uid:
             data=[],
             **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
         )
+    except AuthorizationOCPIError as e:
+        raise HTTPException(403, e.__str__())
 
 
 @router.patch("/{country_code}/{party_id}/{token_uid}", response_model=OCPIResponse)
@@ -75,3 +80,5 @@ async def update_token(country_code: CiString(2), party_id: CiString(3), token_u
             data=[],
             **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
         )
+    except AuthorizationOCPIError as e:
+        raise HTTPException(403, e.__str__())

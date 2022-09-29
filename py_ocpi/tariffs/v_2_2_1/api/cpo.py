@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, Request, HTTPException
 from pydantic import ValidationError
 
-from py_ocpi.core.utils import get_list
+from py_ocpi.core.utils import get_list, get_auth_token
 from py_ocpi.core import status
+from py_ocpi.core.exceptions import AuthorizationOCPIError
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.enums import ModuleID
 from py_ocpi.core.dependencies import get_crud, get_adapter, pagination_filters
@@ -14,13 +15,15 @@ router = APIRouter(
 
 
 @router.get("/", response_model=OCPIResponse)
-async def get_tariffs(response: Response,
+async def get_tariffs(request: Request,
+                      response: Response,
                       crud=Depends(get_crud),
                       adapter=Depends(get_adapter),
                       filters: dict = Depends(pagination_filters)):
+    auth_token = get_auth_token(request)
     try:
         data_list = await get_list(response, filters, ModuleID.tariffs,
-                                   VersionNumber.v_2_2_1, crud)
+                                   VersionNumber.v_2_2_1, crud, auth_token=auth_token)
 
         tariffs = []
         for data in data_list:
@@ -34,3 +37,5 @@ async def get_tariffs(response: Response,
             data=[],
             **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
         )
+    except AuthorizationOCPIError as e:
+        raise HTTPException(403, e.__str__())
