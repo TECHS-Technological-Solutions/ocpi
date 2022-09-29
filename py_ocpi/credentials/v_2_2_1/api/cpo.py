@@ -56,11 +56,11 @@ async def post_credentials(request: Request, credentials: Credentials,
             endpoints = response_endpoints.json()['data'][0]
             await crud.create(
                 ModuleID.credentials_and_registration,
-                {
-                    'cred_token_b': credentials.token,
-                    'versions': versions,
-                    'endpoints': endpoints
-                },
+                ServerCredentials(
+                    cred_token_b=credentials.token,
+                    versions=versions,
+                    endpoints=endpoints
+                ),
                 token=auth_token
             )
 
