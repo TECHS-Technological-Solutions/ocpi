@@ -1,7 +1,8 @@
 from typing import Any, List
 
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from py_ocpi.credentials.v_2_2_1.api import cpo_router as credentials_cpo_2_2_1_router
 from py_ocpi.locations.v_2_2_1.api import cpo_router as locations_cpo_2_2_1_router
@@ -17,6 +18,19 @@ from py_ocpi.core.dependencies import get_crud, get_adapter, get_versions
 from py_ocpi.core.enums import RoleEnum
 from py_ocpi.core.config import settings
 from py_ocpi.core.data_types import URL
+from py_ocpi.core.exceptions import AuthorizationOCPIError
+
+
+class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
+
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ):
+        try:
+            response = await call_next(request)
+        except AuthorizationOCPIError as e:
+            raise HTTPException(403, e.__str__())
+        return response
 
 
 def get_application(
@@ -38,6 +52,7 @@ def get_application(
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    _app.exception_handler(ExceptionHandlerMiddleware)
     versions = []
     if VersionNumber.v_2_2_1 in version_numbers:
         _app.include_router(

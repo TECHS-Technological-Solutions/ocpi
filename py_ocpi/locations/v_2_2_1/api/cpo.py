@@ -38,8 +38,6 @@ async def get_locations(request: Request,
             data=[],
             **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
         )
-    except AuthorizationOCPIError as e:
-        raise HTTPException(403, e.__str__())
 
 
 @router.get("/{location_id}", response_model=OCPIResponse)
@@ -57,8 +55,6 @@ async def get_location(request: Request, location_id: CiString(36),
             data=[],
             **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
         )
-    except AuthorizationOCPIError as e:
-        raise HTTPException(403, e.__str__())
 
 
 @router.get("/{location_id}/{evse_uid}", response_model=OCPIResponse)
@@ -79,8 +75,6 @@ async def get_evse(request: Request, location_id: CiString(36), evse_uid: CiStri
             data=[],
             **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
         )
-    except AuthorizationOCPIError as e:
-        raise HTTPException(403, e.__str__())
 
 
 @router.get("/{location_id}/{evse_uid}/{connector_id}", response_model=OCPIResponse)
@@ -103,5 +97,3 @@ async def get_connector(request: Request, location_id: CiString(36), evse_uid: C
             data=[],
             **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
         )
-    except AuthorizationOCPIError as e:
-        raise HTTPException(403, e.__str__())
