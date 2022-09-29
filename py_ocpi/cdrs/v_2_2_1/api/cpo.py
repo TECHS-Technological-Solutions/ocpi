@@ -22,7 +22,7 @@ async def get_cdrs(response: Response,
     try:
         token = get_auth_token(request)
         data_list = await get_list(response, filters, ModuleID.cdrs,
-                                   VersionNumber.v_2_2_1, crud, token=token)
+                                   VersionNumber.v_2_2_1, crud, auth_token=token)
 
         cdrs = []
         for data in data_list:
