@@ -43,7 +43,8 @@ async def get_locations(request: Request,
 
 
 @router.get("/{location_id}", response_model=OCPIResponse)
-async def get_location(request: Request, location_id: CiString(36), crud=Depends(get_crud), adapter=Depends(get_adapter)):
+async def get_location(request: Request, location_id: CiString(36),
+                       crud=Depends(get_crud), adapter=Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
         data = await crud.get(ModuleID.locations, location_id, auth_token=auth_token)
