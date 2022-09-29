@@ -29,7 +29,7 @@ class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
         try:
             response = await call_next(request)
         except AuthorizationOCPIError as e:
-            raise HTTPException(403, e.__str__())
+            raise HTTPException(403, str(e)) from e
         return response
 
 
@@ -52,7 +52,7 @@ def get_application(
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    _app.exception_handler(ExceptionHandlerMiddleware)
+    _app.add_middleware(ExceptionHandlerMiddleware)
     versions = []
     if VersionNumber.v_2_2_1 in version_numbers:
         _app.include_router(
