@@ -45,7 +45,8 @@ https://github.com/TECHS-Technological-Solutions/ocpi/blob/830dba5fb3bbc7297326a
 Documents
 ---------
 
-`Documentation <https://techs-technological-solutions.github.io/ocpi/`_
+Check the `Documentation <https://techs-technological-solutions.github.io/ocpi/>`_
+
 
 License
 =======
