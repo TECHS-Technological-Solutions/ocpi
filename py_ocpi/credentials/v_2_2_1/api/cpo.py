@@ -31,7 +31,7 @@ async def get_credentials(request: Request, crud=Depends(get_crud), adapter=Depe
         )
 
 
-@router.post("/", response_model=OCPIResponse)
+@router.post("/create", response_model=OCPIResponse)
 async def post_credentials(request: Request, credentials: Credentials,
                            crud=Depends(get_crud), adapter=Depends(get_adapter)):
     auth_token = get_auth_token(request)
@@ -56,11 +56,11 @@ async def post_credentials(request: Request, credentials: Credentials,
             endpoints = response_endpoints.json()['data'][0]
             await crud.create(
                 ModuleID.credentials_and_registration,
-                ServerCredentials(
-                    cred_token_b=credentials.token,
-                    versions=versions,
-                    endpoints=endpoints
-                ),
+                {
+                    'cred_token_b': credentials.token,
+                    'versions': versions,
+                    'endpoints': endpoints
+                },
                 token=auth_token
             )
 
