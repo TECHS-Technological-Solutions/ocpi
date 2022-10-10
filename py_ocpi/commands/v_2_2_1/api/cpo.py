@@ -24,7 +24,7 @@ async def receive_command(request: Request, command: CommandType,
     try:
         response = await crud.create(ModuleID.commands, data.dict(), command=command, auth_token=auth_token)
         return OCPIResponse(
-            data=adapter.commands_adapter(response),
+            data=[adapter.commands_adapter(response)],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
         )
     except ValidationError:
