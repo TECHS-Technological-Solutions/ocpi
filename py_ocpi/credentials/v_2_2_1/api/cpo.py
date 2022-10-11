@@ -31,7 +31,7 @@ async def get_credentials(request: Request, crud=Depends(get_crud), adapter=Depe
         )
 
 
-@router.post("/create", response_model=OCPIResponse)
+@router.post("/", response_model=OCPIResponse)
 async def post_credentials(request: Request, credentials: Credentials,
                            crud=Depends(get_crud), adapter=Depends(get_adapter)):
     auth_token = get_auth_token(request)

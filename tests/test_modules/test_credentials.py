@@ -75,7 +75,7 @@ def test_post_credentials(async_mock):
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
     client = TestClient(app)
-    response = client.post(f'/ocpi/cpo/2.2.1/credentials/create', json=CREDENTIALS_CREATE)
+    response = client.post(f'/ocpi/cpo/2.2.1/credentials/', json=CREDENTIALS_CREATE)
 
     assert response.status_code == 200
     assert len(response.json()['data']) == 1
