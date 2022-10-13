@@ -32,7 +32,9 @@ async def get_credentials(request: Request, crud=Depends(get_crud), adapter=Depe
 
 
 @router.post("/", response_model=OCPIResponse)
-async def post_credentials(credentials: Credentials, crud=Depends(get_crud), adapter=Depends(get_adapter)):
+async def post_credentials(request: Request, credentials: Credentials,
+                           crud=Depends(get_crud), adapter=Depends(get_adapter)):
+    auth_token = get_auth_token(request)
     try:
         # Check if the client is already registered
         credentials_client_token = credentials.token
@@ -50,17 +52,21 @@ async def post_credentials(credentials: Credentials, crud=Depends(get_crud), ada
                                                   headers={'authorization': authorization_token})
 
         if response_endpoints.status_code == fastapistatus.HTTP_200_OK:
-
             # Store client credentials
             endpoints = response_endpoints.json()['data'][0]
-            await crud.create(ModuleID.credentials_and_registration, ServerCredentials(
-                cred_token_b=credentials.token,
-                versions=versions,
-                endpoints=endpoints
-            ))
+            await crud.create(
+                ModuleID.credentials_and_registration,
+                {
+                    'cred_token_b': credentials.token,
+                    'versions': versions,
+                    'endpoints': endpoints
+                },
+                token=auth_token
+            )
 
             # Generate new credentials for sender
-            new_credentials = await crud.create(ModuleID.credentials_and_registration, {'url': versions['url']})
+            new_credentials = await crud.create(ModuleID.credentials_and_registration,
+                                                {'url': versions['url']}, token=auth_token)
             return OCPIResponse(
                 data=[adapter.credentials_adapter(new_credentials).dict()],
                 **status.OCPI_1000_GENERIC_SUCESS_CODE
@@ -73,7 +79,9 @@ async def post_credentials(credentials: Credentials, crud=Depends(get_crud), ada
 
 
 @router.put("/", response_model=OCPIResponse)
-async def update_credentials(credentials: Credentials, crud=Depends(get_crud), adapter=Depends(get_adapter)):
+async def update_credentials(request: Request, credentials: Credentials,
+                             crud=Depends(get_crud), adapter=Depends(get_adapter)):
+    auth_token = get_auth_token(request)
     try:
         # Check if the client is already registered
         credentials_client_token = credentials.token
@@ -89,17 +97,17 @@ async def update_credentials(credentials: Credentials, crud=Depends(get_crud), a
             response_endpoints = await client.get(versions['url'], headers={'authorization': authorization_token})
 
         if response_endpoints.status_code == fastapistatus.HTTP_200_OK:
-
             # Update server credentials to access client's system
             endpoints = response_endpoints.json()['data'][0]
             await crud.update(ModuleID.credentials_and_registration,
                               ServerCredentials(cred_token_b=credentials.token,
                                                 versions=versions,
                                                 endpoints=endpoints),
-                              server_cred.cred_token_b)
+                              auth_token)
 
             # Generate new credentials token
-            new_credentials = await crud.create(ModuleID.credentials_and_registration, {'url': versions['url']})
+            new_credentials = await crud.create(ModuleID.credentials_and_registration,
+                                                {'url': versions['url']}, token=auth_token)
             return OCPIResponse(
                 data=[adapter.credentials_adapter(new_credentials).dict()],
                 **status.OCPI_1000_GENERIC_SUCESS_CODE

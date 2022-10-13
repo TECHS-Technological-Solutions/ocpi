@@ -1,6 +1,3 @@
-=======
-Py-OCPI
-=======
 
 .. image:: https://img.shields.io/pypi/v/py-ocpi.svg?style=flat
    :target: https://pypi.org/project/py-ocpi/

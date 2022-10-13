@@ -1,5 +1,4 @@
-from email.policy import default
-from fastapi import APIRouter, Request, Depends, Query
+from fastapi import APIRouter, Request, Depends
 from pydantic import ValidationError
 
 from py_ocpi.core import status
