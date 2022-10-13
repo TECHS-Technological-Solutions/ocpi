@@ -3,7 +3,7 @@
    :target: https://pypi.org/project/py-ocpi/
 .. image:: https://pepy.tech/badge/py-ocpi/month
    :target: https://pepy.tech/project/py-ocpi
-.. image:: https://github.com/TECHS-Technological-Solutions/ocpi/workflows/pypi/badge.svg
+.. image:: https://github.com/TECHS-Technological-Solutions/ocpi/actions/workflows/pypi.yaml/badge.svg?style=svg
    :target: https://github.com/TECHS-Technological-Solutions/ocpi/actions?query=workflow:pypi
 .. image:: https://coveralls.io/repos/github/TECHS-Technological-Solutions/ocpi/badge.svg
    :target: https://coveralls.io/github/TECHS-Technological-Solutions/ocpi
