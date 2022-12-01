@@ -55,9 +55,9 @@ CDRS = [
             }
         ],
         'total_cost': {
-                    'excl_vat': 10.0000,
-                    'incl_vat': 10.2500
-                },
+            'excl_vat': 10.0000,
+            'incl_vat': 10.2500
+        },
         'total_energy': 50,
         'total_time': 500,
         'last_updated': '2022-01-02 00:00:00+00:00'

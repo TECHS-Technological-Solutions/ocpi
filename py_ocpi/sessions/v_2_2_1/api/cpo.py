@@ -47,8 +47,9 @@ async def set_charging_preference(request: Request,
                                   crud=Depends(get_crud),
                                   adapter=Depends(get_adapter)):
     auth_token = get_auth_token(request)
-    data = await crud.update(ModuleID.sessions, charging_preferences.dict(), session_id, auth_token=auth_token)
+    data = await crud.update(ModuleID.sessions, charging_preferences.dict(), session_id,
+                             auth_token=auth_token, version=VersionNumber.v_2_2_1)
     return OCPIResponse(
-        data=[adapter.charging_preference_adapter(data)],
+        data=[adapter.charging_preference_adapter(data).dict()],
         **status.OCPI_1000_GENERIC_SUCESS_CODE,
     )

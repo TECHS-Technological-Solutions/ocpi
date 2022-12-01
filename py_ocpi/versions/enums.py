@@ -10,6 +10,7 @@ class VersionNumber(str, Enum):
     v_2_1_1 = '2.1.1'
     v_2_2 = '2.2'
     v_2_2_1 = '2.2.1'
+    latest = '2.2.1'
 
 
 class InterfaceRole(str, Enum):

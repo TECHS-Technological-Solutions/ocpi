@@ -8,6 +8,7 @@ from py_ocpi.core.utils import get_auth_token
 from py_ocpi.core.dependencies import get_crud, get_adapter
 from py_ocpi.core import status
 from py_ocpi.core.enums import ModuleID
+from py_ocpi.versions.enums import VersionNumber
 from py_ocpi.credentials.v_2_2_1.schemas import Credentials, ServerCredentials
 
 router = APIRouter(
@@ -17,9 +18,10 @@ router = APIRouter(
 
 @router.get("/", response_model=OCPIResponse)
 async def get_credentials(request: Request, crud=Depends(get_crud), adapter=Depends(get_adapter)):
-    token = get_auth_token(request)
+    auth_token = get_auth_token(request)
     try:
-        data = await crud.get(ModuleID.credentials_and_registration, token)
+        data = await crud.get(ModuleID.credentials_and_registration,
+                              auth_token, version=VersionNumber.v_2_2_1)
         return OCPIResponse(
             data=[adapter.credentials_adapter(data).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
@@ -38,7 +40,8 @@ async def post_credentials(request: Request, credentials: Credentials,
     try:
         # Check if the client is already registered
         credentials_client_token = credentials.token
-        server_cred = await crud.get(ModuleID.credentials_and_registration, credentials_client_token)
+        server_cred = await crud.get(ModuleID.credentials_and_registration, credentials_client_token,
+                                     version=VersionNumber.v_2_2_1)
         if server_cred:
             raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client is already registered")
 
@@ -61,12 +64,14 @@ async def post_credentials(request: Request, credentials: Credentials,
                     'versions': versions,
                     'endpoints': endpoints
                 },
-                token=auth_token
+                auth_token=auth_token,
+                version=VersionNumber.v_2_2_1
             )
 
             # Generate new credentials for sender
             new_credentials = await crud.create(ModuleID.credentials_and_registration,
-                                                {'url': versions['url']}, token=auth_token)
+                                                {'url': versions['url']}, auth_token=auth_token,
+                                                version=VersionNumber.v_2_2_1)
             return OCPIResponse(
                 data=[adapter.credentials_adapter(new_credentials).dict()],
                 **status.OCPI_1000_GENERIC_SUCESS_CODE
@@ -85,7 +90,8 @@ async def update_credentials(request: Request, credentials: Credentials,
     try:
         # Check if the client is already registered
         credentials_client_token = credentials.token
-        server_cred = await crud.get(ModuleID.credentials_and_registration, credentials_client_token)
+        server_cred = await crud.get(ModuleID.credentials_and_registration, credentials_client_token,
+                                     auth_token=auth_token, version=VersionNumber.v_2_2_1)
         if not server_cred:
             raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client is not registered")
 
@@ -103,11 +109,13 @@ async def update_credentials(request: Request, credentials: Credentials,
                               ServerCredentials(cred_token_b=credentials.token,
                                                 versions=versions,
                                                 endpoints=endpoints),
-                              auth_token)
+                              auth_token=auth_token,
+                              version=VersionNumber.v_2_2_1)
 
             # Generate new credentials token
             new_credentials = await crud.create(ModuleID.credentials_and_registration,
-                                                {'url': versions['url']}, token=auth_token)
+                                                {'url': versions['url']}, auth_token=auth_token,
+                                                version=VersionNumber.v_2_2_1)
             return OCPIResponse(
                 data=[adapter.credentials_adapter(new_credentials).dict()],
                 **status.OCPI_1000_GENERIC_SUCESS_CODE

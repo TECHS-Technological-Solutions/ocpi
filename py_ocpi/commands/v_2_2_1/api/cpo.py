@@ -4,10 +4,11 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 from py_ocpi.core.dependencies import get_crud, get_adapter
-from py_ocpi.core.enums import ModuleID
+from py_ocpi.core.enums import ModuleID, Action
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core import status
 from py_ocpi.core.utils import get_auth_token
+from py_ocpi.versions.enums import VersionNumber
 from py_ocpi.commands.v_2_2_1.enums import CommandType
 from py_ocpi.commands.v_2_2_1.schemas import CancelReservation, ReserveNow, StartSession, StopSession, UnlockConnector
 
@@ -43,9 +44,10 @@ async def receive_command(request: Request, command: CommandType, data: dict,
             content={'detail': jsonable_encoder(exc.errors())}
         )
     try:
-        response = await crud.create(ModuleID.commands, data.dict(), command=command, auth_token=auth_token)
+        data = await crud.do(ModuleID.commands, Action.send_command, data.dict(), command=command,
+                             auth_token=auth_token, version=VersionNumber.v_2_2_1)
         return OCPIResponse(
-            data=[adapter.commands_adapter(response)],
+            data=[adapter.commands_adapter(data).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
         )
     except ValidationError:

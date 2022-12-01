@@ -11,7 +11,7 @@ from py_ocpi.commands.v_2_2_1.api import cpo_router as commands_cpo_2_2_1_router
 from py_ocpi.tariffs.v_2_2_1.api import cpo_router as tariffs_cpo_2_2_1_router
 from py_ocpi.tokens.v_2_2_1.api import cpo_router as tokens_cpo_2_2_1_router
 from py_ocpi.cdrs.v_2_2_1.api import cpo_router as cdrs_cpo_2_2_1_router
-from py_ocpi.versions.api import router as versions_router
+from py_ocpi.versions.api import router as versions_router, versions_v_2_2_1_router
 from py_ocpi.versions.enums import VersionNumber
 from py_ocpi.versions.schemas import Version
 from py_ocpi.core.dependencies import get_crud, get_adapter, get_versions
@@ -53,39 +53,47 @@ def get_application(
         allow_headers=["*"],
     )
     _app.add_middleware(ExceptionHandlerMiddleware)
+
+    _app.include_router(
+        versions_router,
+        prefix=f'/{settings.OCPI_PREFIX}',
+    )
+
     versions = []
+
     if VersionNumber.v_2_2_1 in version_numbers:
         _app.include_router(
-            versions_router,
+            versions_v_2_2_1_router,
             prefix=f'/{settings.OCPI_PREFIX}',
         )
+
         if RoleEnum.cpo in roles:
-            _cpo_router = APIRouter(
+            _cpo_v_2_2_1_router = APIRouter(
             )
-            _cpo_router.include_router(
+            _cpo_v_2_2_1_router.include_router(
                 locations_cpo_2_2_1_router
             )
-            _cpo_router.include_router(
+            _cpo_v_2_2_1_router.include_router(
                 credentials_cpo_2_2_1_router
             )
-            _cpo_router.include_router(
+            _cpo_v_2_2_1_router.include_router(
                 sessions_cpo_2_2_1_router
             )
-            _cpo_router.include_router(
+            _cpo_v_2_2_1_router.include_router(
                 commands_cpo_2_2_1_router
             )
-            _cpo_router.include_router(
+            _cpo_v_2_2_1_router.include_router(
                 tariffs_cpo_2_2_1_router
             )
-            _cpo_router.include_router(
+            _cpo_v_2_2_1_router.include_router(
                 tokens_cpo_2_2_1_router
             )
-            _cpo_router.include_router(
+            _cpo_v_2_2_1_router.include_router(
                 cdrs_cpo_2_2_1_router
             )
 
             _app.include_router(
-                _cpo_router,
+                _cpo_v_2_2_1_router,
                 prefix=f'/{settings.OCPI_PREFIX}/cpo/{VersionNumber.v_2_2_1}',
                 tags=['CPO']
             )

@@ -45,7 +45,8 @@ async def get_location(request: Request, location_id: CiString(36),
                        crud=Depends(get_crud), adapter=Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
-        data = await crud.get(ModuleID.locations, location_id, auth_token=auth_token)
+        data = await crud.get(ModuleID.locations, location_id, auth_token=auth_token,
+                              version=VersionNumber.v_2_2_1)
         return OCPIResponse(
             data=[adapter.location_adapter(data).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
@@ -62,7 +63,8 @@ async def get_evse(request: Request, location_id: CiString(36), evse_uid: CiStri
                    crud=Depends(get_crud), adapter=Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
-        data = await crud.get(ModuleID.locations, location_id, auth_token=auth_token)
+        data = await crud.get(ModuleID.locations, location_id, auth_token=auth_token,
+                              version=VersionNumber.v_2_2_1)
         location = adapter.location_adapter(data)
         for evse in location.evses:
             if evse.uid == evse_uid:
@@ -82,7 +84,8 @@ async def get_connector(request: Request, location_id: CiString(36), evse_uid: C
                         crud=Depends(get_crud), adapter=Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
-        data = await crud.get(ModuleID.locations, location_id, auth_token=auth_token)
+        data = await crud.get(ModuleID.locations, location_id, auth_token=auth_token,
+                              version=VersionNumber.v_2_2_1)
         location = adapter.location_adapter(data)
         for evse in location.evses:
             if evse.uid == evse_uid:

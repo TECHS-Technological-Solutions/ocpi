@@ -22,7 +22,7 @@ def get_auth_token(request: Request) -> str:
 
 async def get_list(response: Response, filters: dict, module: ModuleID, version: VersionNumber, crud,
                    *args, **kwargs):
-    data_list, total, is_last_page = await crud.list(module, filters, *args, **kwargs)
+    data_list, total, is_last_page = await crud.list(module, filters, *args, version=version, **kwargs)
 
     link = ''
     params = dict(**filters)

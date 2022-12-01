@@ -27,3 +27,7 @@ class ModuleID(str, Enum):
     sessions = 'sessions'
     tariffs = 'tariffs'
     tokens = 'tokens'
+
+
+class Action(str, Enum):
+    send_command = 'Send Command'

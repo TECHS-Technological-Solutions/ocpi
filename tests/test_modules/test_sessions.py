@@ -42,9 +42,9 @@ SESSIONS = [
             }
         ],
         'total_cost': {
-                    'excl_vat': 10.0000,
-                    'incl_vat': 10.2500
-                },
+            'excl_vat': 10.0000,
+            'incl_vat': 10.2500
+        },
         'status': SessionStatus.active,
         'last_updated': '2022-01-02 00:00:00+00:00'
     }

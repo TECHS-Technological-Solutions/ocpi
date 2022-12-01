@@ -7,6 +7,7 @@ from py_ocpi.core.enums import ModuleID
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.utils import get_auth_token
 from py_ocpi.core.dependencies import get_crud, get_adapter
+from py_ocpi.versions.enums import VersionNumber
 from py_ocpi.tokens.v_2_2_1.enums import TokenType
 from py_ocpi.tokens.v_2_2_1.schemas import Token, TokenUpdate
 
@@ -23,7 +24,8 @@ async def get_token(country_code: CiString(2), party_id: CiString(3), token_uid:
     try:
         data = await crud.get(ModuleID.tokens, token_uid,
                               auth_token=auth_token, country_code=country_code,
-                              party_id=party_id, token_type=token_type)
+                              party_id=party_id, token_type=token_type,
+                              version=VersionNumber.v_2_2_1)
         return OCPIResponse(
             data=[adapter.token_adapter(data).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
@@ -44,7 +46,8 @@ async def add_token(country_code: CiString(2), party_id: CiString(3), token_uid:
         data = await crud.create(ModuleID.tokens, token,
                                  auth_token=auth_token,
                                  country_code=country_code, party_id=party_id,
-                                 token_uid=token_uid, token_type=token_type)
+                                 token_uid=token_uid, token_type=token_type,
+                                 version=VersionNumber.v_2_2_1)
         return OCPIResponse(
             data=[adapter.token_adapter(data).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
@@ -64,7 +67,8 @@ async def update_token(country_code: CiString(2), party_id: CiString(3), token_u
     try:
         data = await crud.update(ModuleID.tokens, token, token_uid,
                                  auth_token=auth_token, country_code=country_code,
-                                 party_id=party_id, token_type=token_type)
+                                 party_id=party_id, token_type=token_type,
+                                 version=VersionNumber.v_2_2_1)
         return OCPIResponse(
             data=[adapter.token_adapter(data).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
