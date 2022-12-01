@@ -1,7 +1,7 @@
+from py_ocpi.core.dependencies import get_versions
+
 fake_versions_and_endpoints_data = {
-    'data': [{
-        'url': 'url'
-    }]
+    'data': get_versions()
 }
 
 

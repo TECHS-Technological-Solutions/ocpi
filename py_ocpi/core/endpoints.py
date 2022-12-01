@@ -6,6 +6,8 @@ from py_ocpi.modules.versions.enums import VersionNumber, InterfaceRole
 
 ENDPOINTS = {
     VersionNumber.v_2_2_1: [
+        # ###############--CPO--###############
+
         # locations
         Endpoint(
             identifier=ModuleID.locations,
@@ -47,6 +49,16 @@ ENDPOINTS = {
             role=InterfaceRole.receiver,
             url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/cpo'
                     f'/{VersionNumber.v_2_2_1}/{ModuleID.tokens}')
+        ),
+
+        # ###############--EMSP--###############
+
+        # credentials
+        Endpoint(
+            identifier=ModuleID.credentials_and_registration,
+            role=InterfaceRole.receiver,
+            url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/emsp'
+                    f'/{VersionNumber.v_2_2_1}/{ModuleID.credentials_and_registration}')
         ),
     ]
 
