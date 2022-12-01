@@ -1,8 +1,8 @@
 from py_ocpi.core.enums import ModuleID
 from py_ocpi.core.data_types import URL
 from py_ocpi.core.config import settings
-from py_ocpi.versions.schemas import Endpoint
-from py_ocpi.versions.enums import VersionNumber, InterfaceRole
+from py_ocpi.modules.versions.schemas import Endpoint
+from py_ocpi.modules.versions.enums import VersionNumber, InterfaceRole
 
 ENDPOINTS = {
     VersionNumber.v_2_2_1: [

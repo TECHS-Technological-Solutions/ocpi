@@ -4,7 +4,7 @@ from fastapi import Response, Request
 
 from py_ocpi.core.enums import ModuleID
 from py_ocpi.core.config import settings
-from py_ocpi.versions.enums import VersionNumber
+from py_ocpi.modules.versions.enums import VersionNumber
 
 
 def set_pagination_headers(response: Response, link: str, total: int, limit: int):

@@ -1,8 +1,8 @@
 from uuid import uuid4
 
 from py_ocpi import get_application, enums
-from py_ocpi.versions.enums import VersionNumber
-from py_ocpi.locations.v_2_2_1.schemas import Location
+from py_ocpi.modules.versions.enums import VersionNumber
+from py_ocpi.modules.locations.v_2_2_1.schemas import Location
 
 LOCATIONS = [
     {

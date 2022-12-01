@@ -3,12 +3,12 @@ from uuid import uuid4
 
 from fastapi.testclient import TestClient
 
+from py_ocpi import get_application
 from py_ocpi.core import enums
-from py_ocpi.tokens.v_2_2_1.enums import TokenType, WhitelistType
-from py_ocpi.commands.v_2_2_1.enums import CommandType, CommandResponseType
-from py_ocpi.commands.v_2_2_1.schemas import CommandResponse
-from py_ocpi.main import get_application
-from py_ocpi.versions.enums import VersionNumber
+from py_ocpi.modules.tokens.v_2_2_1.enums import TokenType, WhitelistType
+from py_ocpi.modules.commands.v_2_2_1.enums import CommandType, CommandResponseType
+from py_ocpi.modules.commands.v_2_2_1.schemas import CommandResponse
+from py_ocpi.modules.versions.enums import VersionNumber
 
 COMMAND_RESPONSE = {
     'result': CommandResponseType.accepted,

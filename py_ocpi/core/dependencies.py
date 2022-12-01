@@ -6,8 +6,8 @@ from py_ocpi.core.adapter import Adapter
 from py_ocpi.core.config import settings
 from py_ocpi.core.crud import Crud
 from py_ocpi.core.data_types import URL
-from py_ocpi.versions.enums import VersionNumber
-from py_ocpi.versions.schemas import Version
+from py_ocpi.modules.versions.enums import VersionNumber
+from py_ocpi.modules.versions.schemas import Version
 
 
 def get_crud():

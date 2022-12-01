@@ -1,4 +1,4 @@
-from py_ocpi.versions.enums import VersionNumber
+from py_ocpi.modules.versions.enums import VersionNumber
 
 
 class Adapter:
