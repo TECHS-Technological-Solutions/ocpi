@@ -4,6 +4,10 @@ from pydantic import BaseModel
 from py_ocpi.modules.cdrs.v_2_2_1.enums import AuthMethod
 from py_ocpi.modules.cdrs.v_2_2_1.schemas import CdrToken, ChargingPeriod
 from py_ocpi.modules.sessions.v_2_2_1.enums import ProfileType, SessionStatus
+
+from py_ocpi.modules.cdrs.v_2_2_1.enums import AuthMethod
+from py_ocpi.modules.cdrs.v_2_2_1.schemas import CdrToken, ChargingPeriod
+from py_ocpi.modules.sessions.v_2_2_1.enums import ProfileType, SessionStatus
 from py_ocpi.core.data_types import CiString, Number, Price, String, DateTime
 
 
