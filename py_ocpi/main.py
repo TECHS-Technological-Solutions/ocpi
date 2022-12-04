@@ -12,7 +12,7 @@ from py_ocpi.core.enums import RoleEnum
 from py_ocpi.core.config import settings
 from py_ocpi.core.data_types import URL
 from py_ocpi.core.exceptions import AuthorizationOCPIError
-from py_ocpi.routers import v_2_2_1_cpo_router
+from py_ocpi.routers import v_2_2_1_cpo_router, v_2_2_1_emsp_router
 
 
 class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
@@ -72,6 +72,20 @@ def get_application(
                 Version(
                     version=VersionNumber.v_2_2_1,
                     url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/cpo/{VersionNumber.v_2_2_1}')
+                ).dict(),
+            )
+
+        if RoleEnum.emsp in roles:
+            _app.include_router(
+                v_2_2_1_emsp_router,
+                prefix=f'/{settings.OCPI_PREFIX}/emsp/{VersionNumber.v_2_2_1}',
+                tags=['EMSP']
+            )
+
+            versions.append(
+                Version(
+                    version=VersionNumber.v_2_2_1,
+                    url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/emsp/{VersionNumber.v_2_2_1}')
                 ).dict(),
             )
 

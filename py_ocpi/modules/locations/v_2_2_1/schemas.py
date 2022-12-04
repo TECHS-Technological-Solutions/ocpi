@@ -63,6 +63,19 @@ class Connector(BaseModel):
     last_updated: DateTime
 
 
+class ConnectorPartialUpdate(BaseModel):
+    id: Optional[CiString(max_length=36)]
+    standard: Optional[ConnectorType]
+    format: Optional[ConnectorFormat]
+    power_type: Optional[PowerType]
+    max_voltage: Optional[int]
+    max_amperage: Optional[int]
+    max_electric_power: Optional[Optional[int]]
+    tariff_ids: Optional[List[CiString(max_length=36)]]
+    terms_and_conditions: Optional[URL]
+    last_updated: Optional[DateTime]
+
+
 class StatusSchedule(BaseModel):
     """
     https://github.com/ocpi/ocpi/blob/2.2.1/mod_locations.asciidoc#1423-statusschedule-class
@@ -89,6 +102,22 @@ class EVSE(BaseModel):
     parking_restrictions: List[ParkingRestriction] = []
     images: List[Image] = []
     last_updated: DateTime
+
+
+class EVSEPartialUpdate(BaseModel):
+    uid: Optional[CiString(max_length=36)]
+    evse_id: Optional[CiString(max_length=48)]
+    status: Optional[Status]
+    status_schedule: Optional[StatusSchedule]
+    capabilities: Optional[List[Capability]]
+    connectors: Optional[List[Connector]]
+    floor_level: Optional[String(max_length=4)]
+    coordinates: Optional[GeoLocation]
+    physical_reference: Optional[String(max_length=16)]
+    directions: Optional[List[DisplayText]]
+    parking_restrictions: Optional[List[ParkingRestriction]]
+    images: Optional[List[Image]]
+    last_updated: Optional[DateTime]
 
 
 class BusinessDetails(BaseModel):
@@ -184,3 +213,32 @@ class Location(BaseModel):
     images: List[Image] = []
     energy_mix: Optional[EnergyMix]
     last_updated: DateTime
+
+
+class LocationPartialUpdate(BaseModel):
+    country_code: Optional[CiString(max_length=2)]
+    party_id: Optional[CiString(max_length=3)]
+    id: Optional[CiString(max_length=36)]
+    publish: Optional[bool]
+    publish_allowed_to: Optional[List[PublishTokenType]]
+    name: Optional[String(max_length=255)]
+    address: Optional[String(max_length=45)]
+    city: Optional[String(max_length=45)]
+    postal_code: Optional[String(max_length=10)]
+    state: Optional[String(max_length=20)]
+    country: Optional[String(max_length=3)]
+    coordinates: Optional[GeoLocation]
+    related_locations: Optional[List[AdditionalGeoLocation]]
+    parking_type: Optional[ParkingType]
+    evses: Optional[List[EVSE]]
+    directions: Optional[List[DisplayText]]
+    operator: Optional[BusinessDetails]
+    suboperator: Optional[BusinessDetails]
+    owner: Optional[BusinessDetails]
+    facilities: Optional[List[Facility]]
+    time_zone: Optional[String(max_length=255)]
+    opening_times: Optional[Hours]
+    charging_when_closed: Optional[bool]
+    images: Optional[List[Image]]
+    energy_mix: Optional[EnergyMix]
+    last_updated: Optional[DateTime]

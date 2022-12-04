@@ -7,7 +7,7 @@ from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.utils import get_auth_token
 from py_ocpi.core.dependencies import get_crud, get_adapter
 from py_ocpi.core import status
-from py_ocpi.core.enums import ModuleID
+from py_ocpi.core.enums import ModuleID, RoleEnum
 from py_ocpi.modules.versions.enums import VersionNumber
 from py_ocpi.modules.credentials.v_2_2_1.schemas import Credentials
 
@@ -20,7 +20,7 @@ router = APIRouter(
 async def get_credentials(request: Request, crud=Depends(get_crud), adapter=Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
-        data = await crud.get(ModuleID.credentials_and_registration,
+        data = await crud.get(ModuleID.credentials_and_registration, RoleEnum.emsp,
                               auth_token, version=VersionNumber.v_2_2_1)
         return OCPIResponse(
             data=[adapter.credentials_adapter(data).dict()],
@@ -40,7 +40,7 @@ async def post_credentials(request: Request, credentials: Credentials,
     try:
         # Check if the client is already registered
         credentials_client_token = credentials.token
-        server_cred = await crud.get(ModuleID.credentials_and_registration, credentials_client_token,
+        server_cred = await crud.get(ModuleID.credentials_and_registration, RoleEnum.emsp, credentials_client_token,
                                      version=VersionNumber.v_2_2_1)
         if server_cred:
             raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client is already registered")
@@ -77,7 +77,7 @@ async def post_credentials(request: Request, credentials: Credentials,
                 # Store client credentials
                 endpoints = response_endpoints.json()['data'][0]
                 await crud.create(
-                    ModuleID.credentials_and_registration,
+                    ModuleID.credentials_and_registration, RoleEnum.emsp,
                     {
                         "token_b": credentials.token,
                         "version": VersionNumber.v_2_2_1,
@@ -89,7 +89,7 @@ async def post_credentials(request: Request, credentials: Credentials,
                 )
 
                 # Generate new credentials for sender
-                new_credentials = await crud.create(ModuleID.credentials_and_registration,
+                new_credentials = await crud.create(ModuleID.credentials_and_registration, RoleEnum.emsp,
                                                     {'url': version_url}, operation='registration',
                                                     auth_token=auth_token, version=VersionNumber.v_2_2_1)
 
@@ -112,7 +112,7 @@ async def update_credentials(request: Request, credentials: Credentials,
     try:
         # Check if the client is already registered
         credentials_client_token = credentials.token
-        server_cred = await crud.get(ModuleID.credentials_and_registration, credentials_client_token,
+        server_cred = await crud.get(ModuleID.credentials_and_registration, RoleEnum.emsp, credentials_client_token,
                                      auth_token=auth_token, version=VersionNumber.v_2_2_1)
         if not server_cred:
             raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client is not registered")
@@ -146,7 +146,7 @@ async def update_credentials(request: Request, credentials: Credentials,
             if response_endpoints.status_code == fastapistatus.HTTP_200_OK:
                 # Update server credentials to access client's system
                 endpoints = response_endpoints.json()['data'][0]
-                await crud.update(ModuleID.credentials_and_registration,
+                await crud.update(ModuleID.credentials_and_registration, RoleEnum.emsp,
                                   {
                                       "token_b": credentials.token,
                                       "version": VersionNumber.v_2_2_1,
@@ -157,7 +157,7 @@ async def update_credentials(request: Request, credentials: Credentials,
                                   version=VersionNumber.v_2_2_1)
 
                 # Generate new credentials token
-                new_credentials = await crud.update(ModuleID.credentials_and_registration,
+                new_credentials = await crud.update(ModuleID.credentials_and_registration, RoleEnum.emsp,
                                                     {'url': version_url}, auth_token=auth_token,
                                                     operation='registration',
                                                     version=VersionNumber.v_2_2_1)
