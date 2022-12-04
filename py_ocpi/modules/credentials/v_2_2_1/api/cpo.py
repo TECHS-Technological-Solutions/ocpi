@@ -21,7 +21,7 @@ async def get_credentials(request: Request, crud=Depends(get_crud), adapter=Depe
     auth_token = get_auth_token(request)
     try:
         data = await crud.get(ModuleID.credentials_and_registration, RoleEnum.cpo,
-                              auth_token, version=VersionNumber.v_2_2_1)
+                              auth_token, auth_token=auth_token, version=VersionNumber.v_2_2_1)
         return OCPIResponse(
             data=[adapter.credentials_adapter(data).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
@@ -74,24 +74,17 @@ async def post_credentials(request: Request, credentials: Credentials,
                                                       headers={'authorization': authorization_token})
 
             if response_endpoints.status_code == fastapistatus.HTTP_200_OK:
-                # Store client credentials
+                # Store client credentials and generate new credentials for sender
                 endpoints = response_endpoints.json()['data'][0]
-                await crud.create(
+                new_credentials = await crud.create(
                     ModuleID.credentials_and_registration, RoleEnum.cpo,
                     {
-                        "token_b": credentials.token,
-                        "version": VersionNumber.v_2_2_1,
+                        "credentials": credentials.dict(),
                         "endpoints": endpoints
                     },
-                    operation='credentials',
                     auth_token=auth_token,
                     version=VersionNumber.v_2_2_1
                 )
-
-                # Generate new credentials for sender
-                new_credentials = await crud.create(ModuleID.credentials_and_registration, RoleEnum.cpo,
-                                                    {'url': version_url}, operation='registration',
-                                                    auth_token=auth_token, version=VersionNumber.v_2_2_1)
 
                 return OCPIResponse(
                     data=[adapter.credentials_adapter(new_credentials).dict()],
@@ -144,28 +137,44 @@ async def update_credentials(request: Request, credentials: Credentials,
                                                       headers={'authorization': authorization_token})
 
             if response_endpoints.status_code == fastapistatus.HTTP_200_OK:
-                # Update server credentials to access client's system
+                # Update server credentials to access client's system and generate new credentials token
                 endpoints = response_endpoints.json()['data'][0]
-                await crud.update(ModuleID.credentials_and_registration, RoleEnum.cpo,
-                                  {
-                                      "token_b": credentials.token,
-                                      "version": VersionNumber.v_2_2_1,
-                                      "endpoints": endpoints
-                                  },
-                                  operation='credentials',
-                                  auth_token=auth_token,
-                                  version=VersionNumber.v_2_2_1)
-
-                # Generate new credentials token
                 new_credentials = await crud.update(ModuleID.credentials_and_registration, RoleEnum.cpo,
-                                                    {'url': version_url}, auth_token=auth_token,
-                                                    operation='registration',
+                                                    {
+                                                        "credentials": credentials.dict(),
+                                                        "endpoints": endpoints
+                                                    },
+                                                    auth_token=auth_token,
                                                     version=VersionNumber.v_2_2_1)
+
                 return OCPIResponse(
                     data=[adapter.credentials_adapter(new_credentials).dict()],
                     **status.OCPI_1000_GENERIC_SUCESS_CODE
                 )
 
+    except ValidationError:
+        return OCPIResponse(
+            data=[],
+            **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
+        )
+
+
+@router.delete("/", response_model=OCPIResponse)
+async def remove_credentials(request: Request, crud=Depends(get_crud), adapter=Depends(get_adapter)):
+    auth_token = get_auth_token(request)
+    try:
+        data = await crud.get(ModuleID.credentials_and_registration, RoleEnum.cpo,
+                              auth_token, auth_token=auth_token, version=VersionNumber.v_2_2_1)
+        if not data:
+            raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client is not registered")
+
+        await crud.delete(ModuleID.credentials_and_registration, RoleEnum.cpo,
+                          auth_token, auth_token=auth_token, version=VersionNumber.v_2_2_1)
+
+        return OCPIResponse(
+            data=[],
+            **status.OCPI_1000_GENERIC_SUCESS_CODE,
+        )
     except ValidationError:
         return OCPIResponse(
             data=[],

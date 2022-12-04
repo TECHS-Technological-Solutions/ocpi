@@ -1,4 +1,4 @@
-from typing import Any, Literal, Tuple
+from typing import Any, Tuple
 
 from py_ocpi.core.enums import ModuleID, RoleEnum, Action
 
@@ -118,25 +118,4 @@ class Crud:
 
         Returns:
             Any: The action result
-        """
-
-    @classmethod
-    async def send(cls, module: ModuleID, role: RoleEnum, url: str,
-                   method: Literal['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], *args,
-                   data: dict = None, **kwargs) -> Any:
-        """Send a HTTP request
-
-        Args:
-            module (ModuleID): The OCPI module
-            role (RoleEnum): The role of the caller
-            url (str): The URL to send the request to
-            method ('GET', 'POST', 'PUT', 'PATCH', 'DELETE'): _description_
-            data (dict, optional): The data used for POST,PATCH or PUT request
-
-        Keyword Args:
-            auth_token (str): The authentication token used by third party
-            version (VersionNumber): The version number of the caller OCPI module
-
-        Returns:
-            Any: The request response
         """

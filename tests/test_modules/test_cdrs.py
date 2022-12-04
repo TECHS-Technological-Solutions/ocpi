@@ -68,13 +68,13 @@ CDRS = [
 class Crud:
 
     @classmethod
-    async def list(cls, module: enums.ModuleID, filters: dict, *args, **kwargs) -> list:
+    async def list(cls, module: enums.ModuleID, role: enums.RoleEnum, filters: dict, *args, **kwargs) -> list:
         return CDRS, 1, True
 
 
 class Adapter:
     @classmethod
-    def cdr_adapter(cls, data) -> Cdr:
+    def cdr_adapter(cls, data, version: VersionNumber = VersionNumber.latest) -> Cdr:
         return Cdr(**data)
 
 

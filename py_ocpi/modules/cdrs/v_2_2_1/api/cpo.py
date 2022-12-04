@@ -21,7 +21,7 @@ async def get_cdrs(response: Response,
                    filters: dict = Depends(pagination_filters)):
     try:
         auth_token = get_auth_token(request)
-        data_list = await get_list(response, filters, ModuleID.cdrs,
+        data_list = await get_list(response, filters, ModuleID.cdrs, RoleEnum.cpo,
                                    VersionNumber.v_2_2_1, crud, auth_token=auth_token)
 
         cdrs = []

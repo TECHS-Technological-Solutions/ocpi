@@ -23,7 +23,7 @@ async def get_sessions(request: Request,
                        filters: dict = Depends(pagination_filters)):
     auth_token = get_auth_token(request)
     try:
-        data_list = await get_list(response, filters, ModuleID.sessions,
+        data_list = await get_list(response, filters, ModuleID.sessions, RoleEnum.cpo,
                                    VersionNumber.v_2_2_1, crud, auth_token=auth_token)
 
         sessions = []
