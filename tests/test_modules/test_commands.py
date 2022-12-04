@@ -3,11 +3,12 @@ from uuid import uuid4
 
 from fastapi.testclient import TestClient
 
+from py_ocpi import get_application
 from py_ocpi.core import enums
-from py_ocpi.tokens.v_2_2_1.enums import TokenType, WhitelistType
-from py_ocpi.commands.v_2_2_1.enums import CommandType, CommandResponseType
-from py_ocpi.main import get_application
-from py_ocpi.versions.enums import VersionNumber
+from py_ocpi.modules.tokens.v_2_2_1.enums import TokenType, WhitelistType
+from py_ocpi.modules.commands.v_2_2_1.enums import CommandType, CommandResponseType
+from py_ocpi.modules.commands.v_2_2_1.schemas import CommandResponse
+from py_ocpi.modules.versions.enums import VersionNumber
 
 COMMAND_RESPONSE = {
     'result': CommandResponseType.accepted,
@@ -18,14 +19,15 @@ COMMAND_RESPONSE = {
 class Crud:
 
     @classmethod
-    async def create(cls, module: enums.ModuleID, filters: dict, *args, **kwargs) -> dict:
-        return dict(COMMAND_RESPONSE, **filters)
+    async def do(cls, module: enums.ModuleID, action: enums.Action,
+                 *args, data: dict = None, **kwargs) -> dict:
+        return COMMAND_RESPONSE
 
 
 class Adapter:
     @classmethod
     def commands_adapter(cls, data):
-        return data
+        return CommandResponse(**data)
 
 
 def test_receive_command_start_session():
@@ -54,7 +56,6 @@ def test_receive_command_start_session():
     assert response.status_code == 200
     assert len(response.json()['data']) == 1
     assert response.json()['data'][0]['result'] == COMMAND_RESPONSE["result"]
-    assert response.json()['data'][0]['location_id'] == data['location_id']
 
 
 def test_receive_command_stop_session():
@@ -71,7 +72,6 @@ def test_receive_command_stop_session():
     assert response.status_code == 200
     assert len(response.json()['data']) == 1
     assert response.json()['data'][0]['result'] == COMMAND_RESPONSE["result"]
-    assert response.json()['data'][0]['session_id'] == data["session_id"]
 
 
 def test_receive_command_reserve_now():
@@ -102,4 +102,3 @@ def test_receive_command_reserve_now():
     assert response.status_code == 200
     assert len(response.json()['data']) == 1
     assert response.json()['data'][0]['result'] == COMMAND_RESPONSE["result"]
-    assert response.json()['data'][0]['reservation_id'] == data["reservation_id"]
