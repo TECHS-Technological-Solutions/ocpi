@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Depends, Response, Request, HTTPException
+from fastapi import APIRouter, Depends, Response, Request
 from pydantic import ValidationError
 
 from py_ocpi.modules.versions.enums import VersionNumber
 from py_ocpi.core.utils import get_list, get_auth_token
 from py_ocpi.core import status
-from py_ocpi.core.exceptions import AuthorizationOCPIError
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.data_types import CiString
 from py_ocpi.core.enums import ModuleID

@@ -1,7 +1,7 @@
 from uuid import uuid4
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
-from unittest.mock import patch
 
 from py_ocpi import get_application
 from py_ocpi.core import enums
@@ -9,7 +9,7 @@ from py_ocpi.modules.credentials.v_2_2_1.schemas import Credentials
 from py_ocpi.modules.versions.enums import VersionNumber
 from tests.test_modules.mocks.async_client import MockAsyncClientGeneratorVersionsAndEndpoints
 
-CREDENTIALS_GET = {
+CREDENTIALS_TOKEN_GET = {
     'url': 'url',
     'roles': [{
         'role': enums.RoleEnum.cpo,
@@ -21,7 +21,7 @@ CREDENTIALS_GET = {
     }]
 }
 
-CREDENTIALS_CREATE = {
+CREDENTIALS_TOKEN_CREATE = {
     'token': str(uuid4()),
     'url': 'url',
     'roles': [{
@@ -38,15 +38,15 @@ CREDENTIALS_CREATE = {
 class Crud:
     @classmethod
     async def get(cls, module: enums.ModuleID, id, *args, **kwargs):
-        if id == CREDENTIALS_CREATE['token']:
+        if id == CREDENTIALS_TOKEN_CREATE['token']:
             return None
-        return dict(CREDENTIALS_GET, **{'token': id})
+        return dict(CREDENTIALS_TOKEN_GET, **{'token': id})
 
     @classmethod
-    async def create(cls, module: enums.ModuleID, data, *args, **kwargs):
-        if 'cred_token_b' in data:
+    async def create(cls, module: enums.ModuleID, data, operation, *args, **kwargs):
+        if operation == 'credentials':
             return None
-        return CREDENTIALS_CREATE
+        return CREDENTIALS_TOKEN_CREATE
 
 
 class Adapter:
@@ -76,8 +76,8 @@ def test_post_credentials(async_mock):
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
     client = TestClient(app)
-    response = client.post('/ocpi/cpo/2.2.1/credentials/', json=CREDENTIALS_CREATE)
+    response = client.post('/ocpi/cpo/2.2.1/credentials/', json=CREDENTIALS_TOKEN_CREATE)
 
     assert response.status_code == 200
     assert len(response.json()['data']) == 1
-    assert response.json()['data'][0]['token'] == CREDENTIALS_CREATE['token']
+    assert response.json()['data'][0]['token'] == CREDENTIALS_TOKEN_CREATE['token']

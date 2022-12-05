@@ -54,6 +54,7 @@ class Crud:
             party_id (CiString(3)): The party ID (used in Tokens module)
             token_uid (CiString(36)): The token UID (used in Tokens module)
             token_type (TokenType): The token type (used in Tokens module)
+            operation ('credentials', 'registration'): The operation type in credentials and registration process
 
         Returns:
             Any: The created object data
@@ -74,6 +75,7 @@ class Crud:
             party_id (CiString(3)): The party ID (used in Tokens module)
             token_uid (CiString(36)): The token UID (used in Tokens module)
             token_type (TokenType): The token type (used in Tokens module)
+            operation ('credentials', 'registration'): The operation type in credentials and registration process
 
         Returns:
             Any: The updated object data
