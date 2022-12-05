@@ -4,6 +4,8 @@ from pydantic import ValidationError
 from py_ocpi.core.utils import get_auth_token, partially_update_attributes
 from py_ocpi.core import status
 from py_ocpi.core.schemas import OCPIResponse
+from py_ocpi.core.adapter import Adapter
+from py_ocpi.core.crud import Crud
 from py_ocpi.core.data_types import CiString
 from py_ocpi.core.enums import ModuleID, RoleEnum
 from py_ocpi.core.dependencies import get_crud, get_adapter
@@ -21,7 +23,7 @@ router = APIRouter(
 
 @router.get("/{country_code}/{party_id}/{location_id}", response_model=OCPIResponse)
 async def get_location(request: Request, country_code: CiString(2), party_id: CiString(3), location_id: CiString(36),
-                       crud=Depends(get_crud), adapter=Depends(get_adapter)):
+                       crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
         data = await crud.get(ModuleID.locations, RoleEnum.emsp, location_id, auth_token=auth_token,
@@ -39,7 +41,7 @@ async def get_location(request: Request, country_code: CiString(2), party_id: Ci
 
 @router.get("/{country_code}/{party_id}/{location_id}/{evse_uid}", response_model=OCPIResponse)
 async def get_evse(request: Request, country_code: CiString(2), party_id: CiString(3), location_id: CiString(36),
-                   evse_uid: CiString(48), crud=Depends(get_crud), adapter=Depends(get_adapter)):
+                   evse_uid: CiString(48), crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
         data = await crud.get(ModuleID.locations, RoleEnum.emsp, location_id, auth_token=auth_token,
@@ -61,7 +63,7 @@ async def get_evse(request: Request, country_code: CiString(2), party_id: CiStri
 @router.get("/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id}", response_model=OCPIResponse)
 async def get_connector(request: Request, country_code: CiString(2), party_id: CiString(3), location_id: CiString(36),
                         evse_uid: CiString(48), connector_id: CiString(36),
-                        crud=Depends(get_crud), adapter=Depends(get_adapter)):
+                        crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
         data = await crud.get(ModuleID.locations, RoleEnum.emsp, location_id, auth_token=auth_token,
@@ -83,14 +85,21 @@ async def get_connector(request: Request, country_code: CiString(2), party_id: C
 
 
 @router.put("/{country_code}/{party_id}/{location_id}", response_model=OCPIResponse)
-async def update_location(request: Request, country_code: CiString(2), party_id: CiString(3),
-                          location_id: CiString(36), location: Location,
-                          crud=Depends(get_crud), adapter=Depends(get_adapter)):
+async def add_or_update_location(request: Request, country_code: CiString(2), party_id: CiString(3),
+                                 location_id: CiString(36), location: Location,
+                                 crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
-        data = await crud.update(ModuleID.locations, RoleEnum.emsp, location, location_id,
-                                 auth_token=auth_token, country_code=country_code,
-                                 party_id=party_id, version=VersionNumber.v_2_2_1)
+        data = await crud.get(ModuleID.locations, RoleEnum.emsp, location_id, auth_token=auth_token,
+                              country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
+        if data:
+            data = await crud.update(ModuleID.locations, RoleEnum.emsp, location, location_id,
+                                     auth_token=auth_token, country_code=country_code,
+                                     party_id=party_id, version=VersionNumber.v_2_2_1)
+        else:
+            data = await crud.create(ModuleID.locations, RoleEnum.emsp, location,
+                                     auth_token=auth_token, country_code=country_code,
+                                     party_id=party_id, version=VersionNumber.v_2_2_1)
 
         return OCPIResponse(
             data=[adapter.location_adapter(data).dict()],
@@ -104,20 +113,23 @@ async def update_location(request: Request, country_code: CiString(2), party_id:
 
 
 @router.put("/{country_code}/{party_id}/{location_id}/{evse_uid}", response_model=OCPIResponse)
-async def update_evse(request: Request, country_code: CiString(2), party_id: CiString(3), location_id: CiString(36),
-                      evse_uid: CiString(48), evse: EVSE,
-                      crud=Depends(get_crud), adapter=Depends(get_adapter)):
+async def add_or_update_evse(request: Request, country_code: CiString(2), party_id: CiString(3),
+                             location_id: CiString(36), evse_uid: CiString(48), evse: EVSE,
+                             crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
         old_data = await crud.get(ModuleID.locations, RoleEnum.emsp, location_id, auth_token=auth_token,
                                   country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
         old_location = adapter.location_adapter(old_data)
 
+        is_new_evse = False
         for old_evse in old_location.evses:
             if old_evse.uid == evse_uid:
+                is_new_evse = True
                 break
         new_location = old_location
-        new_location.evses.remove(old_evse)
+        if is_new_evse:
+            new_location.evses.remove(old_evse)
         new_location.evses.append(evse)
 
         await crud.update(ModuleID.locations, RoleEnum.emsp, new_location, location_id,
@@ -136,23 +148,26 @@ async def update_evse(request: Request, country_code: CiString(2), party_id: CiS
 
 
 @router.put("/{country_code}/{party_id}/{location_id}/{evse_uid}/{connector_id}", response_model=OCPIResponse)
-async def update_connector(request: Request, country_code: CiString(2), party_id: CiString(3),
-                           location_id: CiString(36), evse_uid: CiString(48),
-                           connector_id: CiString(36), connector: Connector,
-                           crud=Depends(get_crud), adapter=Depends(get_adapter)):
+async def add_or_update_connector(request: Request, country_code: CiString(2), party_id: CiString(3),
+                                  location_id: CiString(36), evse_uid: CiString(48),
+                                  connector_id: CiString(36), connector: Connector,
+                                  crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
         old_data = await crud.get(ModuleID.locations, RoleEnum.emsp, location_id, auth_token=auth_token,
                                   country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
         old_location = adapter.location_adapter(old_data)
 
+        is_new_connector = False
         for old_evse in old_location.evses:
             if old_evse.uid == evse_uid:
                 for old_onnector in old_evse.connectors:
                     if old_onnector.id == connector_id:
+                        is_new_connector = True
                         break
         new_location = old_location
-        new_location.evses.connectors.remove(old_onnector)
+        if is_new_connector:
+            new_location.evses.connectors.remove(old_onnector)
         new_location.evses.connectors.append(connector)
 
         await crud.update(ModuleID.locations, RoleEnum.emsp, new_location, location_id,
@@ -173,7 +188,7 @@ async def update_connector(request: Request, country_code: CiString(2), party_id
 @router.patch("/{country_code}/{party_id}/{location_id}", response_model=OCPIResponse)
 async def partial_update_location(request: Request, country_code: CiString(2), party_id: CiString(3),
                                   location_id: CiString(36), location: LocationPartialUpdate,
-                                  crud=Depends(get_crud), adapter=Depends(get_adapter)):
+                                  crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
         old_data = await crud.get(ModuleID.locations, RoleEnum.emsp, location_id, auth_token=auth_token,
@@ -201,7 +216,7 @@ async def partial_update_location(request: Request, country_code: CiString(2), p
 @router.patch("/{country_code}/{party_id}/{location_id}/{evse_uid}", response_model=OCPIResponse)
 async def partial_update_evse(request: Request, country_code: CiString(2), party_id: CiString(3),
                               location_id: CiString(36), evse_uid: CiString(48), evse: EVSEPartialUpdate,
-                              crud=Depends(get_crud), adapter=Depends(get_adapter)):
+                              crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
         old_data = await crud.get(ModuleID.locations, RoleEnum.emsp, location_id, auth_token=auth_token,
@@ -234,7 +249,7 @@ async def partial_update_evse(request: Request, country_code: CiString(2), party
 async def partial_update_connector(request: Request, country_code: CiString(2), party_id: CiString(3),
                                    location_id: CiString(36), evse_uid: CiString(48),
                                    connector_id: CiString(36), connector: ConnectorPartialUpdate,
-                                   crud=Depends(get_crud), adapter=Depends(get_adapter)):
+                                   crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
         old_data = await crud.get(ModuleID.locations, RoleEnum.emsp, location_id, auth_token=auth_token,

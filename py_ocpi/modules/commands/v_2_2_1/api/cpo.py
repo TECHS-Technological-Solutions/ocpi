@@ -6,6 +6,8 @@ from pydantic import ValidationError
 from py_ocpi.core.dependencies import get_crud, get_adapter
 from py_ocpi.core.enums import ModuleID, RoleEnum, Action
 from py_ocpi.core.schemas import OCPIResponse
+from py_ocpi.core.adapter import Adapter
+from py_ocpi.core.crud import Crud
 from py_ocpi.core import status
 from py_ocpi.core.utils import get_auth_token
 from py_ocpi.modules.versions.enums import VersionNumber
@@ -36,7 +38,7 @@ async def apply_pydantic_schema(command: str, data: dict):
 
 @router.post("/{command}", response_model=OCPIResponse)
 async def receive_command(request: Request, command: CommandType, data: dict,
-                          crud=Depends(get_crud), adapter=Depends(get_adapter)):
+                          crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
 
     try:
