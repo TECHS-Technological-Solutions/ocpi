@@ -34,15 +34,15 @@ TOKEN_UPDATE = {
 class Crud:
 
     @classmethod
-    async def get(cls, module: enums.ModuleID, filters: dict, *args, **kwargs) -> Token:
+    async def get(cls, module: enums.ModuleID, role: enums.RoleEnum, filters: dict, *args, **kwargs) -> Token:
         return TOKENS[0]
 
     @classmethod
-    async def create(cls, module: enums.ModuleID, data: Token, *args, **kwargs) -> dict:
+    async def create(cls, module: enums.ModuleID, role: enums.RoleEnum, data: Token, *args, **kwargs) -> dict:
         return data
 
     @classmethod
-    async def update(cls, module: enums.ModuleID, data: Token, id: str, *args, **kwargs):
+    async def update(cls, module: enums.ModuleID, role: enums.RoleEnum, data: Token, id: str, *args, **kwargs):
         data = dict(data)
         TOKENS[0]['country_code'] = data['country_code']
         TOKENS[0]['party_id'] = data['party_id']
@@ -51,7 +51,7 @@ class Crud:
 
 class Adapter:
     @classmethod
-    def token_adapter(cls, data) -> Token:
+    def token_adapter(cls, data, version: VersionNumber = VersionNumber.latest) -> Token:
         return Token(**dict(data))
 
 

@@ -60,21 +60,21 @@ CHARGING_PREFERENCES = {
 class Crud:
 
     @classmethod
-    async def list(cls, module: enums.ModuleID, filters: dict, *args, **kwargs) -> list:
+    async def list(cls, module: enums.ModuleID, role: enums.RoleEnum, filters: dict, *args, **kwargs) -> list:
         return SESSIONS, 1, True
 
     @classmethod
-    async def update(cls, module: enums.ModuleID, filters: dict, id: str, *args, **kwargs):
+    async def update(cls, module: enums.ModuleID, role: enums.RoleEnum, filters: dict, id: str, *args, **kwargs):
         return CHARGING_PREFERENCES
 
 
 class Adapter:
     @classmethod
-    def session_adapter(cls, data) -> Session:
+    def session_adapter(cls, data, version: VersionNumber = VersionNumber.latest) -> Session:
         return Session(**data)
 
     @classmethod
-    def charging_preference_adapter(cls, data) -> Session:
+    def charging_preference_adapter(cls, data, version: VersionNumber = VersionNumber.latest) -> Session:
         return ChargingPreferences(**data)
 
 

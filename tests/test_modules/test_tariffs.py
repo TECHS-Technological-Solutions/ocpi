@@ -32,13 +32,13 @@ TARIFFS = [{
 class Crud:
 
     @classmethod
-    async def list(cls, module: enums.ModuleID, filters: dict, *args, **kwargs) -> list:
+    async def list(cls, module: enums.ModuleID, role: enums.RoleEnum, filters: dict, *args, **kwargs) -> list:
         return TARIFFS, 1, True
 
 
 class Adapter:
     @classmethod
-    def tariff_adapter(cls, data) -> Tariff:
+    def tariff_adapter(cls, data, version: VersionNumber = VersionNumber.latest) -> Tariff:
         return Tariff(**data)
 
 

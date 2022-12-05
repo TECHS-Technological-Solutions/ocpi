@@ -3,7 +3,7 @@ from pydantic import ValidationError
 
 from py_ocpi.core import status
 from py_ocpi.core.data_types import CiString
-from py_ocpi.core.enums import ModuleID
+from py_ocpi.core.enums import ModuleID, RoleEnum
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.utils import get_auth_token
 from py_ocpi.core.dependencies import get_crud, get_adapter
@@ -22,7 +22,7 @@ async def get_token(country_code: CiString(2), party_id: CiString(3), token_uid:
                     crud=Depends(get_crud), adapter=Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
-        data = await crud.get(ModuleID.tokens, token_uid,
+        data = await crud.get(ModuleID.tokens, RoleEnum.cpo, token_uid,
                               auth_token=auth_token, country_code=country_code,
                               party_id=party_id, token_type=token_type,
                               version=VersionNumber.v_2_2_1)
@@ -43,7 +43,7 @@ async def add_token(country_code: CiString(2), party_id: CiString(3), token_uid:
                     crud=Depends(get_crud), adapter=Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
-        data = await crud.create(ModuleID.tokens, token,
+        data = await crud.create(ModuleID.tokens, RoleEnum.cpo, token,
                                  auth_token=auth_token,
                                  country_code=country_code, party_id=party_id,
                                  token_uid=token_uid, token_type=token_type,
@@ -65,7 +65,7 @@ async def update_token(country_code: CiString(2), party_id: CiString(3), token_u
                        crud=Depends(get_crud), adapter=Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
-        data = await crud.update(ModuleID.tokens, token, token_uid,
+        data = await crud.update(ModuleID.tokens, RoleEnum.cpo, token, token_uid,
                                  auth_token=auth_token, country_code=country_code,
                                  party_id=party_id, token_type=token_type,
                                  version=VersionNumber.v_2_2_1)

@@ -7,7 +7,7 @@ from py_ocpi.core.utils import get_list, get_auth_token
 from py_ocpi.core import status
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.data_types import CiString
-from py_ocpi.core.enums import ModuleID
+from py_ocpi.core.enums import ModuleID, RoleEnum
 from py_ocpi.core.dependencies import get_crud, get_adapter, pagination_filters
 
 router = APIRouter(
@@ -23,7 +23,7 @@ async def get_sessions(request: Request,
                        filters: dict = Depends(pagination_filters)):
     auth_token = get_auth_token(request)
     try:
-        data_list = await get_list(response, filters, ModuleID.sessions,
+        data_list = await get_list(response, filters, ModuleID.sessions, RoleEnum.cpo,
                                    VersionNumber.v_2_2_1, crud, auth_token=auth_token)
 
         sessions = []
@@ -47,7 +47,7 @@ async def set_charging_preference(request: Request,
                                   crud=Depends(get_crud),
                                   adapter=Depends(get_adapter)):
     auth_token = get_auth_token(request)
-    data = await crud.update(ModuleID.sessions, charging_preferences.dict(), session_id,
+    data = await crud.update(ModuleID.sessions, RoleEnum.cpo, charging_preferences.dict(), session_id,
                              auth_token=auth_token, version=VersionNumber.v_2_2_1)
     return OCPIResponse(
         data=[adapter.charging_preference_adapter(data).dict()],

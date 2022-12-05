@@ -37,7 +37,7 @@ CREDENTIALS_TOKEN_CREATE = {
 
 class Crud:
     @classmethod
-    async def get(cls, module: enums.ModuleID, id, *args, **kwargs):
+    async def get(cls, module: enums.ModuleID, role: enums.RoleEnum, id, *args, **kwargs):
         if id == CREDENTIALS_TOKEN_CREATE['token']:
             return None
         return dict(CREDENTIALS_TOKEN_GET, **{'token': id})
@@ -51,7 +51,7 @@ class Crud:
 
 class Adapter:
     @classmethod
-    def credentials_adapter(cls, data) -> Credentials:
+    def credentials_adapter(cls, data, version: VersionNumber = VersionNumber.latest) -> Credentials:
         return Credentials(**data)
 
 

@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 from py_ocpi.core.dependencies import get_crud, get_adapter
-from py_ocpi.core.enums import ModuleID, Action
+from py_ocpi.core.enums import ModuleID, RoleEnum, Action
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core import status
 from py_ocpi.core.utils import get_auth_token
@@ -47,7 +47,7 @@ async def receive_command(request: Request, command: CommandType, data: dict,
             content={'detail': jsonable_encoder(exc.errors())}
         )
     try:
-        data = await crud.do(ModuleID.commands, Action.send_command, data.dict(), command=command,
+        data = await crud.do(ModuleID.commands, RoleEnum.cpo, Action.send_command, data.dict(), command=command,
                              auth_token=auth_token, version=VersionNumber.v_2_2_1)
         return OCPIResponse(
             data=[adapter.commands_adapter(data).dict()],

@@ -12,7 +12,8 @@ from py_ocpi.core.enums import RoleEnum
 from py_ocpi.core.config import settings
 from py_ocpi.core.data_types import URL
 from py_ocpi.core.exceptions import AuthorizationOCPIError
-from py_ocpi.routers import v_2_2_1_cpo_router
+from py_ocpi.core.push import router as push_router
+from py_ocpi.routers import v_2_2_1_cpo_router, v_2_2_1_emsp_router
 
 
 class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
@@ -32,6 +33,7 @@ def get_application(
     roles: List[RoleEnum],
     crud: Any,
     adapter: Any,
+    push: bool = True,
 ) -> FastAPI:
     _app = FastAPI(
         title=settings.PROJECT_NAME,
@@ -53,6 +55,12 @@ def get_application(
         prefix=f'/{settings.OCPI_PREFIX}',
     )
 
+    if push:
+        _app.include_router(
+            push_router,
+            prefix=f'/{settings.PUSH_PREFIX}',
+        )
+
     versions = []
 
     if VersionNumber.v_2_2_1 in version_numbers:
@@ -72,6 +80,20 @@ def get_application(
                 Version(
                     version=VersionNumber.v_2_2_1,
                     url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/cpo/{VersionNumber.v_2_2_1}')
+                ).dict(),
+            )
+
+        if RoleEnum.emsp in roles:
+            _app.include_router(
+                v_2_2_1_emsp_router,
+                prefix=f'/{settings.OCPI_PREFIX}/emsp/{VersionNumber.v_2_2_1}',
+                tags=['EMSP']
+            )
+
+            versions.append(
+                Version(
+                    version=VersionNumber.v_2_2_1,
+                    url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/emsp/{VersionNumber.v_2_2_1}')
                 ).dict(),
             )
 

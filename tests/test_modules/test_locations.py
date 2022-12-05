@@ -192,17 +192,17 @@ LOCATIONS = [
 
 class Crud:
     @classmethod
-    async def get(cls, module: enums.ModuleID, id, *args, **kwargs):
+    async def get(cls, module: enums.ModuleID, role: enums.RoleEnum, id, *args, **kwargs):
         return LOCATIONS[0]
 
     @classmethod
-    async def list(cls, module: enums.ModuleID, filters: dict, *args, **kwargs) -> list:
+    async def list(cls, module: enums.ModuleID, role: enums.RoleEnum, filters: dict, *args, **kwargs) -> list:
         return LOCATIONS, 1, True
 
 
 class Adapter:
     @classmethod
-    def location_adapter(cls, data) -> Location:
+    def location_adapter(cls, data, version: VersionNumber = VersionNumber.latest) -> Location:
         return Location(**data)
 
 

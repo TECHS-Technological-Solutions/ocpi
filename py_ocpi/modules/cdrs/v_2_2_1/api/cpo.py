@@ -5,7 +5,7 @@ from py_ocpi.modules.versions.enums import VersionNumber
 from py_ocpi.core.utils import get_auth_token, get_list
 from py_ocpi.core import status
 from py_ocpi.core.schemas import OCPIResponse
-from py_ocpi.core.enums import ModuleID
+from py_ocpi.core.enums import ModuleID, RoleEnum
 from py_ocpi.core.dependencies import get_crud, get_adapter, pagination_filters
 
 router = APIRouter(
@@ -21,7 +21,7 @@ async def get_cdrs(response: Response,
                    filters: dict = Depends(pagination_filters)):
     try:
         auth_token = get_auth_token(request)
-        data_list = await get_list(response, filters, ModuleID.cdrs,
+        data_list = await get_list(response, filters, ModuleID.cdrs, RoleEnum.cpo,
                                    VersionNumber.v_2_2_1, crud, auth_token=auth_token)
 
         cdrs = []

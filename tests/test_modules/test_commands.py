@@ -19,14 +19,14 @@ COMMAND_RESPONSE = {
 class Crud:
 
     @classmethod
-    async def do(cls, module: enums.ModuleID, action: enums.Action,
+    async def do(cls, module: enums.ModuleID, role: enums.RoleEnum, action: enums.Action,
                  *args, data: dict = None, **kwargs) -> dict:
         return COMMAND_RESPONSE
 
 
 class Adapter:
     @classmethod
-    def commands_adapter(cls, data):
+    def commands_adapter(cls, data, version: VersionNumber = VersionNumber.latest):
         return CommandResponse(**data)
 
 

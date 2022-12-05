@@ -60,6 +60,13 @@ ENDPOINTS = {
             url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/emsp'
                     f'/{VersionNumber.v_2_2_1}/{ModuleID.credentials_and_registration}')
         ),
+        # locations
+        Endpoint(
+            identifier=ModuleID.locations,
+            role=InterfaceRole.receiver,
+            url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/emsp'
+                    f'/{VersionNumber.v_2_2_1}/{ModuleID.locations}')
+        ),
     ]
 
 }
