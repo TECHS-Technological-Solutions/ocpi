@@ -5,6 +5,8 @@ from py_ocpi.core import status
 from py_ocpi.core.data_types import CiString
 from py_ocpi.core.enums import ModuleID, RoleEnum
 from py_ocpi.core.schemas import OCPIResponse
+from py_ocpi.core.adapter import Adapter
+from py_ocpi.core.crud import Crud
 from py_ocpi.core.utils import get_auth_token
 from py_ocpi.core.dependencies import get_crud, get_adapter
 from py_ocpi.modules.versions.enums import VersionNumber
@@ -19,7 +21,7 @@ router = APIRouter(
 @router.get("/{country_code}/{party_id}/{token_uid}", response_model=OCPIResponse)
 async def get_token(country_code: CiString(2), party_id: CiString(3), token_uid: CiString(36),
                     request: Request, token_type: TokenType = TokenType.rfid,
-                    crud=Depends(get_crud), adapter=Depends(get_adapter)):
+                    crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
         data = await crud.get(ModuleID.tokens, RoleEnum.cpo, token_uid,
@@ -40,7 +42,7 @@ async def get_token(country_code: CiString(2), party_id: CiString(3), token_uid:
 @router.put("/{country_code}/{party_id}/{token_uid}", response_model=OCPIResponse)
 async def add_token(country_code: CiString(2), party_id: CiString(3), token_uid: CiString(36), token: Token,
                     request: Request, token_type: TokenType = TokenType.rfid,
-                    crud=Depends(get_crud), adapter=Depends(get_adapter)):
+                    crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
         data = await crud.create(ModuleID.tokens, RoleEnum.cpo, token,
@@ -62,7 +64,7 @@ async def add_token(country_code: CiString(2), party_id: CiString(3), token_uid:
 @router.patch("/{country_code}/{party_id}/{token_uid}", response_model=OCPIResponse)
 async def update_token(country_code: CiString(2), party_id: CiString(3), token_uid: CiString(36), token: TokenUpdate,
                        request: Request, token_type: TokenType = TokenType.rfid,
-                       crud=Depends(get_crud), adapter=Depends(get_adapter)):
+                       crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
         data = await crud.update(ModuleID.tokens, RoleEnum.cpo, token, token_uid,

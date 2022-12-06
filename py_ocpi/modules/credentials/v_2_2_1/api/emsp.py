@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status as fastap
 from pydantic import ValidationError
 
 from py_ocpi.core.schemas import OCPIResponse
+from py_ocpi.core.adapter import Adapter
+from py_ocpi.core.crud import Crud
 from py_ocpi.core.utils import get_auth_token
 from py_ocpi.core.dependencies import get_crud, get_adapter
 from py_ocpi.core import status
@@ -17,7 +19,7 @@ router = APIRouter(
 
 
 @router.get("/", response_model=OCPIResponse)
-async def get_credentials(request: Request, crud=Depends(get_crud), adapter=Depends(get_adapter)):
+async def get_credentials(request: Request, crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
         data = await crud.get(ModuleID.credentials_and_registration, RoleEnum.emsp,
@@ -35,7 +37,7 @@ async def get_credentials(request: Request, crud=Depends(get_crud), adapter=Depe
 
 @router.post("/", response_model=OCPIResponse)
 async def post_credentials(request: Request, credentials: Credentials,
-                           crud=Depends(get_crud), adapter=Depends(get_adapter)):
+                           crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
         # Check if the client is already registered
@@ -100,7 +102,7 @@ async def post_credentials(request: Request, credentials: Credentials,
 
 @router.put("/", response_model=OCPIResponse)
 async def update_credentials(request: Request, credentials: Credentials,
-                             crud=Depends(get_crud), adapter=Depends(get_adapter)):
+                             crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
         # Check if the client is already registered
@@ -160,7 +162,8 @@ async def update_credentials(request: Request, credentials: Credentials,
 
 
 @router.delete("/", response_model=OCPIResponse)
-async def remove_credentials(request: Request, crud=Depends(get_crud), adapter=Depends(get_adapter)):
+async def remove_credentials(request: Request,
+                             crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
         data = await crud.get(ModuleID.credentials_and_registration, RoleEnum.emsp,

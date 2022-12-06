@@ -4,6 +4,8 @@ from pydantic import ValidationError
 from py_ocpi.core.utils import get_list, get_auth_token
 from py_ocpi.core import status
 from py_ocpi.core.schemas import OCPIResponse
+from py_ocpi.core.adapter import Adapter
+from py_ocpi.core.crud import Crud
 from py_ocpi.core.enums import ModuleID, RoleEnum
 from py_ocpi.core.dependencies import get_crud, get_adapter, pagination_filters
 from py_ocpi.modules.versions.enums import VersionNumber
@@ -16,8 +18,8 @@ router = APIRouter(
 @router.get("/", response_model=OCPIResponse)
 async def get_tariffs(request: Request,
                       response: Response,
-                      crud=Depends(get_crud),
-                      adapter=Depends(get_adapter),
+                      crud: Crud = Depends(get_crud),
+                      adapter: Adapter = Depends(get_adapter),
                       filters: dict = Depends(pagination_filters)):
     auth_token = get_auth_token(request)
     try:
