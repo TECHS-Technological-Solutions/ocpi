@@ -93,11 +93,11 @@ async def add_or_update_location(request: Request, country_code: CiString(2), pa
         data = await crud.get(ModuleID.locations, RoleEnum.emsp, location_id, auth_token=auth_token,
                               country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
         if data:
-            data = await crud.update(ModuleID.locations, RoleEnum.emsp, location, location_id,
+            data = await crud.update(ModuleID.locations, RoleEnum.emsp, location.dict(), location_id,
                                      auth_token=auth_token, country_code=country_code,
                                      party_id=party_id, version=VersionNumber.v_2_2_1)
         else:
-            data = await crud.create(ModuleID.locations, RoleEnum.emsp, location,
+            data = await crud.create(ModuleID.locations, RoleEnum.emsp, location.dict(),
                                      auth_token=auth_token, country_code=country_code,
                                      party_id=party_id, version=VersionNumber.v_2_2_1)
 
@@ -132,7 +132,7 @@ async def add_or_update_evse(request: Request, country_code: CiString(2), party_
             new_location.evses.remove(old_evse)
         new_location.evses.append(evse)
 
-        await crud.update(ModuleID.locations, RoleEnum.emsp, new_location, location_id,
+        await crud.update(ModuleID.locations, RoleEnum.emsp, new_location.dict(), location_id,
                           auth_token=auth_token, country_code=country_code,
                           party_id=party_id, version=VersionNumber.v_2_2_1)
 
@@ -170,7 +170,7 @@ async def add_or_update_connector(request: Request, country_code: CiString(2), p
             new_location.evses.connectors.remove(old_onnector)
         new_location.evses.connectors.append(connector)
 
-        await crud.update(ModuleID.locations, RoleEnum.emsp, new_location, location_id,
+        await crud.update(ModuleID.locations, RoleEnum.emsp, new_location.dict(), location_id,
                           auth_token=auth_token, country_code=country_code,
                           party_id=party_id, version=VersionNumber.v_2_2_1)
 
@@ -198,7 +198,7 @@ async def partial_update_location(request: Request, country_code: CiString(2), p
         new_location = old_location
         partially_update_attributes(new_location, location.dict(exclude_defaults=True, exclude_unset=True))
 
-        data = await crud.update(ModuleID.locations, RoleEnum.emsp, new_location, location_id,
+        data = await crud.update(ModuleID.locations, RoleEnum.emsp, new_location.dict(), location_id,
                                  auth_token=auth_token, country_code=country_code,
                                  party_id=party_id, version=VersionNumber.v_2_2_1)
 
@@ -230,7 +230,7 @@ async def partial_update_evse(request: Request, country_code: CiString(2), party
         partially_update_attributes(new_evse, evse.dict(exclude_defaults=True, exclude_unset=True))
         new_location = old_location
 
-        await crud.update(ModuleID.locations, RoleEnum.emsp, new_location, location_id,
+        await crud.update(ModuleID.locations, RoleEnum.emsp, new_location.dict(), location_id,
                           auth_token=auth_token, country_code=country_code,
                           party_id=party_id, version=VersionNumber.v_2_2_1)
 
@@ -265,7 +265,7 @@ async def partial_update_connector(request: Request, country_code: CiString(2), 
         partially_update_attributes(new_connector, connector.dict(exclude_defaults=True, exclude_unset=True))
         new_location = old_location
 
-        await crud.update(ModuleID.locations, RoleEnum.emsp, new_location, location_id,
+        await crud.update(ModuleID.locations, RoleEnum.emsp, new_location.dict(), location_id,
                           auth_token=auth_token, country_code=country_code,
                           party_id=party_id, version=VersionNumber.v_2_2_1)
 

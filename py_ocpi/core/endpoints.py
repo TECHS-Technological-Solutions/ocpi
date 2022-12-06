@@ -67,6 +67,20 @@ ENDPOINTS = {
             url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/emsp'
                     f'/{VersionNumber.v_2_2_1}/{ModuleID.locations}')
         ),
+        # sessions
+        Endpoint(
+            identifier=ModuleID.sessions,
+            role=InterfaceRole.receiver,
+            url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/emsp'
+                    f'/{VersionNumber.v_2_2_1}/{ModuleID.sessions}')
+        ),
+        # cdrs
+        Endpoint(
+            identifier=ModuleID.cdrs,
+            role=InterfaceRole.receiver,
+            url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/emsp'
+                    f'/{VersionNumber.v_2_2_1}/{ModuleID.cdrs}')
+        ),
     ]
 
 }

@@ -44,11 +44,11 @@ async def add_or_update_session(request: Request, country_code: CiString(2), par
         data = await crud.get(ModuleID.sessions, RoleEnum.emsp, session_id, auth_token=auth_token,
                               country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
         if data:
-            data = await crud.update(ModuleID.sessions, RoleEnum.emsp, session, session_id,
+            data = await crud.update(ModuleID.sessions, RoleEnum.emsp, session.dict(), session_id,
                                      auth_token=auth_token, country_code=country_code,
                                      party_id=party_id, version=VersionNumber.v_2_2_1)
         else:
-            data = await crud.create(ModuleID.sessions, RoleEnum.emsp, session,
+            data = await crud.create(ModuleID.sessions, RoleEnum.emsp, session.dict(),
                                      auth_token=auth_token, country_code=country_code,
                                      party_id=party_id, version=VersionNumber.v_2_2_1)
 
@@ -76,7 +76,7 @@ async def partial_update_session(request: Request, country_code: CiString(2), pa
         new_session = old_session
         partially_update_attributes(new_session, session.dict(exclude_defaults=True, exclude_unset=True))
 
-        data = await crud.update(ModuleID.sessions, RoleEnum.emsp, new_session, session_id,
+        data = await crud.update(ModuleID.sessions, RoleEnum.emsp, new_session.dict(), session_id,
                                  auth_token=auth_token, country_code=country_code,
                                  party_id=party_id, version=VersionNumber.v_2_2_1)
 

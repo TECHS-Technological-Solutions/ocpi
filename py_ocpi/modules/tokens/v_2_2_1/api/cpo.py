@@ -45,7 +45,7 @@ async def add_token(country_code: CiString(2), party_id: CiString(3), token_uid:
                     crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
-        data = await crud.create(ModuleID.tokens, RoleEnum.cpo, token,
+        data = await crud.create(ModuleID.tokens, RoleEnum.cpo, token.dict(),
                                  auth_token=auth_token,
                                  country_code=country_code, party_id=party_id,
                                  token_uid=token_uid, token_type=token_type,
@@ -67,7 +67,7 @@ async def update_token(country_code: CiString(2), party_id: CiString(3), token_u
                        crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
     try:
-        data = await crud.update(ModuleID.tokens, RoleEnum.cpo, token, token_uid,
+        data = await crud.update(ModuleID.tokens, RoleEnum.cpo, token.dict(), token_uid,
                                  auth_token=auth_token, country_code=country_code,
                                  party_id=party_id, token_type=token_type,
                                  version=VersionNumber.v_2_2_1)
