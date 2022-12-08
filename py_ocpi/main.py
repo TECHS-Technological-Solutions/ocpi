@@ -12,7 +12,7 @@ from py_ocpi.core.enums import RoleEnum
 from py_ocpi.core.config import settings
 from py_ocpi.core.data_types import URL
 from py_ocpi.core.exceptions import AuthorizationOCPIError
-from py_ocpi.core.push import router as push_router
+from py_ocpi.core.push import http_router as http_push_router, websocket_router as websocket_push_router
 from py_ocpi.routers import v_2_2_1_cpo_router, v_2_2_1_emsp_router
 
 
@@ -33,7 +33,8 @@ def get_application(
     roles: List[RoleEnum],
     crud: Any,
     adapter: Any,
-    push: bool = True,
+    http_push: bool = False,
+    websocket_push: bool = False,
 ) -> FastAPI:
     _app = FastAPI(
         title=settings.PROJECT_NAME,
@@ -55,9 +56,15 @@ def get_application(
         prefix=f'/{settings.OCPI_PREFIX}',
     )
 
-    if push:
+    if http_push:
         _app.include_router(
-            push_router,
+            http_push_router,
+            prefix=f'/{settings.PUSH_PREFIX}',
+        )
+
+    if websocket_push:
+        _app.include_router(
+            websocket_push_router,
             prefix=f'/{settings.PUSH_PREFIX}',
         )
 

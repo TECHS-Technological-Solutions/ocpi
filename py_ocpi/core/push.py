@@ -1,5 +1,5 @@
 import httpx
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, WebSocket, Depends
 
 from py_ocpi.core.adapter import Adapter
 from py_ocpi.core.crud import Crud
@@ -10,11 +10,31 @@ from py_ocpi.core.enums import ModuleID, RoleEnum
 from py_ocpi.core.config import settings
 from py_ocpi.modules.versions.enums import InterfaceRole, VersionNumber
 
-router = APIRouter(
-)
+
+def client_url(module_id: ModuleID, object_id: str, base_url: str) -> str:
+    if module_id == ModuleID.cdrs:
+        return base_url
+    return f'{base_url}/{settings.COUNTRY_CODE}/{settings.PARTY_ID}/{object_id}'
 
 
-async def push_object(
+def client_method(module_id: ModuleID) -> str:
+    if module_id == ModuleID.cdrs:
+        return 'POST'
+    return 'PUT'
+
+
+def request_data(module_id: ModuleID, object_data: dict, adapter: Adapter) -> dict:
+    data = {}
+    if module_id == ModuleID.locations:
+        data = adapter.location_adapter(object_data).dict()
+    elif module_id == ModuleID.sessions:
+        data = adapter.session_adapter(object_data).dict()
+    elif module_id == ModuleID.cdrs:
+        data = adapter.cdr_adapter(object_data).dict()
+    return data
+
+
+async def send_push_request(
     object_id: str,
     object_data: dict,
     module_id: ModuleID,
@@ -22,30 +42,23 @@ async def push_object(
     emsp_auth_token: str,
     endpoints: list,
 ):
-    push_data = {}
-    if module_id == ModuleID.locations:
-        push_data = adapter.location_adapter(object_data).dict()
-    elif module_id == ModuleID.sessions:
-        push_data = adapter.session_adapter(object_data).dict()
+    data = request_data(module_id, object_data, adapter)
 
-    push_url = ''
+    base_url = ''
     for endpoint in endpoints:
         if endpoint['identifier'] == module_id and endpoint['role'] == InterfaceRole.receiver:
-            push_url = endpoint['url']
+            base_url = endpoint['url']
 
     # push object to emsp
     async with httpx.AsyncClient() as client:
-        response = await client.put(f'{push_url}/{settings.COUNTRY_CODE}/{settings.PARTY_ID}/{object_id}',
-                                    headers={'authorization': emsp_auth_token}, json=push_data)
+        request = client.build_request(client_method(module_id), client_url(module_id, object_id, base_url),
+                                       headers={'authorization': emsp_auth_token}, json=data)
+        response = await client.send(request)
         return response
 
 
-# WARNING it's advised not to expose this endpoint
-@router.get("/{version}", status_code=200, include_in_schema=False, response_model=PushResponse)
-async def push_to_emsp(request: Request, version: VersionNumber, push: Push,
-                       crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
-    auth_token = get_auth_token(request)
-
+async def push_object(version: VersionNumber, push: Push, crud: Crud, adapter: Adapter,
+                      auth_token: str = None) -> PushResponse:
     receiver_responses = []
     for receiver in push.receivers:
         # get emsp endpoints
@@ -57,8 +70,42 @@ async def push_to_emsp(request: Request, version: VersionNumber, push: Push,
 
         # get object data
         data = await crud.get(push.module_id, RoleEnum.cpo, push.object_id, auth_token=auth_token, version=version)
-        response = await push_object(push.object_id, data, push.module_id, adapter, emsp_auth_token, endpoints)
-        receiver_responses.append(ReceiverResponse(receiver.endpoints_url, status_code=response.status_code,
-                                                   response=response.json()))
+        response = await send_push_request(push.object_id, data, push.module_id, adapter, emsp_auth_token, endpoints)
+        if push.module_id == ModuleID.cdrs:
+            receiver_responses.append(ReceiverResponse(receiver.endpoints_url, status_code=response.status_code,
+                                                       response=response.headers))
+        else:
+            receiver_responses.append(ReceiverResponse(receiver.endpoints_url, status_code=response.status_code,
+                                                       response=response.json()))
 
     return PushResponse(receiver_responses=receiver_responses)
+
+
+http_router = APIRouter()
+
+
+# WARNING it's advised not to expose this endpoint
+@http_router.get("/{version}", status_code=200, include_in_schema=False, response_model=PushResponse)
+async def http_push_to_emsp(request: Request, version: VersionNumber, push: Push,
+                            crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
+    auth_token = get_auth_token(request)
+
+    return await push_object(version, push, crud, adapter, auth_token)
+
+
+websocket_router = APIRouter()
+
+
+# WARNING it's advised not to expose this endpoint
+@websocket_router.websocket("/ws/{version}")
+async def websocket_push_to_emsp(websocket: WebSocket, version: VersionNumber,
+                                 crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
+
+    auth_token = get_auth_token(websocket)
+    await websocket.accept()
+
+    while True:
+        data = await websocket.receive_json()
+        push = Push(**data)
+        push_response = await push_object(version, push, crud, adapter, auth_token)
+        await websocket.send_json(push_response.dict())
