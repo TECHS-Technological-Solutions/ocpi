@@ -11,7 +11,7 @@ from py_ocpi.core.dependencies import get_crud, get_adapter, get_versions
 from py_ocpi.core.enums import RoleEnum
 from py_ocpi.core.config import settings
 from py_ocpi.core.data_types import URL
-from py_ocpi.core.exceptions import AuthorizationOCPIError
+from py_ocpi.core.exceptions import AuthorizationOCPIError, NotFoundOCPIError
 from py_ocpi.core.push import http_router as http_push_router, websocket_router as websocket_push_router
 from py_ocpi.routers import v_2_2_1_cpo_router, v_2_2_1_emsp_router
 
@@ -25,6 +25,8 @@ class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
             response = await call_next(request)
         except AuthorizationOCPIError as e:
             raise HTTPException(403, str(e)) from e
+        except NotFoundOCPIError as e:
+            raise HTTPException(404, str(e)) from e
         return response
 
 

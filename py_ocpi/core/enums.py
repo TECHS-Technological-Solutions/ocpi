@@ -34,3 +34,5 @@ class Action(str, Enum):
     send_command = 'SendCommand'
     # used for getting client authentication token
     get_client_token = 'GetClientToken'  # nosec
+    # used for authorizing a token
+    authorize_token = 'AuthorizeToken'  # nosec

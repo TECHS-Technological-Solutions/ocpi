@@ -38,5 +38,5 @@ async def get_list(response: Response, filters: dict, module: ModuleID, role: Ro
 
 
 def partially_update_attributes(instance: BaseModel, attributes: dict):
-    for key, value in attributes.keys():
+    for key, value in attributes.items():
         setattr(instance, key, value)
