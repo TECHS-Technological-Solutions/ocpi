@@ -31,6 +31,8 @@ def request_data(module_id: ModuleID, object_data: dict, adapter: Adapter) -> di
         data = adapter.session_adapter(object_data).dict()
     elif module_id == ModuleID.cdrs:
         data = adapter.cdr_adapter(object_data).dict()
+    elif module_id == ModuleID.tariffs:
+        data = adapter.tariff_adapter(object_data).dict()
     return data
 
 
