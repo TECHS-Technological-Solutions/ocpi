@@ -64,6 +64,18 @@ class Adapter:
         """
 
     @classmethod
+    def tariff_adapter(cls, data: dict, version: VersionNumber = VersionNumber.latest):
+        """Adapt the data to OCPI Tariff schema
+
+        Args:
+            data (dict): The object details
+            version (VersionNumber, optional): The version number of the caller OCPI module
+
+        Returns:
+            Tariff: The object data in proper OCPI schema
+        """
+
+    @classmethod
     def commands_adapter(cls, data: dict, version: VersionNumber = VersionNumber.latest):
         """Adapt the data to OCPI Command schema
 
