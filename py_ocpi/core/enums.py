@@ -30,4 +30,7 @@ class ModuleID(str, Enum):
 
 
 class Action(str, Enum):
-    send_command = 'Send Command'
+    # used for requesting to send an OCPP command to a Chargepoint
+    send_command = 'SendCommand'
+    # used for getting client authentication token
+    get_client_token = 'GetClientToken'  # nosec

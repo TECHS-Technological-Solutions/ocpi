@@ -6,13 +6,17 @@ from fastapi.testclient import TestClient
 from py_ocpi import get_application
 from py_ocpi.core import enums
 from py_ocpi.modules.tokens.v_2_2_1.enums import TokenType, WhitelistType
-from py_ocpi.modules.commands.v_2_2_1.enums import CommandType, CommandResponseType
-from py_ocpi.modules.commands.v_2_2_1.schemas import CommandResponse
+from py_ocpi.modules.commands.v_2_2_1.enums import CommandType, CommandResponseType, CommandResultType
+from py_ocpi.modules.commands.v_2_2_1.schemas import CommandResponse, CommandResult
 from py_ocpi.modules.versions.enums import VersionNumber
 
 COMMAND_RESPONSE = {
     'result': CommandResponseType.accepted,
     'timeout': 30
+}
+
+COMMAND_RESULT = {
+    'result': CommandResultType.accepted,
 }
 
 
@@ -23,18 +27,26 @@ class Crud:
                  *args, data: dict = None, **kwargs) -> dict:
         return COMMAND_RESPONSE
 
+    @classmethod
+    async def get(cls, module: enums.ModuleID, role: enums.RoleEnum, id, *args, **kwargs) -> dict:
+        return COMMAND_RESULT
+
 
 class Adapter:
     @classmethod
-    def commands_adapter(cls, data, version: VersionNumber = VersionNumber.latest):
+    def command_response_adapter(cls, data, version: VersionNumber = VersionNumber.latest):
         return CommandResponse(**data)
+
+    @classmethod
+    def command_result_adapter(cls, data, version: VersionNumber = VersionNumber.latest):
+        return CommandResult(**data)
 
 
 def test_receive_command_start_session():
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
     data = {
-        'response_url': 'https://www.w3.org/Addressing/URL/uri-spec.html',
+        'response_url': 'https://dummy.restapiexample.com/api/v1/create',
         'token': {
             'country_code': 'us',
             'party_id': 'AAA',
@@ -62,7 +74,7 @@ def test_receive_command_stop_session():
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
     data = {
-        'response_url': 'https://www.w3.org/Addressing/URL/uri-spec.html',
+        'response_url': 'https://dummy.restapiexample.com/api/v1/create',
         'session_id': str(uuid4())
     }
 
@@ -78,7 +90,7 @@ def test_receive_command_reserve_now():
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
     data = {
-        'response_url': 'https://www.w3.org/Addressing/URL/uri-spec.html',
+        'response_url': 'https://dummy.restapiexample.com/api/v1/create',
         'token': {
             'country_code': 'us',
             'party_id': 'AAA',

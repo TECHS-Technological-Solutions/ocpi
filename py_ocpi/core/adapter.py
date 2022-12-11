@@ -76,15 +76,27 @@ class Adapter:
         """
 
     @classmethod
-    def commands_adapter(cls, data: dict, version: VersionNumber = VersionNumber.latest):
-        """Adapt the data to OCPI Command schema
+    def command_response_adapter(cls, data: dict, version: VersionNumber = VersionNumber.latest):
+        """Adapt the data to OCPI CommandResponse schema
 
         Args:
             data (dict): The object details
             version (VersionNumber, optional): The version number of the caller OCPI module
 
         Returns:
-            Command: The object data in proper OCPI schema
+            CommandResponse: The object data in proper OCPI schema
+        """
+
+    @classmethod
+    def command_result_adapter(cls, data: dict, version: VersionNumber = VersionNumber.latest):
+        """Adapt the data to OCPI CommandResult schema
+
+        Args:
+            data (dict): The object details
+            version (VersionNumber, optional): The version number of the caller OCPI module
+
+        Returns:
+            CommandResult: The object data in proper OCPI schema
         """
 
     @classmethod
