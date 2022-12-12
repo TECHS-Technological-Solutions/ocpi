@@ -33,6 +33,8 @@ def request_data(module_id: ModuleID, object_data: dict, adapter: Adapter) -> di
         data = adapter.cdr_adapter(object_data).dict()
     elif module_id == ModuleID.tariffs:
         data = adapter.tariff_adapter(object_data).dict()
+    elif module_id == ModuleID.tokens:
+        data = adapter.token_adapter(object_data).dict()
     return data
 
 
@@ -41,7 +43,7 @@ async def send_push_request(
     object_data: dict,
     module_id: ModuleID,
     adapter: Adapter,
-    emsp_auth_token: str,
+    client_auth_token: str,
     endpoints: list,
 ):
     data = request_data(module_id, object_data, adapter)
@@ -51,10 +53,10 @@ async def send_push_request(
         if endpoint['identifier'] == module_id and endpoint['role'] == InterfaceRole.receiver:
             base_url = endpoint['url']
 
-    # push object to emsp
+    # push object to client
     async with httpx.AsyncClient() as client:
         request = client.build_request(client_method(module_id), client_url(module_id, object_id, base_url),
-                                       headers={'authorization': emsp_auth_token}, json=data)
+                                       headers={'authorization': client_auth_token}, json=data)
         response = await client.send(request)
         return response
 
@@ -63,16 +65,22 @@ async def push_object(version: VersionNumber, push: Push, crud: Crud, adapter: A
                       auth_token: str = None) -> PushResponse:
     receiver_responses = []
     for receiver in push.receivers:
-        # get emsp endpoints
-        emsp_auth_token = f'Token {receiver.auth_token}'
+        # get client endpoints
+        client_auth_token = f'Token {receiver.auth_token}'
         async with httpx.AsyncClient() as client:
             response = await client.get(receiver.endpoints_url,
-                                        headers={'authorization': emsp_auth_token})
+                                        headers={'authorization': client_auth_token})
             endpoints = response.json()['data'][0]['endpoints']
 
         # get object data
-        data = await crud.get(push.module_id, RoleEnum.cpo, push.object_id, auth_token=auth_token, version=version)
-        response = await send_push_request(push.object_id, data, push.module_id, adapter, emsp_auth_token, endpoints)
+        if push.module_id == ModuleID.tokens:
+            data = await crud.get(push.module_id, RoleEnum.emsp, push.object_id,
+                                  auth_token=auth_token, version=version)
+        else:
+            data = await crud.get(push.module_id, RoleEnum.cpo, push.object_id,
+                                  auth_token=auth_token, version=version)
+
+        response = await send_push_request(push.object_id, data, push.module_id, adapter, client_auth_token, endpoints)
         if push.module_id == ModuleID.cdrs:
             receiver_responses.append(ReceiverResponse(receiver.endpoints_url, status_code=response.status_code,
                                                        response=response.headers))
@@ -88,8 +96,8 @@ http_router = APIRouter()
 
 # WARNING it's advised not to expose this endpoint
 @http_router.get("/{version}", status_code=200, include_in_schema=False, response_model=PushResponse)
-async def http_push_to_emsp(request: Request, version: VersionNumber, push: Push,
-                            crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
+async def http_push_to_client(request: Request, version: VersionNumber, push: Push,
+                              crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
 
     return await push_object(version, push, crud, adapter, auth_token)
@@ -100,8 +108,8 @@ websocket_router = APIRouter()
 
 # WARNING it's advised not to expose this endpoint
 @websocket_router.websocket("/ws/{version}")
-async def websocket_push_to_emsp(websocket: WebSocket, version: VersionNumber,
-                                 crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
+async def websocket_push_to_client(websocket: WebSocket, version: VersionNumber,
+                                   crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
 
     auth_token = get_auth_token(websocket)
     await websocket.accept()

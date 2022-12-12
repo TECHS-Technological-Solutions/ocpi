@@ -42,7 +42,7 @@ class Token(BaseModel):
     last_updated: DateTime
 
 
-class TokenUpdate(BaseModel):
+class TokenPartialUpdate(BaseModel):
     country_code: Optional[CiString(2)]
     party_id: Optional[CiString(3)]
     uid: Optional[CiString(36)]
@@ -56,7 +56,7 @@ class TokenUpdate(BaseModel):
     language: Optional[String(2)]
     default_profile_type: Optional[ProfileType]
     energy_contract: Optional[EnergyContract]
-    last_updated: DateTime
+    last_updated: Optional[DateTime]
 
 
 class AuthorizationInfo(BaseModel):

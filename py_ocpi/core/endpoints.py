@@ -95,6 +95,13 @@ ENDPOINTS = {
             url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/emsp'
                     f'/{VersionNumber.v_2_2_1}/{ModuleID.commands}')
         ),
+        # tokens
+        Endpoint(
+            identifier=ModuleID.tokens,
+            role=InterfaceRole.sender,
+            url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/emsp'
+                    f'/{VersionNumber.v_2_2_1}/{ModuleID.tokens}')
+        ),
     ]
 
 }
