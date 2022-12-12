@@ -19,6 +19,7 @@ class Crud:
             party_id (CiString(3)):  The requested party ID
             country_code (CiString(2)): The requested Country code
             token_type (TokenType): The token type
+            command (CommandType): The command type of the OCPP command
 
         Returns:
             Any: The object data
@@ -111,6 +112,7 @@ class Crud:
             role (RoleEnum): The role of the caller
             action (Action): The action type
             data (dict): The data required for the action
+            command (CommandType): The command type of the OCPP command
 
         Keyword Args:
             auth_token (str): The authentication token used by third party
