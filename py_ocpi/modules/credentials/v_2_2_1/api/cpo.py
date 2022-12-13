@@ -53,45 +53,46 @@ async def post_credentials(request: Request, credentials: Credentials,
             response_versions = await client.get(credentials.url,
                                                  headers={'authorization': authorization_token})
 
-        if response_versions.status_code == fastapistatus.HTTP_200_OK:
-            version_url = None
-            versions = response_versions.json()['data']
+            if response_versions.status_code == fastapistatus.HTTP_200_OK:
+                version_url = None
+                versions = response_versions.json()['data']
 
-            for version in versions:
-                if version['version'] == VersionNumber.v_2_2_1:
-                    version_url = version['url']
+                for version in versions:
+                    if version['version'] == VersionNumber.v_2_2_1:
+                        version_url = version['url']
 
-            if not version_url:
-                return OCPIResponse(
-                    data=[],
-                    **status.OCPI_3002_UNSUPPORTED_VERSION,
-                )
-
-            async with httpx.AsyncClient() as client:
-                authorization_token = f'Token {credentials_client_token}'
-                response_versions = await client.get(credentials.url,
-                                                     headers={'authorization': authorization_token})
+                if not version_url:
+                    return OCPIResponse(
+                        data=[],
+                        **status.OCPI_3002_UNSUPPORTED_VERSION,
+                    )
 
                 response_endpoints = await client.get(version_url,
                                                       headers={'authorization': authorization_token})
+                print(version_url)
+                print(response_endpoints.json())
+                if response_endpoints.status_code == fastapistatus.HTTP_200_OK:
+                    # Store client credentials and generate new credentials for sender
+                    endpoints = response_endpoints.json()['data'][0]
+                    new_credentials = await crud.create(
+                        ModuleID.credentials_and_registration, RoleEnum.cpo,
+                        {
+                            "credentials": credentials.dict(),
+                            "endpoints": endpoints
+                        },
+                        auth_token=auth_token,
+                        version=VersionNumber.v_2_2_1
+                    )
 
-            if response_endpoints.status_code == fastapistatus.HTTP_200_OK:
-                # Store client credentials and generate new credentials for sender
-                endpoints = response_endpoints.json()['data'][0]
-                new_credentials = await crud.create(
-                    ModuleID.credentials_and_registration, RoleEnum.cpo,
-                    {
-                        "credentials": credentials.dict(),
-                        "endpoints": endpoints
-                    },
-                    auth_token=auth_token,
-                    version=VersionNumber.v_2_2_1
-                )
+                    return OCPIResponse(
+                        data=[adapter.credentials_adapter(new_credentials).dict()],
+                        **status.OCPI_1000_GENERIC_SUCESS_CODE
+                    )
 
-                return OCPIResponse(
-                    data=[adapter.credentials_adapter(new_credentials).dict()],
-                    **status.OCPI_1000_GENERIC_SUCESS_CODE
-                )
+        return OCPIResponse(
+            data=[],
+            **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
+        )
 
     except ValidationError:
         return OCPIResponse(
@@ -116,43 +117,44 @@ async def update_credentials(request: Request, credentials: Credentials,
         async with httpx.AsyncClient() as client:
             authorization_token = f'Token {credentials_client_token}'
             response_versions = await client.get(credentials.url, headers={'authorization': authorization_token})
-        if response_versions.status_code == fastapistatus.HTTP_200_OK:
-            version_url = None
-            versions = response_versions.json()['data']
 
-            for version in versions:
-                if version['version'] == VersionNumber.v_2_2_1:
-                    version_url = version['url']
+            if response_versions.status_code == fastapistatus.HTTP_200_OK:
+                version_url = None
+                versions = response_versions.json()['data']
 
-            if not version_url:
-                return OCPIResponse(
-                    data=[],
-                    **status.OCPI_3002_UNSUPPORTED_VERSION,
-                )
+                for version in versions:
+                    if version['version'] == VersionNumber.v_2_2_1:
+                        version_url = version['url']
 
-            async with httpx.AsyncClient() as client:
-                authorization_token = f'Token {credentials_client_token}'
-                response_versions = await client.get(credentials.url,
-                                                     headers={'authorization': authorization_token})
+                if not version_url:
+                    return OCPIResponse(
+                        data=[],
+                        **status.OCPI_3002_UNSUPPORTED_VERSION,
+                    )
 
                 response_endpoints = await client.get(version_url,
                                                       headers={'authorization': authorization_token})
 
-            if response_endpoints.status_code == fastapistatus.HTTP_200_OK:
-                # Update server credentials to access client's system and generate new credentials token
-                endpoints = response_endpoints.json()['data'][0]
-                new_credentials = await crud.update(ModuleID.credentials_and_registration, RoleEnum.cpo,
-                                                    {
-                                                        "credentials": credentials.dict(),
-                                                        "endpoints": endpoints
-                                                    },
-                                                    auth_token=auth_token,
-                                                    version=VersionNumber.v_2_2_1)
+                if response_endpoints.status_code == fastapistatus.HTTP_200_OK:
+                    # Update server credentials to access client's system and generate new credentials token
+                    endpoints = response_endpoints.json()['data'][0]
+                    new_credentials = await crud.update(ModuleID.credentials_and_registration, RoleEnum.cpo,
+                                                        {
+                                                            "credentials": credentials.dict(),
+                                                            "endpoints": endpoints
+                                                        },
+                                                        auth_token=auth_token,
+                                                        version=VersionNumber.v_2_2_1)
 
-                return OCPIResponse(
-                    data=[adapter.credentials_adapter(new_credentials).dict()],
-                    **status.OCPI_1000_GENERIC_SUCESS_CODE
-                )
+                    return OCPIResponse(
+                        data=[adapter.credentials_adapter(new_credentials).dict()],
+                        **status.OCPI_1000_GENERIC_SUCESS_CODE
+                    )
+
+        return OCPIResponse(
+            data=[],
+            **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
+        )
 
     except ValidationError:
         return OCPIResponse(
