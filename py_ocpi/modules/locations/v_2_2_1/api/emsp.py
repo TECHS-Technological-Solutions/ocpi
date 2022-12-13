@@ -122,13 +122,13 @@ async def add_or_update_evse(request: Request, country_code: CiString(2), party_
                                   country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
         old_location = adapter.location_adapter(old_data)
 
-        is_new_evse = False
+        is_new_evse = True
         for old_evse in old_location.evses:
             if old_evse.uid == evse_uid:
-                is_new_evse = True
+                is_new_evse = False
                 break
         new_location = old_location
-        if is_new_evse:
+        if not is_new_evse:
             new_location.evses.remove(old_evse)
         new_location.evses.append(evse)
 
@@ -158,17 +158,20 @@ async def add_or_update_connector(request: Request, country_code: CiString(2), p
                                   country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
         old_location = adapter.location_adapter(old_data)
 
-        is_new_connector = False
+        is_new_connector = True
         for old_evse in old_location.evses:
             if old_evse.uid == evse_uid:
                 for old_onnector in old_evse.connectors:
                     if old_onnector.id == connector_id:
-                        is_new_connector = True
+                        is_new_connector = False
                         break
         new_location = old_location
-        if is_new_connector:
-            new_location.evses.connectors.remove(old_onnector)
-        new_location.evses.connectors.append(connector)
+        new_location.evses.remove(old_evse)
+        if not is_new_connector:
+            old_evse.connectors.remove(old_onnector)
+        new_evse = old_evse
+        new_evse.connectors.append(connector)
+        new_location.evses.append(new_evse)
 
         await crud.update(ModuleID.locations, RoleEnum.emsp, new_location.dict(), location_id,
                           auth_token=auth_token, country_code=country_code,

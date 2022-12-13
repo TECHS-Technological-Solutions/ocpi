@@ -23,7 +23,7 @@ CREDENTIALS_TOKEN_GET = {
 
 CREDENTIALS_TOKEN_CREATE = {
     'token': str(uuid4()),
-    'url': 'url',
+    'url': 'versions_url',
     'roles': [{
         'role': enums.RoleEnum.cpo,
         'business_details': {
