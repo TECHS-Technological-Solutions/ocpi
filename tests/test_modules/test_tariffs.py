@@ -94,7 +94,6 @@ def test_emsp_add_tariff_v_2_2_1():
 def test_emsp_delete_tariff_v_2_2_1():
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
 
-    patch_data = {'id': str(uuid4())}
     client = TestClient(app)
     response = client.delete(f'/ocpi/emsp/2.2.1/tariffs/{settings.COUNTRY_CODE}/{settings.PARTY_ID}'
                              f'/{TARIFFS[0]["id"]}')

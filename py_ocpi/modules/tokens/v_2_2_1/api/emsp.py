@@ -58,8 +58,8 @@ async def authorize_token(request: Request, response: Response,
             'token_type': token_type,
             'location_reference': location_reference
         }
-        authroization_result = crud.do(ModuleID.tokens, RoleEnum.emsp, Action.authorize_token, data=data,
-                                       auth_token=auth_token)
+        authroization_result = await crud.do(ModuleID.tokens, RoleEnum.emsp, Action.authorize_token, data=data,
+                                             auth_token=auth_token)
 
         # when the token information is not enough
         if not authroization_result:

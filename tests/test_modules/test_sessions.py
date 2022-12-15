@@ -87,7 +87,7 @@ class Adapter:
         return ChargingPreferences(**data)
 
 
-def test_get_sessions():
+def test_cpo_get_sessions_v_2_2_1():
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
     client = TestClient(app)
@@ -98,7 +98,7 @@ def test_get_sessions():
     assert response.json()['data'][0]['id'] == SESSIONS[0]["id"]
 
 
-def test_set_charging_preference():
+def test_cpo_set_charging_preference_v_2_2_1():
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
     client = TestClient(app)

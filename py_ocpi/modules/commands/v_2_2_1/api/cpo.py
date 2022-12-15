@@ -75,6 +75,7 @@ async def receive_command(request: Request, command: CommandType, data: dict, ba
             status_code=fastapistatus.HTTP_422_UNPROCESSABLE_ENTITY,
             content={'detail': jsonable_encoder(exc.errors())}
         )
+
     try:
         if hasattr(command_data, 'location_id'):
             await crud.get(ModuleID.locations, RoleEnum.cpo, command_data.location_id, auth_token=auth_token,
@@ -95,6 +96,6 @@ async def receive_command(request: Request, command: CommandType, data: dict, ba
     except NotFoundOCPIError:
         command_response = CommandResponse(result=CommandResponseType.rejected, timeout=0)
         return OCPIResponse(
-            data=[adapter.command_response_adapter(command_response).dict()],
+            data=[command_response.dict()],
             **status.OCPI_2003_UNKNOWN_LOCATION,
         )
