@@ -46,7 +46,7 @@ async def add_cdr(request: Request, response: Response, cdr: Cdr,
 
         cdr_data = adapter.cdr_adapter(data)
         cdr_url = (f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/emsp'
-                   f'/{VersionNumber.v_2_2_1}/{ModuleID.cdrs}/cdr_data.id')
+                   f'/{VersionNumber.v_2_2_1}/{ModuleID.cdrs}/{cdr_data.id}')
         response.headers.append('Location', cdr_url)
 
         return OCPIResponse(
