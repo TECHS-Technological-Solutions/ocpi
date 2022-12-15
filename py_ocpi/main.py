@@ -1,6 +1,7 @@
 from typing import Any, List
 
 from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
@@ -31,9 +32,11 @@ class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
         except NotFoundOCPIError as e:
             raise HTTPException(404, str(e)) from e
         except ValidationError:
-            return OCPIResponse(
-                data=[],
-                **status.OCPI_3000_GENERIC_SERVER_ERROR,
+            response = JSONResponse(
+                OCPIResponse(
+                    data=[],
+                    **status.OCPI_3000_GENERIC_SERVER_ERROR,
+                ).dict()
             )
         return response
 
