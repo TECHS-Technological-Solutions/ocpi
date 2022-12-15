@@ -21,18 +21,13 @@ router = APIRouter(
 async def get_tariff(request: Request, country_code: CiString(2), party_id: CiString(3), tariff_id: CiString(36),
                      crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
-    try:
-        data = await crud.get(ModuleID.tariffs, RoleEnum.emsp, tariff_id, auth_token=auth_token,
-                              country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
-        return OCPIResponse(
-            data=[adapter.tariff_adapter(data, VersionNumber.v_2_2_1).dict()],
-            **status.OCPI_1000_GENERIC_SUCESS_CODE,
-        )
-    except ValidationError:
-        return OCPIResponse(
-            data=[],
-            **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
-        )
+
+    data = await crud.get(ModuleID.tariffs, RoleEnum.emsp, tariff_id, auth_token=auth_token,
+                          country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
+    return OCPIResponse(
+        data=[adapter.tariff_adapter(data, VersionNumber.v_2_2_1).dict()],
+        **status.OCPI_1000_GENERIC_SUCESS_CODE,
+    )
 
 
 @router.put("/{country_code}/{party_id}/{tariff_id}", response_model=OCPIResponse)
@@ -40,44 +35,34 @@ async def add_or_update_tariff(request: Request, country_code: CiString(2), part
                                tariff_id: CiString(36), tariff: Tariff,
                                crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
-    try:
-        data = await crud.get(ModuleID.tariffs, RoleEnum.emsp, tariff_id, auth_token=auth_token,
-                              country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
-        if data:
-            data = await crud.update(ModuleID.tariffs, RoleEnum.emsp, tariff.dict(), tariff_id,
-                                     auth_token=auth_token, country_code=country_code,
-                                     party_id=party_id, version=VersionNumber.v_2_2_1)
-        else:
-            data = await crud.create(ModuleID.tariffs, RoleEnum.emsp, tariff.dict(),
-                                     auth_token=auth_token, country_code=country_code,
-                                     party_id=party_id, version=VersionNumber.v_2_2_1)
 
-        return OCPIResponse(
-            data=[adapter.tariff_adapter(data).dict()],
-            **status.OCPI_1000_GENERIC_SUCESS_CODE,
-        )
-    except ValidationError:
-        return OCPIResponse(
-            data=[],
-            **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
-        )
+    data = await crud.get(ModuleID.tariffs, RoleEnum.emsp, tariff_id, auth_token=auth_token,
+                          country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
+    if data:
+        data = await crud.update(ModuleID.tariffs, RoleEnum.emsp, tariff.dict(), tariff_id,
+                                 auth_token=auth_token, country_code=country_code,
+                                 party_id=party_id, version=VersionNumber.v_2_2_1)
+    else:
+        data = await crud.create(ModuleID.tariffs, RoleEnum.emsp, tariff.dict(),
+                                 auth_token=auth_token, country_code=country_code,
+                                 party_id=party_id, version=VersionNumber.v_2_2_1)
+
+    return OCPIResponse(
+        data=[adapter.tariff_adapter(data).dict()],
+        **status.OCPI_1000_GENERIC_SUCESS_CODE,
+    )
 
 
 @router.delete("/{country_code}/{party_id}/{tariff_id}", response_model=OCPIResponse)
 async def delete_tariff(request: Request, country_code: CiString(2), party_id: CiString(3), tariff_id: CiString(36),
                         crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
-    try:
-        await crud.delete(ModuleID.tariffs, RoleEnum.emsp, tariff_id,
-                          auth_token=auth_token, country_code=country_code,
-                          party_id=party_id, version=VersionNumber.v_2_2_1)
 
-        return OCPIResponse(
-            data=[],
-            **status.OCPI_1000_GENERIC_SUCESS_CODE,
-        )
-    except ValidationError:
-        return OCPIResponse(
-            data=[],
-            **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
-        )
+    await crud.delete(ModuleID.tariffs, RoleEnum.emsp, tariff_id,
+                      auth_token=auth_token, country_code=country_code,
+                      party_id=party_id, version=VersionNumber.v_2_2_1)
+
+    return OCPIResponse(
+        data=[],
+        **status.OCPI_1000_GENERIC_SUCESS_CODE,
+    )

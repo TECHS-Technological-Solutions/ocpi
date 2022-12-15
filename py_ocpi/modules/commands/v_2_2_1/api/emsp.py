@@ -17,19 +17,14 @@ router = APIRouter(
 
 
 @router.post("/{uid}", response_model=OCPIResponse)
-async def receive_command(request: Request, uid: str, command_result: CommandResult,
-                          crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
+async def receive_command_result(request: Request, uid: str, command_result: CommandResult,
+                                 crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
 
-    try:
-        await crud.update(ModuleID.commands, RoleEnum.emsp, command_result.dict(), uid,
-                          auth_token=auth_token, version=VersionNumber.v_2_2_1)
-        return OCPIResponse(
-            data=[],
-            **status.OCPI_1000_GENERIC_SUCESS_CODE,
-        )
-    except ValidationError:
-        return OCPIResponse(
-            data=[],
-            **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
-        )
+    await crud.update(ModuleID.commands, RoleEnum.emsp, command_result.dict(), uid,
+                      auth_token=auth_token, version=VersionNumber.v_2_2_1)
+
+    return OCPIResponse(
+        data=[],
+        **status.OCPI_1000_GENERIC_SUCESS_CODE,
+    )

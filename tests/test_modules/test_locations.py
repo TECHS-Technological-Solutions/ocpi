@@ -215,7 +215,7 @@ class Adapter:
         return Location(**data)
 
 
-def test_get_cpo_locations_v_2_2_1():
+def test_cpo_get_locations_v_2_2_1():
 
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
@@ -227,7 +227,7 @@ def test_get_cpo_locations_v_2_2_1():
     assert response.json()['data'][0]['id'] == LOCATIONS[0]["id"]
 
 
-def test_get_cpo_location_v_2_2_1():
+def test_cpo_get_location_v_2_2_1():
 
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
@@ -238,7 +238,7 @@ def test_get_cpo_location_v_2_2_1():
     assert response.json()['data'][0]['id'] == LOCATIONS[0]["id"]
 
 
-def test_get_cpo_evse_v_2_2_1():
+def test_cpo_get_evse_v_2_2_1():
 
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
@@ -250,7 +250,7 @@ def test_get_cpo_evse_v_2_2_1():
     assert response.json()['data'][0]['uid'] == LOCATIONS[0]["evses"][0]["uid"]
 
 
-def test_get_cpo_connector_v_2_2_1():
+def test_cpo_get_connector_v_2_2_1():
 
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
@@ -263,7 +263,7 @@ def test_get_cpo_connector_v_2_2_1():
     assert response.json()['data'][0]['id'] == LOCATIONS[0]["evses"][0]["connectors"][0]["id"]
 
 
-def test_get_emsp_location_v_2_2_1():
+def test_emsp_get_location_v_2_2_1():
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
 
     client = TestClient(app)
@@ -274,7 +274,7 @@ def test_get_emsp_location_v_2_2_1():
     assert response.json()['data'][0]['id'] == LOCATIONS[0]["id"]
 
 
-def test_get_emsp_evse_v_2_2_1():
+def test_emsp_get_evse_v_2_2_1():
 
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
 
@@ -287,7 +287,7 @@ def test_get_emsp_evse_v_2_2_1():
     assert response.json()['data'][0]['uid'] == LOCATIONS[0]["evses"][0]["uid"]
 
 
-def test_get_emsp_connector_v_2_2_1():
+def test_emsp_get_connector_v_2_2_1():
 
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
 
@@ -301,7 +301,7 @@ def test_get_emsp_connector_v_2_2_1():
     assert response.json()['data'][0]['id'] == LOCATIONS[0]["evses"][0]["connectors"][0]["id"]
 
 
-def test_add_emsp_location_v_2_2_1():
+def test_emsp_add_location_v_2_2_1():
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
 
     client = TestClient(app)
@@ -312,7 +312,7 @@ def test_add_emsp_location_v_2_2_1():
     assert response.json()['data'][0]['id'] == LOCATIONS[0]["id"]
 
 
-def test_add_emsp_evse_v_2_2_1():
+def test_emsp_add_evse_v_2_2_1():
 
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
 
@@ -325,7 +325,7 @@ def test_add_emsp_evse_v_2_2_1():
     assert response.json()['data'][0]['uid'] == LOCATIONS[0]["evses"][0]["uid"]
 
 
-def test_add_emsp_connector_v_2_2_1():
+def test_emsp_add_connector_v_2_2_1():
 
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
 
@@ -340,7 +340,7 @@ def test_add_emsp_connector_v_2_2_1():
     assert response.json()['data'][0]['id'] == LOCATIONS[0]["evses"][0]["connectors"][0]["id"]
 
 
-def test_patch_emsp_location_v_2_2_1():
+def test_emsp_patch_location_v_2_2_1():
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
 
     patch_data = {'id': str(uuid4())}
@@ -352,7 +352,7 @@ def test_patch_emsp_location_v_2_2_1():
     assert response.json()['data'][0]['id'] == patch_data["id"]
 
 
-def test_patch_emsp_evse_v_2_2_1():
+def test_emsp_patch_evse_v_2_2_1():
 
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
 
@@ -366,7 +366,7 @@ def test_patch_emsp_evse_v_2_2_1():
     assert response.json()['data'][0]['uid'] == patch_data["uid"]
 
 
-def test_patch_emsp_connector_v_2_2_1():
+def test_emsp_patch_connector_v_2_2_1():
 
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
 

@@ -22,19 +22,14 @@ async def get_tariffs(request: Request,
                       adapter: Adapter = Depends(get_adapter),
                       filters: dict = Depends(pagination_filters)):
     auth_token = get_auth_token(request)
-    try:
-        data_list = await get_list(response, filters, ModuleID.tariffs, RoleEnum.cpo,
-                                   VersionNumber.v_2_2_1, crud, auth_token=auth_token)
 
-        tariffs = []
-        for data in data_list:
-            tariffs.append(adapter.tariff_adapter(data).dict())
-        return OCPIResponse(
-            data=tariffs,
-            **status.OCPI_1000_GENERIC_SUCESS_CODE,
-        )
-    except ValidationError:
-        return OCPIResponse(
-            data=[],
-            **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
-        )
+    data_list = await get_list(response, filters, ModuleID.tariffs, RoleEnum.cpo,
+                               VersionNumber.v_2_2_1, crud, auth_token=auth_token)
+
+    tariffs = []
+    for data in data_list:
+        tariffs.append(adapter.tariff_adapter(data).dict())
+    return OCPIResponse(
+        data=tariffs,
+        **status.OCPI_1000_GENERIC_SUCESS_CODE,
+    )

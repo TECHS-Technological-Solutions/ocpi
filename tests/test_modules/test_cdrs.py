@@ -86,7 +86,7 @@ class Adapter:
         return Cdr(**data)
 
 
-def test_get_cpo_cdrs_v_2_2_1():
+def test_cpo_get_cdrs_v_2_2_1():
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
     client = TestClient(app)
@@ -97,7 +97,7 @@ def test_get_cpo_cdrs_v_2_2_1():
     assert response.json()['data'][0]['id'] == CDRS[0]["id"]
 
 
-def test_get_emsp_cdr_v_2_2_1():
+def test_emsp_get_cdr_v_2_2_1():
 
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
 
@@ -108,7 +108,7 @@ def test_get_emsp_cdr_v_2_2_1():
     assert response.json()['data'][0]['id'] == CDRS[0]["id"]
 
 
-def test_add_emsp_cdr_v_2_2_1():
+def test_emsp_add_cdr_v_2_2_1():
 
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
 
@@ -119,4 +119,4 @@ def test_add_emsp_cdr_v_2_2_1():
 
     assert response.status_code == 200
     assert response.json()['data'][0]['id'] == CDRS[0]["id"]
-    assert response.headers['Location'] is None
+    assert response.headers['Location'] is not None

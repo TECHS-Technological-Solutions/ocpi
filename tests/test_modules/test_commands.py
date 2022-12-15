@@ -31,6 +31,10 @@ class Crud:
     async def get(cls, module: enums.ModuleID, role: enums.RoleEnum, id, *args, **kwargs) -> dict:
         return COMMAND_RESULT
 
+    @classmethod
+    async def update(cls, module: enums.ModuleID, role: enums.RoleEnum, data: dict, id, *args, **kwargs):
+        ...
+
 
 class Adapter:
     @classmethod
@@ -42,7 +46,7 @@ class Adapter:
         return CommandResult(**data)
 
 
-def test_receive_command_start_session():
+def test_cpo_receive_command_start_session_v_2_2_1():
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
     data = {
@@ -70,7 +74,7 @@ def test_receive_command_start_session():
     assert response.json()['data'][0]['result'] == COMMAND_RESPONSE["result"]
 
 
-def test_receive_command_stop_session():
+def test_cpo_receive_command_stop_session_v_2_2_1():
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
     data = {
@@ -86,7 +90,7 @@ def test_receive_command_stop_session():
     assert response.json()['data'][0]['result'] == COMMAND_RESPONSE["result"]
 
 
-def test_receive_command_reserve_now():
+def test_cpo_receive_command_reserve_now_v_2_2_1():
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
     data = {
@@ -114,3 +118,12 @@ def test_receive_command_reserve_now():
     assert response.status_code == 200
     assert len(response.json()['data']) == 1
     assert response.json()['data'][0]['result'] == COMMAND_RESPONSE["result"]
+
+
+def test_emsp_receive_command_result_v_2_2_1():
+    app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
+
+    client = TestClient(app)
+    response = client.post(f'/ocpi/emsp/2.2.1/commands/1234', json=COMMAND_RESPONSE)
+
+    assert response.status_code == 200

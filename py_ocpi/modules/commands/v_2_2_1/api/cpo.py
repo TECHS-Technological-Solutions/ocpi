@@ -8,6 +8,7 @@ import httpx
 
 from py_ocpi.core.dependencies import get_crud, get_adapter
 from py_ocpi.core.enums import ModuleID, RoleEnum, Action
+from py_ocpi.core.exceptions import NotFoundOCPIError
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.adapter import Adapter
 from py_ocpi.core.crud import Crud
@@ -18,7 +19,7 @@ from py_ocpi.modules.commands.v_2_2_1.enums import CommandType
 from py_ocpi.modules.commands.v_2_2_1.schemas import (
     CancelReservation, ReserveNow, StartSession,
     StopSession, UnlockConnector, CommandResult,
-    CommandResultType,
+    CommandResultType, CommandResponse, CommandResponseType
 )
 
 router = APIRouter(
@@ -75,6 +76,10 @@ async def receive_command(request: Request, command: CommandType, data: dict, ba
             content={'detail': jsonable_encoder(exc.errors())}
         )
     try:
+        if hasattr(command_data, 'location_id'):
+            await crud.get(ModuleID.locations, RoleEnum.cpo, command_data.location_id, auth_token=auth_token,
+                           version=VersionNumber.v_2_2_1)
+
         command_response = await crud.do(ModuleID.commands, RoleEnum.cpo, Action.send_command, command_data.dict(),
                                          command=command, auth_token=auth_token, version=VersionNumber.v_2_2_1)
 
@@ -85,8 +90,11 @@ async def receive_command(request: Request, command: CommandType, data: dict, ba
             data=[adapter.command_response_adapter(command_response).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
         )
-    except ValidationError:
+
+    # when the location is not found
+    except NotFoundOCPIError:
+        command_response = CommandResponse(result=CommandResponseType.rejected, timeout=0)
         return OCPIResponse(
-            data=[],
-            **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
+            data=[adapter.command_response_adapter(command_response).dict()],
+            **status.OCPI_2003_UNKNOWN_LOCATION,
         )

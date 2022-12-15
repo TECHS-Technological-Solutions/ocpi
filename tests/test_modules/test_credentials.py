@@ -70,7 +70,7 @@ class Adapter:
         return Credentials(**data)
 
 
-def test_get_credentials():
+def test_cpo_get_credentials_v_2_2_1():
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
     token = str(uuid4())
     header = {
@@ -87,7 +87,7 @@ def test_get_credentials():
 
 @pytest.mark.asyncio
 @patch('py_ocpi.modules.credentials.v_2_2_1.api.cpo.httpx.AsyncClient')
-async def test_post_credentials(async_client):
+async def test_cpo_post_credentials_v_2_2_1(async_client):
     app_1 = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
 
     def override_get_versions():

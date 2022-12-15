@@ -21,18 +21,13 @@ router = APIRouter(
 async def get_session(request: Request, country_code: CiString(2), party_id: CiString(3), session_id: CiString(36),
                       crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
-    try:
-        data = await crud.get(ModuleID.sessions, RoleEnum.emsp, session_id, auth_token=auth_token,
-                              country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
-        return OCPIResponse(
-            data=[adapter.session_adapter(data, VersionNumber.v_2_2_1).dict()],
-            **status.OCPI_1000_GENERIC_SUCESS_CODE,
-        )
-    except ValidationError:
-        return OCPIResponse(
-            data=[],
-            **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
-        )
+
+    data = await crud.get(ModuleID.sessions, RoleEnum.emsp, session_id, auth_token=auth_token,
+                          country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
+    return OCPIResponse(
+        data=[adapter.session_adapter(data, VersionNumber.v_2_2_1).dict()],
+        **status.OCPI_1000_GENERIC_SUCESS_CODE,
+    )
 
 
 @router.put("/{country_code}/{party_id}/{session_id}", response_model=OCPIResponse)
@@ -40,27 +35,22 @@ async def add_or_update_session(request: Request, country_code: CiString(2), par
                                 session_id: CiString(36), session: Session,
                                 crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
-    try:
-        data = await crud.get(ModuleID.sessions, RoleEnum.emsp, session_id, auth_token=auth_token,
-                              country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
-        if data:
-            data = await crud.update(ModuleID.sessions, RoleEnum.emsp, session.dict(), session_id,
-                                     auth_token=auth_token, country_code=country_code,
-                                     party_id=party_id, version=VersionNumber.v_2_2_1)
-        else:
-            data = await crud.create(ModuleID.sessions, RoleEnum.emsp, session.dict(),
-                                     auth_token=auth_token, country_code=country_code,
-                                     party_id=party_id, version=VersionNumber.v_2_2_1)
 
-        return OCPIResponse(
-            data=[adapter.session_adapter(data).dict()],
-            **status.OCPI_1000_GENERIC_SUCESS_CODE,
-        )
-    except ValidationError:
-        return OCPIResponse(
-            data=[],
-            **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
-        )
+    data = await crud.get(ModuleID.sessions, RoleEnum.emsp, session_id, auth_token=auth_token,
+                          country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
+    if data:
+        data = await crud.update(ModuleID.sessions, RoleEnum.emsp, session.dict(), session_id,
+                                 auth_token=auth_token, country_code=country_code,
+                                 party_id=party_id, version=VersionNumber.v_2_2_1)
+    else:
+        data = await crud.create(ModuleID.sessions, RoleEnum.emsp, session.dict(),
+                                 auth_token=auth_token, country_code=country_code,
+                                 party_id=party_id, version=VersionNumber.v_2_2_1)
+
+    return OCPIResponse(
+        data=[adapter.session_adapter(data).dict()],
+        **status.OCPI_1000_GENERIC_SUCESS_CODE,
+    )
 
 
 @router.patch("/{country_code}/{party_id}/{session_id}", response_model=OCPIResponse)
@@ -68,24 +58,19 @@ async def partial_update_session(request: Request, country_code: CiString(2), pa
                                  session_id: CiString(36), session: SessionPartialUpdate,
                                  crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
-    try:
-        old_data = await crud.get(ModuleID.sessions, RoleEnum.emsp, session_id, auth_token=auth_token,
-                                  country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
-        old_session = adapter.session_adapter(old_data)
 
-        new_session = old_session
-        partially_update_attributes(new_session, session.dict(exclude_defaults=True, exclude_unset=True))
+    old_data = await crud.get(ModuleID.sessions, RoleEnum.emsp, session_id, auth_token=auth_token,
+                              country_code=country_code, party_id=party_id, version=VersionNumber.v_2_2_1)
+    old_session = adapter.session_adapter(old_data)
 
-        data = await crud.update(ModuleID.sessions, RoleEnum.emsp, new_session.dict(), session_id,
-                                 auth_token=auth_token, country_code=country_code,
-                                 party_id=party_id, version=VersionNumber.v_2_2_1)
+    new_session = old_session
+    partially_update_attributes(new_session, session.dict(exclude_defaults=True, exclude_unset=True))
 
-        return OCPIResponse(
-            data=[adapter.session_adapter(data).dict()],
-            **status.OCPI_1000_GENERIC_SUCESS_CODE,
-        )
-    except ValidationError:
-        return OCPIResponse(
-            data=[],
-            **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
-        )
+    data = await crud.update(ModuleID.sessions, RoleEnum.emsp, new_session.dict(), session_id,
+                             auth_token=auth_token, country_code=country_code,
+                             party_id=party_id, version=VersionNumber.v_2_2_1)
+
+    return OCPIResponse(
+        data=[adapter.session_adapter(data).dict()],
+        **status.OCPI_1000_GENERIC_SUCESS_CODE,
+    )
