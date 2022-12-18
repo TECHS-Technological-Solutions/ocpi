@@ -30,7 +30,7 @@ class Push(BaseModel):
 
 class ReceiverResponse(BaseModel):
     endpoints_url: URL
-    status_code: str
+    status_code: int
     response: dict
 
 

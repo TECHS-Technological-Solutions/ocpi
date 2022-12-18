@@ -1,16 +1,20 @@
 from typing import Any, List
 
 from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import ValidationError
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from py_ocpi.modules.versions.api import router as versions_router, versions_v_2_2_1_router
 from py_ocpi.modules.versions.enums import VersionNumber
 from py_ocpi.modules.versions.schemas import Version
 from py_ocpi.core.dependencies import get_crud, get_adapter, get_versions
+from py_ocpi.core import status
 from py_ocpi.core.enums import RoleEnum
 from py_ocpi.core.config import settings
 from py_ocpi.core.data_types import URL
+from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.exceptions import AuthorizationOCPIError, NotFoundOCPIError
 from py_ocpi.core.push import http_router as http_push_router, websocket_router as websocket_push_router
 from py_ocpi.routers import v_2_2_1_cpo_router, v_2_2_1_emsp_router
@@ -27,6 +31,13 @@ class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
             raise HTTPException(403, str(e)) from e
         except NotFoundOCPIError as e:
             raise HTTPException(404, str(e)) from e
+        except ValidationError:
+            response = JSONResponse(
+                OCPIResponse(
+                    data=[],
+                    **status.OCPI_3000_GENERIC_SERVER_ERROR,
+                ).dict()
+            )
         return response
 
 

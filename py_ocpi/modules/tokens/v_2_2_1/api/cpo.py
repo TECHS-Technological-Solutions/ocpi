@@ -23,20 +23,15 @@ async def get_token(country_code: CiString(2), party_id: CiString(3), token_uid:
                     request: Request, token_type: TokenType = TokenType.rfid,
                     crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
-    try:
-        data = await crud.get(ModuleID.tokens, RoleEnum.cpo, token_uid,
-                              auth_token=auth_token, country_code=country_code,
-                              party_id=party_id, token_type=token_type,
-                              version=VersionNumber.v_2_2_1)
-        return OCPIResponse(
-            data=[adapter.token_adapter(data).dict()],
-            **status.OCPI_1000_GENERIC_SUCESS_CODE,
-        )
-    except ValidationError:
-        return OCPIResponse(
-            data=[],
-            **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
-        )
+
+    data = await crud.get(ModuleID.tokens, RoleEnum.cpo, token_uid,
+                          auth_token=auth_token, country_code=country_code,
+                          party_id=party_id, token_type=token_type,
+                          version=VersionNumber.v_2_2_1)
+    return OCPIResponse(
+        data=[adapter.token_adapter(data).dict()],
+        **status.OCPI_1000_GENERIC_SUCESS_CODE,
+    )
 
 
 @router.put("/{country_code}/{party_id}/{token_uid}", response_model=OCPIResponse)
@@ -44,27 +39,22 @@ async def add_or_update_token(country_code: CiString(2), party_id: CiString(3), 
                               request: Request, token_type: TokenType = TokenType.rfid,
                               crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
-    try:
-        data = await crud.get(ModuleID.tokens, RoleEnum.cpo, token_uid, auth_token=auth_token,
-                              token_type=token_type, country_code=country_code, party_id=party_id,
-                              version=VersionNumber.v_2_2_1)
-        if data:
-            data = await crud.update(ModuleID.tokens, RoleEnum.cpo, token.dict(), token_uid, token_type=token_type,
-                                     auth_token=auth_token, country_code=country_code,
-                                     party_id=party_id, version=VersionNumber.v_2_2_1)
-        else:
-            data = await crud.create(ModuleID.tokens, RoleEnum.cpo, token.dict(), token_type=token_type,
-                                     auth_token=auth_token, country_code=country_code,
-                                     party_id=party_id, version=VersionNumber.v_2_2_1)
-        return OCPIResponse(
-            data=[adapter.token_adapter(data).dict()],
-            **status.OCPI_1000_GENERIC_SUCESS_CODE,
-        )
-    except ValidationError:
-        return OCPIResponse(
-            data=[],
-            **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
-        )
+
+    data = await crud.get(ModuleID.tokens, RoleEnum.cpo, token_uid, auth_token=auth_token,
+                          token_type=token_type, country_code=country_code, party_id=party_id,
+                          version=VersionNumber.v_2_2_1)
+    if data:
+        data = await crud.update(ModuleID.tokens, RoleEnum.cpo, token.dict(), token_uid, token_type=token_type,
+                                 auth_token=auth_token, country_code=country_code,
+                                 party_id=party_id, version=VersionNumber.v_2_2_1)
+    else:
+        data = await crud.create(ModuleID.tokens, RoleEnum.cpo, token.dict(), token_type=token_type,
+                                 auth_token=auth_token, country_code=country_code,
+                                 party_id=party_id, version=VersionNumber.v_2_2_1)
+    return OCPIResponse(
+        data=[adapter.token_adapter(data).dict()],
+        **status.OCPI_1000_GENERIC_SUCESS_CODE,
+    )
 
 
 @router.patch("/{country_code}/{party_id}/{token_uid}", response_model=OCPIResponse)
@@ -72,24 +62,19 @@ async def partial_update_token(country_code: CiString(2), party_id: CiString(3),
                                token: TokenPartialUpdate, request: Request, token_type: TokenType = TokenType.rfid,
                                crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
-    try:
-        old_data = await crud.get(ModuleID.tokens, RoleEnum.cpo, token_uid, token_type=token_type,
-                                  auth_token=auth_token, country_code=country_code, party_id=party_id,
-                                  version=VersionNumber.v_2_2_1)
-        old_token = adapter.token_adapter(old_data)
 
-        new_token = old_token
-        partially_update_attributes(new_token, token.dict(exclude_defaults=True, exclude_unset=True))
+    old_data = await crud.get(ModuleID.tokens, RoleEnum.cpo, token_uid, token_type=token_type,
+                              auth_token=auth_token, country_code=country_code, party_id=party_id,
+                              version=VersionNumber.v_2_2_1)
+    old_token = adapter.token_adapter(old_data)
 
-        data = await crud.update(ModuleID.tokens, RoleEnum.cpo, new_token.dict(), token_uid, token_type=token_type,
-                                 auth_token=auth_token, country_code=country_code,
-                                 party_id=party_id, version=VersionNumber.v_2_2_1)
-        return OCPIResponse(
-            data=[adapter.token_adapter(data).dict()],
-            **status.OCPI_1000_GENERIC_SUCESS_CODE,
-        )
-    except ValidationError:
-        return OCPIResponse(
-            data=[],
-            **status.OCPI_3001_UNABLE_TO_USE_CLIENTS_API,
-        )
+    new_token = old_token
+    partially_update_attributes(new_token, token.dict(exclude_defaults=True, exclude_unset=True))
+
+    data = await crud.update(ModuleID.tokens, RoleEnum.cpo, new_token.dict(), token_uid, token_type=token_type,
+                             auth_token=auth_token, country_code=country_code,
+                             party_id=party_id, version=VersionNumber.v_2_2_1)
+    return OCPIResponse(
+        data=[adapter.token_adapter(data).dict()],
+        **status.OCPI_1000_GENERIC_SUCESS_CODE,
+    )

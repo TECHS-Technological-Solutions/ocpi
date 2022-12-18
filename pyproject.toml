@@ -22,6 +22,7 @@ requests = "^2.7"
 pytest-cov = "^2.10.1"
 prospector = "^1.7.7"
 bandit = "^1.7.4"
+pytest-asyncio = "^0.20.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -82,10 +82,12 @@ async def push_object(version: VersionNumber, push: Push, crud: Crud, adapter: A
 
         response = await send_push_request(push.object_id, data, push.module_id, adapter, client_auth_token, endpoints)
         if push.module_id == ModuleID.cdrs:
-            receiver_responses.append(ReceiverResponse(receiver.endpoints_url, status_code=response.status_code,
+            receiver_responses.append(ReceiverResponse(endpoints_url=receiver.endpoints_url,
+                                                       status_code=response.status_code,
                                                        response=response.headers))
         else:
-            receiver_responses.append(ReceiverResponse(receiver.endpoints_url, status_code=response.status_code,
+            receiver_responses.append(ReceiverResponse(endpoints_url=receiver.endpoints_url,
+                                                       status_code=response.status_code,
                                                        response=response.json()))
 
     return PushResponse(receiver_responses=receiver_responses)
@@ -95,7 +97,7 @@ http_router = APIRouter()
 
 
 # WARNING it's advised not to expose this endpoint
-@http_router.get("/{version}", status_code=200, include_in_schema=False, response_model=PushResponse)
+@http_router.post("/{version}", status_code=200, include_in_schema=False, response_model=PushResponse)
 async def http_push_to_client(request: Request, version: VersionNumber, push: Push,
                               crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
     auth_token = get_auth_token(request)
