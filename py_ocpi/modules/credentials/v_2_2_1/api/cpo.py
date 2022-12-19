@@ -1,7 +1,6 @@
 import httpx
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status as fastapistatus
-from pydantic import ValidationError
 
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.adapter import Adapter

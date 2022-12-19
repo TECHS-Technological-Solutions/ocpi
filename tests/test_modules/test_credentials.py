@@ -12,9 +12,10 @@ from py_ocpi.core.data_types import URL
 from py_ocpi.core.config import settings
 from py_ocpi.core.dependencies import get_versions
 from py_ocpi.modules.credentials.v_2_2_1.schemas import Credentials
+from py_ocpi.modules.tokens.v_2_2_1.enums import AllowedType
+from py_ocpi.modules.tokens.v_2_2_1.schemas import AuthorizationInfo, Token
 from py_ocpi.modules.versions.enums import VersionNumber
 from py_ocpi.modules.versions.schemas import Version
-from tests.test_modules.mocks.async_client import MockAsyncClientGeneratorVersionsAndEndpoints
 
 CREDENTIALS_TOKEN_GET = {
     'url': 'url',
@@ -62,6 +63,11 @@ class Crud:
         if operation == 'credentials':
             return None
         return CREDENTIALS_TOKEN_CREATE
+
+    @classmethod
+    async def do(cls, module: enums.ModuleID, role: enums.RoleEnum, action: enums.Action, *args,
+                 data: dict = None, **kwargs):
+        return None
 
 
 class Adapter:

@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, Response, Request
-from pydantic import ValidationError
 
 from py_ocpi.modules.sessions.v_2_2_1.schemas import ChargingPreferences
 from py_ocpi.modules.versions.enums import VersionNumber

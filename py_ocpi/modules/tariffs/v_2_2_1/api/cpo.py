@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, Response, Request
-from pydantic import ValidationError
 
 from py_ocpi.core.utils import get_list, get_auth_token
 from py_ocpi.core import status

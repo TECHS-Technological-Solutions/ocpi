@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, Request
-from pydantic import ValidationError
 
 from py_ocpi.modules.tariffs.v_2_2_1.schemas import Tariff
 from py_ocpi.modules.versions.enums import VersionNumber
