@@ -214,7 +214,6 @@ def test_push(async_client):
         ]
     ).dict()
     response = client.post('/push/2.2.1', json=data)
-    print(response.json())
 
     crud.get.assert_awaited_once()
     adapter.location_adapter.assert_called_once()

@@ -1,7 +1,6 @@
 import httpx
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status as fastapistatus
-from pydantic import ValidationError
 
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.adapter import Adapter
@@ -9,7 +8,7 @@ from py_ocpi.core.crud import Crud
 from py_ocpi.core.utils import get_auth_token
 from py_ocpi.core.dependencies import get_crud, get_adapter
 from py_ocpi.core import status
-from py_ocpi.core.enums import ModuleID, RoleEnum
+from py_ocpi.core.enums import Action, ModuleID, RoleEnum
 from py_ocpi.modules.versions.enums import VersionNumber
 from py_ocpi.modules.credentials.v_2_2_1.schemas import Credentials
 
@@ -37,8 +36,8 @@ async def post_credentials(request: Request, credentials: Credentials,
 
     # Check if the client is already registered
     credentials_client_token = credentials.token
-    server_cred = await crud.get(ModuleID.credentials_and_registration, RoleEnum.emsp, credentials_client_token,
-                                 version=VersionNumber.v_2_2_1)
+    server_cred = await crud.do(ModuleID.credentials_and_registration, RoleEnum.emsp, Action.get_client_token,
+                                version=VersionNumber.v_2_2_1, auth_token=auth_token)
     if server_cred:
         raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client is already registered")
 
@@ -96,8 +95,8 @@ async def update_credentials(request: Request, credentials: Credentials,
 
     # Check if the client is already registered
     credentials_client_token = credentials.token
-    server_cred = await crud.get(ModuleID.credentials_and_registration, RoleEnum.emsp, credentials_client_token,
-                                 auth_token=auth_token, version=VersionNumber.v_2_2_1)
+    server_cred = await crud.do(ModuleID.credentials_and_registration, RoleEnum.emsp, Action.get_client_token,
+                                version=VersionNumber.v_2_2_1, auth_token=auth_token)
     if not server_cred:
         raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client is not registered")
 

@@ -106,7 +106,7 @@ async def test_cpo_post_credentials_v_2_2_1(async_client):
 
     async with AsyncClient(app=app_2, base_url="http://test") as client:
         response = await client.post('/ocpi/cpo/2.2.1/credentials/', json=CREDENTIALS_TOKEN_CREATE)
-        print(response.json())
+
     assert response.status_code == 200
     assert len(response.json()['data']) == 1
     assert response.json()['data'][0]['token'] == CREDENTIALS_TOKEN_CREATE['token']

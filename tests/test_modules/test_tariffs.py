@@ -86,7 +86,7 @@ def test_emsp_add_tariff_v_2_2_1():
     client = TestClient(app)
     response = client.put(f'/ocpi/emsp/2.2.1/tariffs/{settings.COUNTRY_CODE}/{settings.PARTY_ID}'
                           f'/{TARIFFS[0]["id"]}', json=TARIFFS[0])
-    print(response.json())
+
     assert response.status_code == 200
     assert response.json()['data'][0]['id'] == TARIFFS[0]["id"]
 

@@ -9,5 +9,7 @@
   * [Tutorials](./tutorials/index)
     * [CRUD](./tutorials/crud)
     * [Adapter](./tutorials/adapter)
+    * [Modules](./tutorials/modules/index)
+      * [Locations](./tutorials/modules/locations)
 
 * [About](./about/index)

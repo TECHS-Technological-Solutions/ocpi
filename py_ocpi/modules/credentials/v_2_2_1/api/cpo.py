@@ -9,7 +9,7 @@ from py_ocpi.core.crud import Crud
 from py_ocpi.core.utils import get_auth_token
 from py_ocpi.core.dependencies import get_crud, get_adapter
 from py_ocpi.core import status
-from py_ocpi.core.enums import ModuleID, RoleEnum
+from py_ocpi.core.enums import Action, ModuleID, RoleEnum
 from py_ocpi.modules.versions.enums import VersionNumber
 from py_ocpi.modules.credentials.v_2_2_1.schemas import Credentials
 
@@ -37,8 +37,8 @@ async def post_credentials(request: Request, credentials: Credentials,
 
     # Check if the client is already registered
     credentials_client_token = credentials.token
-    server_cred = await crud.get(ModuleID.credentials_and_registration, RoleEnum.cpo, credentials_client_token,
-                                 version=VersionNumber.v_2_2_1)
+    server_cred = await crud.do(ModuleID.credentials_and_registration, RoleEnum.cpo, Action.get_client_token,
+                                version=VersionNumber.v_2_2_1, auth_token=auth_token)
     if server_cred:
         raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client is already registered")
 
@@ -64,8 +64,7 @@ async def post_credentials(request: Request, credentials: Credentials,
 
             response_endpoints = await client.get(version_url,
                                                   headers={'authorization': authorization_token})
-            print(version_url)
-            print(response_endpoints.json())
+
             if response_endpoints.status_code == fastapistatus.HTTP_200_OK:
                 # Store client credentials and generate new credentials for sender
                 endpoints = response_endpoints.json()['data'][0]
@@ -97,8 +96,8 @@ async def update_credentials(request: Request, credentials: Credentials,
 
     # Check if the client is already registered
     credentials_client_token = credentials.token
-    server_cred = await crud.get(ModuleID.credentials_and_registration, RoleEnum.cpo, credentials_client_token,
-                                 auth_token=auth_token, version=VersionNumber.v_2_2_1)
+    server_cred = await crud.do(ModuleID.credentials_and_registration, RoleEnum.cpo, Action.get_client_token,
+                                version=VersionNumber.v_2_2_1, auth_token=auth_token)
     if not server_cred:
         raise HTTPException(fastapistatus.HTTP_405_METHOD_NOT_ALLOWED, "Client is not registered")
 
