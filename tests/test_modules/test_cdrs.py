@@ -2,12 +2,12 @@ from uuid import uuid4
 
 from fastapi.testclient import TestClient
 
+from py_ocpi import get_application
 from py_ocpi.core import enums
-from py_ocpi.locations.v_2_2_1.schemas import ConnectorType, ConnectorFormat, PowerType
-from py_ocpi.cdrs.v_2_2_1.schemas import TokenType, Cdr
-from py_ocpi.cdrs.v_2_2_1.enums import AuthMethod, CdrDimensionType
-from py_ocpi.main import get_application
-from py_ocpi.versions.enums import VersionNumber
+from py_ocpi.modules.locations.v_2_2_1.schemas import ConnectorType, ConnectorFormat, PowerType
+from py_ocpi.modules.cdrs.v_2_2_1.schemas import TokenType, Cdr
+from py_ocpi.modules.cdrs.v_2_2_1.enums import AuthMethod, CdrDimensionType
+from py_ocpi.modules.versions.enums import VersionNumber
 
 CDRS = [
     {
@@ -55,9 +55,9 @@ CDRS = [
             }
         ],
         'total_cost': {
-                    'excl_vat': 10.0000,
-                    'incl_vat': 10.2500
-                },
+            'excl_vat': 10.0000,
+            'incl_vat': 10.2500
+        },
         'total_energy': 50,
         'total_time': 500,
         'last_updated': '2022-01-02 00:00:00+00:00'
@@ -68,17 +68,25 @@ CDRS = [
 class Crud:
 
     @classmethod
-    async def list(cls, module: enums.ModuleID, filters: dict, *args, **kwargs) -> list:
+    async def list(cls, module: enums.ModuleID, role: enums.RoleEnum, filters: dict, *args, **kwargs) -> list:
         return CDRS, 1, True
+
+    @classmethod
+    async def get(cls, module: enums.ModuleID, role: enums.RoleEnum, id, *args, **kwargs):
+        return CDRS[0]
+
+    @classmethod
+    async def create(cls, module: enums.ModuleID, role: enums.RoleEnum, data: dict, *args, **kwargs):
+        return data
 
 
 class Adapter:
     @classmethod
-    def cdr_adapter(cls, data) -> Cdr:
+    def cdr_adapter(cls, data, version: VersionNumber = VersionNumber.latest) -> Cdr:
         return Cdr(**data)
 
 
-def test_get_cdrs():
+def test_cpo_get_cdrs_v_2_2_1():
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
     client = TestClient(app)
@@ -87,3 +95,28 @@ def test_get_cdrs():
     assert response.status_code == 200
     assert len(response.json()['data']) == 1
     assert response.json()['data'][0]['id'] == CDRS[0]["id"]
+
+
+def test_emsp_get_cdr_v_2_2_1():
+
+    app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
+
+    client = TestClient(app)
+    response = client.get(f'/ocpi/emsp/2.2.1/cdrs/{CDRS[0]["id"]}')
+
+    assert response.status_code == 200
+    assert response.json()['data'][0]['id'] == CDRS[0]["id"]
+
+
+def test_emsp_add_cdr_v_2_2_1():
+
+    app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
+
+    data = CDRS[0]
+
+    client = TestClient(app)
+    response = client.post('/ocpi/emsp/2.2.1/cdrs/', json=data)
+
+    assert response.status_code == 200
+    assert response.json()['data'][0]['id'] == CDRS[0]["id"]
+    assert response.headers['Location'] is not None

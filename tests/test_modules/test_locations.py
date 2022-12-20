@@ -2,10 +2,11 @@ from uuid import uuid4
 
 from fastapi.testclient import TestClient
 
-from py_ocpi.core import enums
-from py_ocpi.locations.v_2_2_1.schemas import Location
 from py_ocpi.main import get_application
-from py_ocpi.versions.enums import VersionNumber
+from py_ocpi.core import enums
+from py_ocpi.core.config import settings
+from py_ocpi.modules.locations.v_2_2_1.schemas import Location
+from py_ocpi.modules.versions.enums import VersionNumber
 
 
 LOCATIONS = [
@@ -192,21 +193,29 @@ LOCATIONS = [
 
 class Crud:
     @classmethod
-    async def get(cls, module: enums.ModuleID, id, *args, **kwargs):
+    async def get(cls, module: enums.ModuleID, role: enums.RoleEnum, id, *args, **kwargs):
         return LOCATIONS[0]
 
     @classmethod
-    async def list(cls, module: enums.ModuleID, filters: dict, *args, **kwargs) -> list:
+    async def update(cls, module: enums.ModuleID, role: enums.RoleEnum, data: dict, id, *args, **kwargs):
+        return data
+
+    @classmethod
+    async def create(cls, module: enums.ModuleID, role: enums.RoleEnum, data: dict, *args, **kwargs):
+        return data
+
+    @classmethod
+    async def list(cls, module: enums.ModuleID, role: enums.RoleEnum, filters: dict, *args, **kwargs) -> list:
         return LOCATIONS, 1, True
 
 
 class Adapter:
     @classmethod
-    def location_adapter(cls, data) -> Location:
+    def location_adapter(cls, data, version: VersionNumber = VersionNumber.latest) -> Location:
         return Location(**data)
 
 
-def test_get_locations():
+def test_cpo_get_locations_v_2_2_1():
 
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
@@ -218,7 +227,7 @@ def test_get_locations():
     assert response.json()['data'][0]['id'] == LOCATIONS[0]["id"]
 
 
-def test_get_location():
+def test_cpo_get_location_v_2_2_1():
 
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
@@ -229,7 +238,7 @@ def test_get_location():
     assert response.json()['data'][0]['id'] == LOCATIONS[0]["id"]
 
 
-def test_get_evse():
+def test_cpo_get_evse_v_2_2_1():
 
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
@@ -241,7 +250,7 @@ def test_get_evse():
     assert response.json()['data'][0]['uid'] == LOCATIONS[0]["evses"][0]["uid"]
 
 
-def test_get_connector():
+def test_cpo_get_connector_v_2_2_1():
 
     app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], Crud, Adapter)
 
@@ -252,3 +261,121 @@ def test_get_connector():
     assert response.status_code == 200
     assert len(response.json()['data']) == 1
     assert response.json()['data'][0]['id'] == LOCATIONS[0]["evses"][0]["connectors"][0]["id"]
+
+
+def test_emsp_get_location_v_2_2_1():
+    app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
+
+    client = TestClient(app)
+    response = client.get(f'/ocpi/emsp/2.2.1/locations/{settings.COUNTRY_CODE}/{settings.PARTY_ID}'
+                          f'/{LOCATIONS[0]["id"]}')
+
+    assert response.status_code == 200
+    assert response.json()['data'][0]['id'] == LOCATIONS[0]["id"]
+
+
+def test_emsp_get_evse_v_2_2_1():
+
+    app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
+
+    client = TestClient(app)
+    response = client.get(f'/ocpi/emsp/2.2.1/locations/{settings.COUNTRY_CODE}/{settings.PARTY_ID}'
+                          f'/{LOCATIONS[0]["id"]}/{LOCATIONS[0]["evses"][0]["uid"]}')
+
+    assert response.status_code == 200
+    assert len(response.json()['data']) == 1
+    assert response.json()['data'][0]['uid'] == LOCATIONS[0]["evses"][0]["uid"]
+
+
+def test_emsp_get_connector_v_2_2_1():
+
+    app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
+
+    client = TestClient(app)
+    response = client.get(f'/ocpi/emsp/2.2.1/locations/{settings.COUNTRY_CODE}/{settings.PARTY_ID}'
+                          f'/{LOCATIONS[0]["id"]}/{LOCATIONS[0]["evses"][0]["uid"]}'
+                          f'/{LOCATIONS[0]["evses"][0]["connectors"][0]["id"]}')
+
+    assert response.status_code == 200
+    assert len(response.json()['data']) == 1
+    assert response.json()['data'][0]['id'] == LOCATIONS[0]["evses"][0]["connectors"][0]["id"]
+
+
+def test_emsp_add_location_v_2_2_1():
+    app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
+
+    client = TestClient(app)
+    response = client.put(f'/ocpi/emsp/2.2.1/locations/{settings.COUNTRY_CODE}/{settings.PARTY_ID}'
+                          f'/{LOCATIONS[0]["id"]}', json=LOCATIONS[0])
+
+    assert response.status_code == 200
+    assert response.json()['data'][0]['id'] == LOCATIONS[0]["id"]
+
+
+def test_emsp_add_evse_v_2_2_1():
+
+    app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
+
+    client = TestClient(app)
+    response = client.put(f'/ocpi/emsp/2.2.1/locations/{settings.COUNTRY_CODE}/{settings.PARTY_ID}'
+                          f'/{LOCATIONS[0]["id"]}/{LOCATIONS[0]["evses"][0]["uid"]}', json=LOCATIONS[0]["evses"][0])
+
+    assert response.status_code == 200
+    assert len(response.json()['data']) == 1
+    assert response.json()['data'][0]['uid'] == LOCATIONS[0]["evses"][0]["uid"]
+
+
+def test_emsp_add_connector_v_2_2_1():
+
+    app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
+
+    client = TestClient(app)
+    response = client.put(f'/ocpi/emsp/2.2.1/locations/{settings.COUNTRY_CODE}/{settings.PARTY_ID}'
+                          f'/{LOCATIONS[0]["id"]}/{LOCATIONS[0]["evses"][0]["uid"]}'
+                          f'/{LOCATIONS[0]["evses"][0]["connectors"][0]["id"]}',
+                          json=LOCATIONS[0]["evses"][0]["connectors"][0])
+
+    assert response.status_code == 200
+    assert len(response.json()['data']) == 1
+    assert response.json()['data'][0]['id'] == LOCATIONS[0]["evses"][0]["connectors"][0]["id"]
+
+
+def test_emsp_patch_location_v_2_2_1():
+    app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
+
+    patch_data = {'id': str(uuid4())}
+    client = TestClient(app)
+    response = client.patch(f'/ocpi/emsp/2.2.1/locations/{settings.COUNTRY_CODE}/{settings.PARTY_ID}'
+                            f'/{LOCATIONS[0]["id"]}', json=patch_data)
+
+    assert response.status_code == 200
+    assert response.json()['data'][0]['id'] == patch_data["id"]
+
+
+def test_emsp_patch_evse_v_2_2_1():
+
+    app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
+
+    patch_data = {'uid': str(uuid4())}
+    client = TestClient(app)
+    response = client.patch(f'/ocpi/emsp/2.2.1/locations/{settings.COUNTRY_CODE}/{settings.PARTY_ID}'
+                            f'/{LOCATIONS[0]["id"]}/{LOCATIONS[0]["evses"][0]["uid"]}', json=patch_data)
+
+    assert response.status_code == 200
+    assert len(response.json()['data']) == 1
+    assert response.json()['data'][0]['uid'] == patch_data["uid"]
+
+
+def test_emsp_patch_connector_v_2_2_1():
+
+    app = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], Crud, Adapter)
+
+    patch_data = {'id': str(uuid4())}
+    client = TestClient(app)
+    response = client.patch(f'/ocpi/emsp/2.2.1/locations/{settings.COUNTRY_CODE}/{settings.PARTY_ID}'
+                            f'/{LOCATIONS[0]["id"]}/{LOCATIONS[0]["evses"][0]["uid"]}'
+                            f'/{LOCATIONS[0]["evses"][0]["connectors"][0]["id"]}', json=patch_data)
+
+    assert response.status_code == 200
+    assert len(response.json()['data']) == 1
+    assert response.json()['data'][0]['id'] == patch_data["id"]

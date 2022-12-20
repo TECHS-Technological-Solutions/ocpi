@@ -1,10 +1,11 @@
 import urllib
 
 from fastapi import Response, Request
+from pydantic import BaseModel
 
-from py_ocpi.core.enums import ModuleID
+from py_ocpi.core.enums import ModuleID, RoleEnum
 from py_ocpi.core.config import settings
-from py_ocpi.versions.enums import VersionNumber
+from py_ocpi.modules.versions.enums import VersionNumber
 
 
 def set_pagination_headers(response: Response, link: str, total: int, limit: int):
@@ -20,9 +21,9 @@ def get_auth_token(request: Request) -> str:
     return headers_token.split()[1]
 
 
-async def get_list(response: Response, filters: dict, module: ModuleID, version: VersionNumber, crud,
-                   *args, **kwargs):
-    data_list, total, is_last_page = await crud.list(module, filters, *args, **kwargs)
+async def get_list(response: Response, filters: dict, module: ModuleID, role: RoleEnum,
+                   version: VersionNumber, crud, *args, **kwargs):
+    data_list, total, is_last_page = await crud.list(module, role, filters, *args, version=version, **kwargs)
 
     link = ''
     params = dict(**filters)
@@ -34,3 +35,8 @@ async def get_list(response: Response, filters: dict, module: ModuleID, version:
     set_pagination_headers(response, link, total, filters['limit'])
 
     return data_list
+
+
+def partially_update_attributes(instance: BaseModel, attributes: dict):
+    for key, value in attributes.items():
+        setattr(instance, key, value)

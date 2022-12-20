@@ -1,7 +1,19 @@
-fake_versions_and_endpoints_data = {
-    'data': [{
-        'url': 'url'
-    }]
+from py_ocpi.core.dependencies import get_versions
+from py_ocpi.core.endpoints import ENDPOINTS
+from py_ocpi.modules.versions.enums import VersionNumber
+from py_ocpi.modules.versions.schemas import VersionDetail
+
+fake_endpoints_data = {
+    'data': [
+        VersionDetail(
+            version=VersionNumber.v_2_2_1,
+            endpoints=ENDPOINTS[VersionNumber.v_2_2_1]
+        ).dict(),
+    ],
+}
+
+fake_versions_data = {
+    'data': get_versions()
 }
 
 
@@ -17,8 +29,17 @@ class MockResponse:
 # Connector mocks
 
 class MockAsyncClientVersionsAndEndpoints:
-    async def get(request, headers):
-        return MockResponse(fake_versions_and_endpoints_data, 200)
+    async def get(url, headers):
+        if url == 'versions_url':
+            return MockResponse(fake_versions_data, 200)
+        else:
+            return MockResponse(fake_endpoints_data, 200)
+
+    def build_request(self, request, headers, json):
+        return self
+
+    async def send(request):
+        return MockResponse(fake_endpoints_data, 200)
 
 
 class MockAsyncClientGeneratorVersionsAndEndpoints:

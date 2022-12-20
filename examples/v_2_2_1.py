@@ -1,8 +1,9 @@
 from uuid import uuid4
 
-from py_ocpi import get_application, enums
-from py_ocpi.versions.enums import VersionNumber
-from py_ocpi.locations.v_2_2_1.schemas import Location
+from py_ocpi import get_application
+from py_ocpi.core import enums
+from py_ocpi.modules.versions.enums import VersionNumber
+from py_ocpi.modules.locations.v_2_2_1.schemas import Location
 
 LOCATIONS = [
     {
@@ -188,17 +189,17 @@ LOCATIONS = [
 
 class Crud:
     @classmethod
-    async def get(cls, module: enums.ModuleID, id, *args, **kwargs):
+    async def get(cls, module: enums.ModuleID, role: enums.RoleEnum, id, *args, **kwargs):
         return LOCATIONS[0]
 
     @classmethod
-    async def list(cls, module: enums.ModuleID, filters: dict, *args, **kwargs) -> list:
+    async def list(cls, module: enums.ModuleID, role: enums.RoleEnum, filters: dict, *args, **kwargs) -> list:
         return LOCATIONS, 1, True
 
 
 class Adapter:
     @classmethod
-    def location_adapter(cls, data) -> Location:
+    def location_adapter(cls, data, version: VersionNumber) -> Location:
         return Location(**data)
 
 
