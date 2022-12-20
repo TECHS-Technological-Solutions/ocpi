@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "py_ocpi"
-version = "0.2.2"
+version = "0.3.0"
 description = "Python Implementation of OCPI"
 authors = ["HAkhavan71 <hakh.27@gmail.com>"]
 readme = "README.rst"
