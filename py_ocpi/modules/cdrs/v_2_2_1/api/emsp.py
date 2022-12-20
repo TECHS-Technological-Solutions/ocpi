@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, Request, Response
-from pydantic import ValidationError
 
 from py_ocpi.modules.cdrs.v_2_2_1.schemas import Cdr
 from py_ocpi.modules.versions.enums import VersionNumber

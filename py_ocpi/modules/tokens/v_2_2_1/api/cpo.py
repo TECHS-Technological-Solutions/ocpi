@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Request, Depends
-from pydantic import ValidationError
 
 from py_ocpi.core import status
 from py_ocpi.core.data_types import CiString

@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, Response, Request, status as http_status
-from pydantic import ValidationError
 
 from py_ocpi.modules.tokens.v_2_2_1.enums import TokenType
 from py_ocpi.modules.tokens.v_2_2_1.schemas import LocationReference, AuthorizationInfo

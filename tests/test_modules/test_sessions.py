@@ -127,7 +127,7 @@ def test_emsp_add_session_v_2_2_1():
     client = TestClient(app)
     response = client.put(f'/ocpi/emsp/2.2.1/sessions/{settings.COUNTRY_CODE}/{settings.PARTY_ID}'
                           f'/{SESSIONS[0]["id"]}', json=SESSIONS[0])
-    print(response.json())
+
     assert response.status_code == 200
     assert response.json()['data'][0]['id'] == SESSIONS[0]["id"]
 

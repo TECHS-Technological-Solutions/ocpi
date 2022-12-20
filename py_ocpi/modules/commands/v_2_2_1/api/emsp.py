@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, Request
-from pydantic import ValidationError
 
 from py_ocpi.core.dependencies import get_crud, get_adapter
 from py_ocpi.core.enums import ModuleID, RoleEnum

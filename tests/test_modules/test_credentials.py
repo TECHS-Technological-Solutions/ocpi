@@ -12,9 +12,10 @@ from py_ocpi.core.data_types import URL
 from py_ocpi.core.config import settings
 from py_ocpi.core.dependencies import get_versions
 from py_ocpi.modules.credentials.v_2_2_1.schemas import Credentials
+from py_ocpi.modules.tokens.v_2_2_1.enums import AllowedType
+from py_ocpi.modules.tokens.v_2_2_1.schemas import AuthorizationInfo, Token
 from py_ocpi.modules.versions.enums import VersionNumber
 from py_ocpi.modules.versions.schemas import Version
-from tests.test_modules.mocks.async_client import MockAsyncClientGeneratorVersionsAndEndpoints
 
 CREDENTIALS_TOKEN_GET = {
     'url': 'url',
@@ -63,6 +64,11 @@ class Crud:
             return None
         return CREDENTIALS_TOKEN_CREATE
 
+    @classmethod
+    async def do(cls, module: enums.ModuleID, role: enums.RoleEnum, action: enums.Action, *args,
+                 data: dict = None, **kwargs):
+        return None
+
 
 class Adapter:
     @classmethod
@@ -106,7 +112,7 @@ async def test_cpo_post_credentials_v_2_2_1(async_client):
 
     async with AsyncClient(app=app_2, base_url="http://test") as client:
         response = await client.post('/ocpi/cpo/2.2.1/credentials/', json=CREDENTIALS_TOKEN_CREATE)
-        print(response.json())
+
     assert response.status_code == 200
     assert len(response.json()['data']) == 1
     assert response.json()['data'][0]['token'] == CREDENTIALS_TOKEN_CREATE['token']
