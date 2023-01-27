@@ -92,28 +92,28 @@ def get_application(
         if RoleEnum.cpo in roles:
             _app.include_router(
                 v_2_2_1_cpo_router,
-                prefix=f'/{settings.OCPI_PREFIX}/cpo/{VersionNumber.v_2_2_1}',
+                prefix=f'/{settings.OCPI_PREFIX}/cpo/{VersionNumber.v_2_2_1.value}',
                 tags=['CPO']
             )
 
             versions.append(
                 Version(
                     version=VersionNumber.v_2_2_1,
-                    url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/cpo/{VersionNumber.v_2_2_1}')
+                    url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/cpo/{VersionNumber.v_2_2_1.value}')
                 ).dict(),
             )
 
         if RoleEnum.emsp in roles:
             _app.include_router(
                 v_2_2_1_emsp_router,
-                prefix=f'/{settings.OCPI_PREFIX}/emsp/{VersionNumber.v_2_2_1}',
+                prefix=f'/{settings.OCPI_PREFIX}/emsp/{VersionNumber.v_2_2_1.value}',
                 tags=['EMSP']
             )
 
             versions.append(
                 Version(
                     version=VersionNumber.v_2_2_1,
-                    url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/emsp/{VersionNumber.v_2_2_1}')
+                    url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/emsp/{VersionNumber.v_2_2_1.value}')
                 ).dict(),
             )
 
