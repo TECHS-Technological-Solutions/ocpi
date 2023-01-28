@@ -7,6 +7,7 @@ from py_ocpi.modules.commands.v_2_2_1.api import cpo_router as commands_cpo_2_2_
 from py_ocpi.modules.tariffs.v_2_2_1.api import cpo_router as tariffs_cpo_2_2_1_router
 from py_ocpi.modules.tokens.v_2_2_1.api import cpo_router as tokens_cpo_2_2_1_router
 from py_ocpi.modules.cdrs.v_2_2_1.api import cpo_router as cdrs_cpo_2_2_1_router
+from py_ocpi.modules.versions.api.cpo import router as versions_cpo_2_2_1_router
 
 
 router = APIRouter(
@@ -31,4 +32,7 @@ router.include_router(
 )
 router.include_router(
     cdrs_cpo_2_2_1_router
+)
+router.include_router(
+    versions_cpo_2_2_1_router
 )

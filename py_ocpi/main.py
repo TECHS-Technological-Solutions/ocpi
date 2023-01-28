@@ -99,7 +99,7 @@ def get_application(
             versions.append(
                 Version(
                     version=VersionNumber.v_2_2_1,
-                    url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/cpo/{VersionNumber.v_2_2_1.value}')
+                    url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/cpo/{VersionNumber.v_2_2_1.value}/')
                 ).dict(),
             )
 
@@ -113,7 +113,7 @@ def get_application(
             versions.append(
                 Version(
                     version=VersionNumber.v_2_2_1,
-                    url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/emsp/{VersionNumber.v_2_2_1.value}')
+                    url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/emsp/{VersionNumber.v_2_2_1.value}/')
                 ).dict(),
             )
 
