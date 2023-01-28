@@ -1,4 +1,5 @@
 import urllib
+import base64
 
 from fastapi import Response, Request
 from pydantic import BaseModel
@@ -40,3 +41,7 @@ async def get_list(response: Response, filters: dict, module: ModuleID, role: Ro
 def partially_update_attributes(instance: BaseModel, attributes: dict):
     for key, value in attributes.items():
         setattr(instance, key, value)
+
+def encode_string_base64(input: str) -> str:
+    input_bytes = base64.b64encode(bytes(input, 'utf-8'))
+    return input_bytes.decode('utf-8')
