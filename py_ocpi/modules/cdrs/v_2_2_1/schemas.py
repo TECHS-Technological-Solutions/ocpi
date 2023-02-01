@@ -43,7 +43,7 @@ class ChargingPeriod(BaseModel):
     https://github.com/ocpi/ocpi/blob/2.2.1/mod_cdrs.asciidoc#146-chargingperiod-class
     """
     start_date_time: DateTime
-    diemnsions: List[CdrDimension]
+    dimensions: List[CdrDimension]
     tariff_id: Optional[CiString(36)]
 
 
