@@ -30,4 +30,4 @@ def test_get_versions_v_2_2_1():
     response = client.get('/ocpi/2.2.1/details')
 
     assert response.status_code == 200
-    assert response.json()['data'][0]['version'] == '2.2.1'
+    assert response.json()['data']['version'] == '2.2.1'
