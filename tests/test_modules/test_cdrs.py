@@ -46,7 +46,7 @@ CDRS = [
         'charging_periods': [
             {
                 'start_date_time': '2022-01-02 00:00:00+00:00',
-                'diemnsions': [
+                'dimensions': [
                     {
                         'type': CdrDimensionType.power,
                         'volume': 10

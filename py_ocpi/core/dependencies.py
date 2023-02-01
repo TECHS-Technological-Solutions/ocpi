@@ -27,6 +27,10 @@ def get_versions():
     ]
 
 
+def get_endpoints():
+    return {}
+
+
 def pagination_filters(
     date_from: datetime = Query(default=None),
     date_to: datetime = Query(default=datetime.now()),
