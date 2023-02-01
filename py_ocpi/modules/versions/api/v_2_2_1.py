@@ -12,11 +12,9 @@ router = APIRouter()
 @router.get("/2.2.1/details", response_model=OCPIResponse)
 async def get_version_details(endpoints=Depends(get_endpoints)):
     return OCPIResponse(
-        data=[
-            VersionDetail(
-                version=VersionNumber.v_2_2_1,
-                endpoints=endpoints[VersionNumber.v_2_2_1]
-            ).dict(),
-        ],
+        data=VersionDetail(
+            version=VersionNumber.v_2_2_1,
+            endpoints=endpoints[VersionNumber.v_2_2_1]
+        ).dict(),
         **status.OCPI_1000_GENERIC_SUCESS_CODE,
     )
