@@ -19,7 +19,10 @@ def set_pagination_headers(response: Response, link: str, total: int, limit: int
 def get_auth_token(request: Request) -> str:
     headers = request.headers
     headers_token = headers.get('authorization', 'Token Null')
-    return headers_token.split()[1]
+    token = headers_token.split()[1]
+    if token == 'Null':
+        return None
+    return decode_string_base64(token)
 
 
 async def get_list(response: Response, filters: dict, module: ModuleID, role: RoleEnum,
@@ -44,4 +47,8 @@ def partially_update_attributes(instance: BaseModel, attributes: dict):
 
 def encode_string_base64(input: str) -> str:
     input_bytes = base64.b64encode(bytes(input, 'utf-8'))
+    return input_bytes.decode('utf-8')
+
+def decode_string_base64(input: str) -> str:
+    input_bytes = base64.b64decode(bytes(input, 'utf-8'))
     return input_bytes.decode('utf-8')
