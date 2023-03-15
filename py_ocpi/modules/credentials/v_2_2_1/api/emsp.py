@@ -24,7 +24,7 @@ async def get_credentials(request: Request, crud: Crud = Depends(get_crud), adap
     data = await crud.get(ModuleID.credentials_and_registration, RoleEnum.emsp,
                           auth_token, auth_token=auth_token, version=VersionNumber.v_2_2_1)
     return OCPIResponse(
-        data=[adapter.credentials_adapter(data).dict()],
+        data=adapter.credentials_adapter(data).dict(),
         **status.OCPI_1000_GENERIC_SUCESS_CODE,
     )
 
@@ -78,7 +78,7 @@ async def post_credentials(request: Request, credentials: Credentials,
                 )
 
                 return OCPIResponse(
-                    data=[adapter.credentials_adapter(new_credentials).dict()],
+                    data=adapter.credentials_adapter(new_credentials).dict(),
                     **status.OCPI_1000_GENERIC_SUCESS_CODE
                 )
 
@@ -134,7 +134,7 @@ async def update_credentials(request: Request, credentials: Credentials,
                                                     version=VersionNumber.v_2_2_1)
 
                 return OCPIResponse(
-                    data=[adapter.credentials_adapter(new_credentials).dict()],
+                    data=adapter.credentials_adapter(new_credentials).dict(),
                     **status.OCPI_1000_GENERIC_SUCESS_CODE
                 )
 
