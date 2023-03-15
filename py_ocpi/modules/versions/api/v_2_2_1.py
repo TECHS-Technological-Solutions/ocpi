@@ -7,7 +7,7 @@ from py_ocpi.core import status
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.dependencies import get_endpoints, get_crud
 from py_ocpi.core.utils import get_auth_token
-from py_ocpi.core.enums import Action, ModuleID, RoleEnum
+from py_ocpi.core.enums import Action, ModuleID
 router = APIRouter()
 
 

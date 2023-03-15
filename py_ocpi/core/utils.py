@@ -45,9 +45,11 @@ def partially_update_attributes(instance: BaseModel, attributes: dict):
     for key, value in attributes.items():
         setattr(instance, key, value)
 
+
 def encode_string_base64(input: str) -> str:
     input_bytes = base64.b64encode(bytes(input, 'utf-8'))
     return input_bytes.decode('utf-8')
+
 
 def decode_string_base64(input: str) -> str:
     input_bytes = base64.b64decode(bytes(input, 'utf-8'))
