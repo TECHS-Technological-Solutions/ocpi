@@ -26,6 +26,9 @@ class Crud:
     @classmethod
     async def do(cls, module: enums.ModuleID, role: enums.RoleEnum, action: enums.Action,
                  *args, data: dict = None, **kwargs) -> dict:
+        if action == enums.Action.get_client_token:
+            return 'foo'
+
         return COMMAND_RESPONSE
 
     @classmethod
@@ -68,7 +71,7 @@ def test_cpo_receive_command_start_session_v_2_2_1():
     }
 
     client = TestClient(app)
-    response = client.post(f'/ocpi/cpo/2.2.1/commands/{CommandType.start_session}', json=data)
+    response = client.post(f'/ocpi/cpo/2.2.1/commands/{CommandType.start_session.value}', json=data)
 
     assert response.status_code == 200
     assert len(response.json()['data']) == 1
@@ -84,7 +87,7 @@ def test_cpo_receive_command_stop_session_v_2_2_1():
     }
 
     client = TestClient(app)
-    response = client.post(f'/ocpi/cpo/2.2.1/commands/{CommandType.stop_session}', json=data)
+    response = client.post(f'/ocpi/cpo/2.2.1/commands/{CommandType.stop_session.value}', json=data)
 
     assert response.status_code == 200
     assert len(response.json()['data']) == 1
@@ -114,7 +117,7 @@ def test_cpo_receive_command_reserve_now_v_2_2_1():
     }
 
     client = TestClient(app)
-    response = client.post(f'/ocpi/cpo/2.2.1/commands/{CommandType.reserve_now}', json=data)
+    response = client.post(f'/ocpi/cpo/2.2.1/commands/{CommandType.reserve_now.value}', json=data)
 
     assert response.status_code == 200
     assert len(response.json()['data']) == 1
@@ -154,7 +157,7 @@ def test_cpo_receive_command_reserve_now_unknown_location_v_2_2_1():
     }
 
     client = TestClient(app)
-    response = client.post(f'/ocpi/cpo/2.2.1/commands/{CommandType.reserve_now}', json=data)
+    response = client.post(f'/ocpi/cpo/2.2.1/commands/{CommandType.reserve_now.value}', json=data)
 
     assert response.status_code == 200
     assert response.json()['data'][0]['result'] == CommandResultType.rejected
