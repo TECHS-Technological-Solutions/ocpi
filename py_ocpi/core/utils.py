@@ -1,5 +1,4 @@
 import urllib
-import base64
 
 from fastapi import Response, Request
 from pydantic import BaseModel
@@ -19,10 +18,7 @@ def set_pagination_headers(response: Response, link: str, total: int, limit: int
 def get_auth_token(request: Request) -> str:
     headers = request.headers
     headers_token = headers.get('authorization', 'Token Null')
-    token = headers_token.split()[1]
-    if token == 'Null':
-        return None
-    return decode_string_base64(token)
+    return headers_token.split()[1]
 
 
 async def get_list(response: Response, filters: dict, module: ModuleID, role: RoleEnum,
@@ -44,11 +40,3 @@ async def get_list(response: Response, filters: dict, module: ModuleID, role: Ro
 def partially_update_attributes(instance: BaseModel, attributes: dict):
     for key, value in attributes.items():
         setattr(instance, key, value)
-
-def encode_string_base64(input: str) -> str:
-    input_bytes = base64.b64encode(bytes(input, 'utf-8'))
-    return input_bytes.decode('utf-8')
-
-def decode_string_base64(input: str) -> str:
-    input_bytes = base64.b64decode(bytes(input, 'utf-8'))
-    return input_bytes.decode('utf-8')
