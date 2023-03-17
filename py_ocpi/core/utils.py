@@ -20,7 +20,7 @@ def get_auth_token(request: Request) -> str:
     headers = request.headers
     headers_token = headers.get('authorization', 'Token Null')
     token = headers_token.split()[1]
-    if token == 'Null': # nosec
+    if token == 'Null':  # nosec
         return None
     return decode_string_base64(token)
 
