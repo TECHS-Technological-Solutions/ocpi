@@ -61,4 +61,4 @@ jobs:
           make install
       - name: Run bandit
         run: |
-          poetry run bandit -r ./py_ocpi -s B105
+          poetry run bandit -r ./py_ocpi
