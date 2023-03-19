@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status as fastap
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.adapter import Adapter
 from py_ocpi.core.crud import Crud
-from py_ocpi.core.utils import get_auth_token
+from py_ocpi.core.utils import encode_string_base64, get_auth_token
 from py_ocpi.core.dependencies import get_crud, get_adapter
 from py_ocpi.core import status
 from py_ocpi.core.enums import Action, ModuleID, RoleEnum
@@ -24,7 +24,7 @@ async def get_credentials(request: Request, crud: Crud = Depends(get_crud), adap
     data = await crud.get(ModuleID.credentials_and_registration, RoleEnum.emsp,
                           auth_token, auth_token=auth_token, version=VersionNumber.v_2_2_1)
     return OCPIResponse(
-        data=[adapter.credentials_adapter(data).dict()],
+        data=adapter.credentials_adapter(data).dict(),
         **status.OCPI_1000_GENERIC_SUCESS_CODE,
     )
 
@@ -43,7 +43,7 @@ async def post_credentials(request: Request, credentials: Credentials,
 
     # Retrieve the versions and endpoints from the client
     async with httpx.AsyncClient() as client:
-        authorization_token = f'Token {credentials_client_token}'
+        authorization_token = f'Token {encode_string_base64(credentials_client_token)}'
         response_versions = await client.get(credentials.url,
                                              headers={'authorization': authorization_token})
 
@@ -78,7 +78,7 @@ async def post_credentials(request: Request, credentials: Credentials,
                 )
 
                 return OCPIResponse(
-                    data=[adapter.credentials_adapter(new_credentials).dict()],
+                    data=adapter.credentials_adapter(new_credentials).dict(),
                     **status.OCPI_1000_GENERIC_SUCESS_CODE
                 )
 
@@ -102,7 +102,7 @@ async def update_credentials(request: Request, credentials: Credentials,
 
     # Retrieve the versions and endpoints from the client
     async with httpx.AsyncClient() as client:
-        authorization_token = f'Token {credentials_client_token}'
+        authorization_token = f'Token {encode_string_base64(credentials_client_token)}'
         response_versions = await client.get(credentials.url, headers={'authorization': authorization_token})
 
         if response_versions.status_code == fastapistatus.HTTP_200_OK:
@@ -134,7 +134,7 @@ async def update_credentials(request: Request, credentials: Credentials,
                                                     version=VersionNumber.v_2_2_1)
 
                 return OCPIResponse(
-                    data=[adapter.credentials_adapter(new_credentials).dict()],
+                    data=adapter.credentials_adapter(new_credentials).dict(),
                     **status.OCPI_1000_GENERIC_SUCESS_CODE
                 )
 
