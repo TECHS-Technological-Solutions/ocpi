@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import List
+from typing import List, Union
 
 from pydantic import BaseModel
 
@@ -11,7 +11,7 @@ class OCPIResponse(BaseModel):
     """
     https://github.com/ocpi/ocpi/blob/2.2.1/transport_and_format.asciidoc#117-response-format
     """
-    data: list
+    data: Union[list, dict]
     status_code: int
     status_message: String(255)
     timestamp: DateTime = str(datetime.now(timezone.utc))

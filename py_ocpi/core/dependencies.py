@@ -22,9 +22,13 @@ def get_versions():
     return [
         Version(
             version=VersionNumber.v_2_2_1,
-            url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/{VersionNumber.v_2_2_1}/details')
+            url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/{VersionNumber.v_2_2_1.value}/details')
         ).dict(),
     ]
+
+
+def get_endpoints():
+    return {}
 
 
 def pagination_filters(
