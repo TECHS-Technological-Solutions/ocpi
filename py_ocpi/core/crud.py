@@ -1,4 +1,4 @@
-from typing import Any, Literal, Tuple
+from typing import Any, Tuple
 
 from py_ocpi.core.enums import ModuleID, RoleEnum, Action
 
