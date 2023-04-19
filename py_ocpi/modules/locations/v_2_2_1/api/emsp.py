@@ -139,6 +139,7 @@ async def add_or_update_connector(request: Request, country_code: CiString(2), p
                 if old_onnector.id == connector_id:
                     is_new_connector = False
                     break
+            break
     new_location = old_location
     new_location.evses.remove(old_evse)
     if not is_new_connector:
@@ -223,6 +224,7 @@ async def partial_update_connector(request: Request, country_code: CiString(2), 
             for old_onnector in old_evse.connectors:
                 if old_onnector.id == connector_id:
                     break
+            break
     new_connector = old_onnector
     partially_update_attributes(new_connector, connector.dict(exclude_defaults=True, exclude_unset=True))
     new_location = old_location
