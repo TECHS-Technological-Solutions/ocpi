@@ -66,7 +66,7 @@ async def post_credentials(request: Request, credentials: Credentials,
 
             if response_endpoints.status_code == fastapistatus.HTTP_200_OK:
                 # Store client credentials and generate new credentials for sender
-                endpoints = response_endpoints.json()['data']
+                endpoints = response_endpoints.json()['data']['endpoints']
                 new_credentials = await crud.create(
                     ModuleID.credentials_and_registration, RoleEnum.cpo,
                     {
@@ -124,7 +124,7 @@ async def update_credentials(request: Request, credentials: Credentials,
 
             if response_endpoints.status_code == fastapistatus.HTTP_200_OK:
                 # Update server credentials to access client's system and generate new credentials token
-                endpoints = response_endpoints.json()['data'][0]
+                endpoints = response_endpoints.json()['data']['endpoints']
                 new_credentials = await crud.update(ModuleID.credentials_and_registration, RoleEnum.cpo,
                                                     {
                                                         "credentials": credentials.dict(),
