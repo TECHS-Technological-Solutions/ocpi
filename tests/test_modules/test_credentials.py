@@ -31,7 +31,7 @@ CREDENTIALS_TOKEN_GET = {
     }]
 }
 
-CREDENTIALS_TOKEN_CREATE = {
+CREDENTIALS_TOKEN = {
     'token': str(uuid4()),
     'url': '/ocpi/versions',
     'roles': [{
@@ -56,7 +56,7 @@ def partial_class(cls, *args, **kwds):
 class Crud:
     @classmethod
     async def get(cls, module: enums.ModuleID, role: enums.RoleEnum, id, *args, **kwargs):
-        if id == CREDENTIALS_TOKEN_CREATE['token']:
+        if id == CREDENTIALS_TOKEN['token']:
             return None
         return dict(CREDENTIALS_TOKEN_GET, **{'token': id})
 
@@ -64,7 +64,13 @@ class Crud:
     async def create(cls, module: enums.ModuleID, data, operation, *args, **kwargs):
         if operation == 'credentials':
             return None
-        return CREDENTIALS_TOKEN_CREATE
+        return CREDENTIALS_TOKEN
+
+    @classmethod
+    async def update(cls, module: enums.ModuleID, data, operation, *args, **kwargs):
+        if operation == 'credentials':
+            return None
+        return CREDENTIALS_TOKEN
 
     @classmethod
     async def do(cls, module: enums.ModuleID, role: enums.RoleEnum, action: enums.Action, *args,
@@ -118,7 +124,37 @@ async def test_cpo_post_credentials_v_2_2_1(async_client):
     app_2 = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], MockCrud, Adapter)
 
     async with AsyncClient(app=app_2, base_url="http://test") as client:
-        response = await client.post('/ocpi/cpo/2.2.1/credentials/', json=CREDENTIALS_TOKEN_CREATE)
+        response = await client.post('/ocpi/cpo/2.2.1/credentials/', json=CREDENTIALS_TOKEN)
 
     assert response.status_code == 200
-    assert response.json()['data']['token'] == CREDENTIALS_TOKEN_CREATE['token']
+    assert response.json()['data']['token'] == CREDENTIALS_TOKEN['token']
+
+@pytest.mark.asyncio
+@patch('py_ocpi.modules.credentials.v_2_2_1.api.cpo.httpx.AsyncClient')
+async def test_cpo_put_credentials_v_2_2_1(async_client):
+    class MockCrud(Crud):
+        @classmethod
+        async def do(cls, module: enums.ModuleID, role: enums.RoleEnum, action: enums.Action, auth_token, *args, data: dict = None, **kwargs) -> Any:
+            return {'dummy':'is_registered'}
+
+    app_1 = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.emsp], MockCrud, Adapter)
+
+    def override_get_versions():
+        return [
+            Version(
+                version=VersionNumber.v_2_2_1,
+                url=URL(f'/{settings.OCPI_PREFIX}/{VersionNumber.v_2_2_1.value}/details')
+            ).dict()
+        ]
+
+    app_1.dependency_overrides[get_versions] = override_get_versions
+
+    async_client.return_value = AsyncClient(app=app_1, base_url="http://test")
+
+    app_2 = get_application(VersionNumber.v_2_2_1, [enums.RoleEnum.cpo], MockCrud, Adapter)
+
+    async with AsyncClient(app=app_2, base_url="http://test") as client:
+        response = await client.put('/ocpi/cpo/2.2.1/credentials/', json=CREDENTIALS_TOKEN)
+
+    assert response.status_code == 200
+    assert response.json()['data']['token'] == CREDENTIALS_TOKEN['token']
