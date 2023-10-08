@@ -18,7 +18,7 @@ help:
 	@echo "  release version=<sem. version>   bumps the project version to <sem. version>, using poetry;"
 	@echo "                                   Updates also docs/source/conf.py version;"
 	@echo "                                   If no version is provided, poetry outputs the current project version"
-	@echo "  test                             run all the tests and linting"
+	@echo "  tests                             run all the tests and linting"
 	@echo "  update                           updates the dependencies in poetry.lock"
 	@echo ""
 	@echo "Check the Makefile to know exactly what each target is doing."
@@ -34,8 +34,8 @@ install: .install-poetry
 	poetry install
 
 tests: .install-poetry
-	poetry run flake8 ocpp tests
-	poetry run py.test -vvv --cov=ocpp --cov-report=term-missing tests/
+	poetry run flake8 py_ocpi tests
+	poetry run py.test -vvv --cov=py_ocpi --cov-report=term-missing tests/
 
 build: .install-poetry
 	poetry build
