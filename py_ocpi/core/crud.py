@@ -20,6 +20,8 @@ class Crud:
             country_code (CiString(2)): The requested Country code
             token_type (TokenType): The token type
             command (CommandType): The command type of the OCPP command
+            command_data (ReserveNow, CancelReservation, StartSession, StopSession, UnlockConnector): The requested
+                command data
 
         Returns:
             Any: The object data
