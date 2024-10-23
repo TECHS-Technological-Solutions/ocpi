@@ -2,7 +2,11 @@ from typing import Optional, List
 from pydantic import BaseModel
 
 from py_ocpi.core.data_types import String, CiString, DisplayText, DateTime
-from py_ocpi.modules.tokens.v_2_2_1.enums import AllowedType, TokenType, WhitelistType
+from py_ocpi.modules.tokens.v_2_2_1.enums import (
+    AllowedType,
+    TokenType,
+    WhitelistType,
+)
 from py_ocpi.modules.sessions.v_2_2_1.enums import ProfileType
 
 

@@ -2,7 +2,10 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from py_ocpi.core.data_types import CiString, URL, DisplayText, DateTime
-from py_ocpi.modules.commands.v_2_2_1.enums import CommandResponseType, CommandResultType
+from py_ocpi.modules.commands.v_2_2_1.enums import (
+    CommandResponseType,
+    CommandResultType,
+)
 from py_ocpi.modules.tokens.v_2_2_1.schemas import Token
 
 

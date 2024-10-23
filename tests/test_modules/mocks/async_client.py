@@ -1,21 +1,19 @@
 from py_ocpi.core.dependencies import get_versions
 from py_ocpi.core.endpoints import ENDPOINTS
-from py_ocpi.core.enums import RoleEnum
+from py_ocpi.core.enums import RoleEnum, ModuleID
 from py_ocpi.modules.versions.enums import VersionNumber
-from py_ocpi.modules.versions.schemas import VersionDetail
+from py_ocpi.modules.versions.v_2_2_1.schemas import VersionDetail
 
 fake_endpoints_data = {
-    'data': [
-        VersionDetail(
-            version=VersionNumber.v_2_2_1,
-            endpoints=ENDPOINTS[VersionNumber.v_2_2_1][RoleEnum.cpo]
-        ).dict(),
-    ],
+    "data": VersionDetail(
+        version=VersionNumber.v_2_2_1,
+        endpoints=[
+            ENDPOINTS[VersionNumber.v_2_2_1][RoleEnum.cpo][ModuleID.locations]
+        ],
+    ).dict(),
 }
 
-fake_versions_data = {
-    'data': get_versions()
-}
+fake_versions_data = {"data": get_versions()}
 
 
 class MockResponse:
@@ -29,9 +27,10 @@ class MockResponse:
 
 # Connector mocks
 
+
 class MockAsyncClientVersionsAndEndpoints:
     async def get(url, headers):
-        if url == 'versions_url':
+        if url == "versions_url":
             return MockResponse(fake_versions_data, 200)
         else:
             return MockResponse(fake_endpoints_data, 200)
@@ -44,7 +43,6 @@ class MockAsyncClientVersionsAndEndpoints:
 
 
 class MockAsyncClientGeneratorVersionsAndEndpoints:
-
     async def __aenter__(self):
         return MockAsyncClientVersionsAndEndpoints
 
