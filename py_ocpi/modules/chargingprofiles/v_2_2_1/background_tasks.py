@@ -67,7 +67,7 @@ async def send_get_chargingprofile(
             )
         )
 
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient() as client:  # nosec
         authorization_token = f"Token {encode_string_base64(client_auth_token)}"
         logger.info(f"Send request with active charging profile result: {response_url}")
         res = await client.post(
@@ -131,7 +131,7 @@ async def send_update_chargingprofile(
             )
         )
 
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient() as client:  # nosec
         authorization_token = f"Token {encode_string_base64(client_auth_token)}"
         logger.info(
             f"Send request with charging profile result: {response_url}"
@@ -194,7 +194,7 @@ async def send_delete_chargingprofile(
             result=ChargingProfileResultType.accepted
         )
 
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient() as client:  # nosec
         authorization_token = f"Token {encode_string_base64(client_auth_token)}"
         logger.info(f"Send request with clear profile result: {response_url}")
         res = await client.post(

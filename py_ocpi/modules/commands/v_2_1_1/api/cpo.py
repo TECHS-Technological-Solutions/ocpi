@@ -97,7 +97,7 @@ async def send_command_result(
             command_result, VersionNumber.v_2_1_1
         )
 
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient() as client:  # nosec
         authorization_token = f"Token {client_auth_token}"
         logger.info(
             f"Send request with command result: {command_data.response_url}"

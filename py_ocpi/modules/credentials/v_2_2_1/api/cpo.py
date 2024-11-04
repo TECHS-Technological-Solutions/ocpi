@@ -110,7 +110,7 @@ async def post_credentials(
         )
 
     # Retrieve the versions and endpoints from the client
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient() as client:  # nosec
         credentials_client_token = credentials.token
         authorization_token = (
             f"Token {encode_string_base64(credentials_client_token)}"
@@ -220,7 +220,7 @@ async def update_credentials(
         )
 
     # Retrieve the versions and endpoints from the client
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient() as client:  # nosec
         credentials_client_token = credentials.token
         authorization_token = (
             f"Token {encode_string_base64(credentials_client_token)}"

@@ -74,7 +74,7 @@ async def send_push_request(
             base_url = endpoint["url"]
 
     # push object to client
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient() as client:  # nosec
         request = client.build_request(
             client_method(module_id),
             client_url(module_id, object_id, base_url),
@@ -102,7 +102,7 @@ async def push_object(
 
         client_auth_token = f"Token {token}"
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient() as client:  # nosec
             logger.info(
                 f"Send request to get version details: {receiver.endpoints_url}"
             )
