@@ -28,7 +28,7 @@ async def get_versions(
     request: Request,
     versions=Depends(get_versions_),
     crud: Crud = Depends(get_crud),
-    server_cred: Unione[str, dict, None] = Depends(cred_dependency),
+    server_cred: Union[str, dict, None] = Depends(cred_dependency),
 ):
     """
     Get OCPI Versions.

@@ -40,7 +40,7 @@ class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
         self, request: Request, call_next: RequestResponseEndpoint
     ):
         logger.debug(f"{request.method}: {request.url}")
-        logger.debug(f"Request headers - {request.headers}" )
+        logger.debug(f"Request headers - {request.headers}")
 
         try:
             response = await call_next(request)
@@ -64,7 +64,7 @@ class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
                     **status.OCPI_3000_GENERIC_SERVER_ERROR,
                 ).dict()
             )
-        except Exception as e:  # pylint: disable=broad-exception-caught
+        except Exception as e:  # pylint: disable=broad-exception
             logger.warning(f"Unknown exception: {str(e)}.")
             response = JSONResponse(
                 OCPIResponse(

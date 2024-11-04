@@ -7,9 +7,9 @@ from fastapi import (
     Security,
     status,
     Query,
-    WebSocketException,
 )
 from fastapi.security import APIKeyHeader
+from starlette.websockets import WebSocketException
 
 from py_ocpi.core.authentication.authenticator import Authenticator
 from py_ocpi.core.config import logger, settings
