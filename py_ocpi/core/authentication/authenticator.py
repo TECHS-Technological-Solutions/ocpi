@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from typing import List
+from typing import List, Union
 
 from py_ocpi.core.exceptions import AuthorizationOCPIError
 from py_ocpi.core.config import logger
@@ -18,26 +18,26 @@ class Authenticator(ABC):
         """
         list_token_c = await cls.get_valid_token_c()
         if auth_token not in list_token_c:
-            logger.debug("Given `%s` token is not valid" % auth_token)
+            logger.debug(f"Given `{auth_token}` token is not valid")
             raise AuthorizationOCPIError
 
     @classmethod
     async def authenticate_credentials(
         cls,
         auth_token: str,
-    ) -> str | dict | None:
+    ) -> Union[str, dict, None]:
         """Authenticate given auth token where both tokens valid."""
         if auth_token:
             list_token_a = await cls.get_valid_token_a()
             if auth_token in list_token_a:
-                logger.debug("Token A `%s` is used." % auth_token)
+                logger.debug(f"Token A `{auth_token}` is used.")
                 return {}
 
             list_token_c = await cls.get_valid_token_c()
             if auth_token in list_token_c:
-                logger.debug("Token C `%s` is used." % auth_token)
+                logger.debug(f"Token C `{auth_token}` is used.")
                 return auth_token
-        logger.debug("Token `%s` is not of type A or C." % auth_token)
+        logger.debug(f"Token `{auth_token}` is not of type A or C.")
         return None
 
     @classmethod

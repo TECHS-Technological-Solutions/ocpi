@@ -87,7 +87,7 @@ def get_module_model(class_name, module_name: str, version_name: str) -> Any:
     try:
         module = importlib.import_module(module_dir)
         return getattr(module, class_name)
-    except ImportError:
+    except ImportError as exc:
         raise NotImplementedError(
             f"{class_name} schema for version {version_name} not found.",
-        )
+        ) from exc

@@ -104,16 +104,15 @@ async def push_object(
 
         async with httpx.AsyncClient() as client:
             logger.info(
-                "Send request to get version details: %s"
-                % receiver.endpoints_url
+                f"Send request to get version details: {receiver.endpoints_url}"
             )
             response = await client.get(
                 receiver.endpoints_url,
                 headers={"authorization": client_auth_token},
             )
-            logger.info("Response status_code - `%s`" % response.status_code)
+            logger.info(f"Response status_code - `{response.status_code}`")
             endpoints = response.json()["data"]["endpoints"]
-            logger.debug("Endpoints response data - `%s`" % endpoints)
+            logger.debug(f"Endpoints response data - `{endpoints}`")
 
         # get object data
         if push.module_id == ModuleID.tokens:
@@ -126,7 +125,7 @@ async def push_object(
                 version=version,
             )
         else:
-            logger.debug("Requested module with push is `%s`." % push.module_id)
+            logger.debug(f"Requested module with push is `{push.module_id}`.")
             data = await crud.get(
                 push.module_id,
                 RoleEnum.cpo,
@@ -162,7 +161,7 @@ async def push_object(
                 )
             )
     result = PushResponse(receiver_responses=receiver_responses)
-    logger.debug("Result of push operation - %s" % result.dict())
+    logger.debug(f"Result of push operation - {result.dict()}")
     return result
 
 
@@ -186,7 +185,7 @@ async def http_push_to_client(
     adapter: Adapter = Depends(get_adapter),
 ):
     logger.info("Received push http request.")
-    logger.debug("Received push data - `%s`" % push.dict())
+    logger.debug(f"Received push data - `{push.dict()}`")
     auth_token = get_auth_token(request, version)
 
     return await push_object(version, push, crud, adapter, auth_token)
@@ -210,10 +209,10 @@ async def websocket_push_to_client(
 
     while True:
         data = await websocket.receive_json()
-        logger.debug("Received data through ws - `%s`" % data)
+        logger.debug(f"Received data through ws - `{data}`")
         push = Push(**data)
         push_response = await push_object(
             version, push, crud, adapter, auth_token
         )
-        logger.debug("Sending push response - `%s`" % push_response.dict())
+        logger.debug(f"Sending push response - `{push_response.dict()}`")
         await websocket.send_json(push_response.dict())

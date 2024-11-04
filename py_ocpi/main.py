@@ -10,7 +10,7 @@ from starlette.middleware.base import (
 )
 from py_ocpi.core.endpoints import ENDPOINTS
 
-from py_ocpi.modules.versions import router as versions_router
+from py_ocpi.modules.versions.main import router as versions_router
 from py_ocpi.modules.versions.enums import VersionNumber
 from py_ocpi.modules.versions.schemas import Version
 from py_ocpi.core.dependencies import (
@@ -39,8 +39,8 @@ class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ):
-        logger.debug("%s: %s" % (request.method, request.url))
-        logger.debug("Request headers - %s" % request.headers)
+        logger.debug(f"{request.method}: {request.url}")
+        logger.debug(f"Request headers - {request.headers}" )
 
         try:
             response = await call_next(request)
@@ -64,7 +64,7 @@ class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
                     **status.OCPI_3000_GENERIC_SERVER_ERROR,
                 ).dict()
             )
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             logger.warning(f"Unknown exception: {str(e)}.")
             response = JSONResponse(
                 OCPIResponse(
@@ -77,7 +77,7 @@ class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
         return response
 
 
-def get_application(
+def get_application(  # noqa: MC0001
     version_numbers: List[VersionNumber],
     roles: List[RoleEnum],
     crud: Any,

@@ -28,7 +28,7 @@ async def get_versions(
     request: Request,
     versions=Depends(get_versions_),
     crud: Crud = Depends(get_crud),
-    server_cred: str | dict | None = Depends(cred_dependency),
+    server_cred: Unione[str, dict, None] = Depends(cred_dependency),
 ):
     """
     Get OCPI Versions.
@@ -38,7 +38,7 @@ async def get_versions(
     **Returns:**
         The OCPIResponse containing a list of available OCPI versions.
     """
-    logger.info("Received request for version details: %s" % request.url)
+    logger.info(f"Received request for version details: {request.url}")
     if server_cred is None:
         logger.debug("Unauthorized request.")
         raise HTTPException(

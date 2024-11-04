@@ -43,6 +43,8 @@ pylint:
     - assignment-from-none
     - redefined-outer-name
     - no-self-argument
+    - unnecessary-pass
+    - logging-fstring-interpolation
   options:
     max-locals: 25
     max-line-length: 120

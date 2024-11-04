@@ -1,3 +1,5 @@
+from typing import Union
+
 from fastapi import (
     Depends,
     Header,
@@ -61,19 +63,19 @@ class AuthorizationVerifier:
             if self.version.startswith("2.2"):
                 try:
                     token = decode_string_base64(token)
-                except UnicodeDecodeError:
+                except UnicodeDecodeError as exc:
                     logger.debug(
-                        "Token `%s` cannot be decoded. "
-                        "Check if the token is already encoded." % token
+                        f"Token `{token}` cannot be decoded. "
+                        "Check if the token is already encoded."
                     )
-                    raise AuthorizationOCPIError
+                    raise AuthorizationOCPIError from exc
             await authenticator.authenticate(token)
-        except IndexError:
+        except IndexError as exc:
             logger.debug(
                 "Token `%s` cannot be split in parts. "
                 "Check if it starts with `Token `"
             )
-            raise AuthorizationOCPIError
+            raise AuthorizationOCPIError from exc
 
 
 class CredentialsAuthorizationVerifier:
@@ -84,14 +86,14 @@ class CredentialsAuthorizationVerifier:
     :param version (VersionNumber): OCPI version used.
     """
 
-    def __init__(self, version: VersionNumber | None) -> None:
+    def __init__(self, version: Union[VersionNumber, None]) -> None:
         self.version = version
 
     async def __call__(
         self,
         authorization: str = Security(api_key_header),
         authenticator: Authenticator = Depends(get_authenticator),
-    ) -> str | dict | None:
+    ) -> Union[str, dict, None]:
         """
         Verifies the authorization token using the specified version
         and an Authenticator.
@@ -106,23 +108,20 @@ class CredentialsAuthorizationVerifier:
         """
         try:
             token = authorization.split()[1]
-        except IndexError:
-            logger.debug(
-                "Token `%s` cannot be split in parts. "
-                "Check if it starts with `Token `"
-            )
-            raise AuthorizationOCPIError
+        except IndexError as exc:
+            logger.debug("Token cannot be split in parts. Check if it starts with `Token `")
+            raise AuthorizationOCPIError from exc
 
         if self.version:
             if self.version.startswith("2.2"):
                 try:
                     token = decode_string_base64(token)
-                except UnicodeDecodeError:
+                except UnicodeDecodeError as exc:
                     logger.debug(
-                        "Token `%s` cannot be decoded. "
-                        "Check if the token is already encoded." % token
+                        f"Token `{token}` cannot be decoded. "
+                        "Check if the token is already encoded."
                     )
-                    raise AuthorizationOCPIError
+                    raise AuthorizationOCPIError from exc
         else:
             try:
                 token = decode_string_base64(token)
@@ -141,7 +140,7 @@ class VersionsAuthorizationVerifier(CredentialsAuthorizationVerifier):
         self,
         authorization: str = auth_verifier,
         authenticator: Authenticator = Depends(get_authenticator),
-    ) -> str | dict | None:
+    ) -> Union[str, dict, None]:
         """
         Verifies the authorization token using the specified version
         and an Authenticator for version endpoints.
@@ -194,19 +193,19 @@ class HttpPushVerifier:
             if version.value.startswith("2.2"):
                 try:
                     token = decode_string_base64(token)
-                except UnicodeDecodeError:
+                except UnicodeDecodeError as exc:
                     logger.debug(
-                        "Token `%s` cannot be decoded. "
-                        "Check if the token is already encoded." % token
+                        f"Token `{token}` cannot be decoded. "
+                        "Check if the token is already encoded."
                     )
-                    raise AuthorizationOCPIError
+                    raise AuthorizationOCPIError from exc
             await authenticator.authenticate(token)
-        except IndexError:
+        except IndexError as exc:
             logger.debug(
-                "Token `%s` cannot be split in parts. "
+                "Token cannot be split in parts. "
                 "Check if it starts with `Token `"
             )
-            raise AuthorizationOCPIError
+            raise AuthorizationOCPIError from exc
 
 
 class WSPushVerifier:
@@ -233,7 +232,7 @@ class WSPushVerifier:
         :raises AuthorizationOCPIError: If there is an issue with
           the authorization token.
         """
-        if settings.NO_AUTH and token == "":
+        if settings.NO_AUTH and token == "":  # nosec
             logger.debug("Authentication skipped due to NO_AUTH setting.")
             return True
 
@@ -245,12 +244,12 @@ class WSPushVerifier:
             if version.value.startswith("2.2"):
                 try:
                     token = decode_string_base64(token)
-                except UnicodeDecodeError:
+                except UnicodeDecodeError as exc:
                     logger.debug(
-                        "Token `%s` cannot be decoded. "
-                        "Check if the token is already encoded." % token
+                        f"Token `{token}` cannot be decoded. "
+                        "Check if the token is already encoded."
                     )
-                    raise AuthorizationOCPIError
+                    raise AuthorizationOCPIError from exc
             await authenticator.authenticate(token)
-        except AuthorizationOCPIError:
-            raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION)
+        except AuthorizationOCPIError as exc:
+            raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION) from exc
