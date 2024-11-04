@@ -40,10 +40,10 @@ async def receive_chargingprofile_command(
         The OCPIResponse indicating the success of the operation.
     """
     logger.info("Received charging profile result.")
-    logger.debug("Chargingprofile result data - %s" % data)
+    logger.debug(f"Chargingprofile result data - {data}")
     auth_token = get_auth_token(request)
     query_params = request.query_params
-    logger.debug("Request query_params - %s" % query_params)
+    logger.debug(f"Request query_params - {query_params}")
 
     await crud.create(
         ModuleID.charging_profile,
@@ -85,12 +85,9 @@ async def add_or_update_chargingprofile(
     """
     logger.info(
         "Received request to add or update charging profile "
-        "with session_id - `%s`." % session_id
+        f"with session_id - `{session_id}`."
     )
-    logger.debug(
-        "Active chargingprofile result data - %s"
-        % active_charging_profile.dict()
-    )
+    logger.debug(f"Active chargingprofile result data - {active_charging_profile.dict()}")
     auth_token = get_auth_token(request)
 
     await crud.update(

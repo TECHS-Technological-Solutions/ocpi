@@ -55,7 +55,7 @@ async def get_session(
     **Raises:**
         NotFoundOCPIError: If the session is not found.
     """
-    logger.info("Received request to get session with id - `%s`." % session_id)
+    logger.info(f"Received request to get session with id - `{session_id}`.")
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
     data = await crud.get(
@@ -72,7 +72,7 @@ async def get_session(
             data=[adapter.session_adapter(data, VersionNumber.v_2_1_1).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
         )
-    logger.debug("Session with id `%s` was not found." % session_id)
+    logger.debug(f"Session with id `{session_id}` was not found.")
     raise NotFoundOCPIError
 
 
@@ -105,9 +105,9 @@ async def add_or_update_session(
         The OCPIResponse containing the added or updated session data.
     """
     logger.info(
-        "Received request to add or update session with id - `%s`." % session_id
+        f"Received request to add or update session with id - `{session_id}`."
     )
-    logger.debug("Session data to update - %s" % session.dict())
+    logger.debug(f"Session data to update - {session.dict()}")
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
     data = await crud.get(
@@ -120,7 +120,7 @@ async def add_or_update_session(
         version=VersionNumber.v_2_1_1,
     )
     if data:
-        logger.debug("Update session with id - `%s`." % session_id)
+        logger.debug(f"Update session with id - `{session_id}`.")
         data = await crud.update(
             ModuleID.sessions,
             RoleEnum.emsp,
@@ -132,7 +132,7 @@ async def add_or_update_session(
             version=VersionNumber.v_2_1_1,
         )
     else:
-        logger.debug("Create session with id - `%s`." % session_id)
+        logger.debug(f"Create session with id - `{session_id}`.")
         data = await crud.create(
             ModuleID.sessions,
             RoleEnum.emsp,
@@ -181,10 +181,9 @@ async def partial_update_session(
         NotFoundOCPIError: If the session is not found.
     """
     logger.info(
-        "Received request to partially update session with id - `%s`."
-        % session_id
+        f"Received request to partially update session with id - `{session_id}`."
     )
-    logger.debug("Session data to update - %s" % session.dict())
+    logger.debug(f"Session data to update - {session.dict()}")
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
     old_data = await crud.get(
@@ -219,5 +218,5 @@ async def partial_update_session(
             data=[adapter.session_adapter(data, VersionNumber.v_2_1_1).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
         )
-    logger.debug("Session with id `%s` was not found." % session_id)
+    logger.debug(f"Session with id `{session_id}` was not found.")
     raise NotFoundOCPIError

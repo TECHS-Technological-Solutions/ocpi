@@ -42,7 +42,7 @@ async def get_cdr(
     **Raises:**
         NotFoundOCPIError: If the CDR is not found.
     """
-    logger.info("Received request to get cdr with id - `%s`." % cdr_id)
+    logger.info(f"Received request to get cdr with id - `{cdr_id}`.")
     auth_token = get_auth_token(request)
 
     data = await crud.get(
@@ -57,7 +57,7 @@ async def get_cdr(
             data=[adapter.cdr_adapter(data).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
         )
-    logger.debug("CDR with id `%s` was not found." % cdr_id)
+    logger.debug(f"CDR with id `{cdr_id}` was not found.")
     raise NotFoundOCPIError
 
 
@@ -81,7 +81,7 @@ async def add_cdr(
         The OCPIResponse containing the created CDR data.
     """
     logger.info("Received request to create cdr.")
-    logger.debug("CDR data to create - %s" % cdr.dict())
+    logger.debug(f"CDR data to create - {cdr.dict()}")
     auth_token = get_auth_token(request)
 
     data = await crud.create(

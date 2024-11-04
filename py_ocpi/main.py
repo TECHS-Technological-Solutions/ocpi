@@ -64,7 +64,7 @@ class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
                     **status.OCPI_3000_GENERIC_SERVER_ERROR,
                 ).dict()
             )
-        except Exception as e:  # pylint: disable=broad-exception
+        except Exception as e:  # pylint: disable=broad-exception-caught
             logger.warning(f"Unknown exception: {str(e)}.")
             response = JSONResponse(
                 OCPIResponse(

@@ -1,3 +1,5 @@
+from typing import Union
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -29,7 +31,7 @@ async def get_version_details(
     request: Request,
     endpoints=Depends(get_endpoints),
     crud: Crud = Depends(get_crud),
-    server_cred: str | dict | None = Depends(cred_dependency),
+    server_cred: Union[str, dict, None] = Depends(cred_dependency),
 ):
     """
     Get Version Details.
@@ -39,7 +41,7 @@ async def get_version_details(
     **Returns:**
         The OCPIResponse containing details of the OCPI version 2.2.1.
     """
-    logger.info("Received request for version details: %s" % request.url)
+    logger.info(f"Received request for version details: {request.url}")
     if server_cred is None:
         logger.debug("Unauthorized request.")
         raise HTTPException(fastapistatus.HTTP_401_UNAUTHORIZED, "Unauthorized")

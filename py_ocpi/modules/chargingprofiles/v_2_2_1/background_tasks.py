@@ -1,7 +1,6 @@
-import httpx
-
 from asyncio import sleep
 
+import httpx
 from py_ocpi.modules.versions.enums import VersionNumber
 from py_ocpi.core.utils import encode_string_base64
 from py_ocpi.core.config import settings
@@ -49,10 +48,7 @@ async def send_get_chargingprofile(
             version=VersionNumber.v_2_2_1,
         )
         if active_charging_profile_result:
-            logger.debug(
-                "Active charging profile result from Charge Point - %s"
-                % active_charging_profile_result
-            )
+            logger.debug(f"Active charging profile result from Charge Point - {active_charging_profile_result}")
             break
         await sleep(2)
 
@@ -73,10 +69,7 @@ async def send_get_chargingprofile(
 
     async with httpx.AsyncClient() as client:
         authorization_token = f"Token {encode_string_base64(client_auth_token)}"
-        logger.info(
-            "Send request with active charging profile result: %s"
-            % response_url
-        )
+        logger.info(f"Send request with active charging profile result: {response_url}")
         res = await client.post(
             response_url,
             json=active_charging_profile_result.dict(),
@@ -84,7 +77,7 @@ async def send_get_chargingprofile(
         )
         logger.info(
             "POST active chargingprofile result data after receiving result "
-            "from Charge Point status_code: %s" % res.status_code
+            f"from Charge Point status_code: {res.status_code}"
         )
 
 
@@ -119,10 +112,7 @@ async def send_update_chargingprofile(
             version=VersionNumber.v_2_2_1,
         )
         if not charging_profile_result:
-            logger.debug(
-                "Charging profile result from Charge Point - %s"
-                % charging_profile_result
-            )
+            logger.debug(f"Charging profile result from Charge Point - {charging_profile_result}")
             break
         await sleep(2)
 
@@ -144,7 +134,7 @@ async def send_update_chargingprofile(
     async with httpx.AsyncClient() as client:
         authorization_token = f"Token {encode_string_base64(client_auth_token)}"
         logger.info(
-            "Send request with charging profile result: %s" % response_url
+            f"Send request with charging profile result: {response_url}"
         )
         res = await client.post(
             response_url,
@@ -153,7 +143,7 @@ async def send_update_chargingprofile(
         )
         logger.info(
             "POST charging profile result data after receiving result "
-            "from Charge Point status_code: %s" % res.status_code
+            f"from Charge Point status_code: {res.status_code}"
         )
 
 
@@ -187,15 +177,14 @@ async def send_delete_chargingprofile(
         )
         if not clear_profile_result:
             logger.debug(
-                "Clear profile result from Charge Point - %s"
-                % clear_profile_result
+                f"Clear profile result from Charge Point - {clear_profile_result}"
             )
             break
         await sleep(2)
 
     if clear_profile_result:
         logger.debug(
-            "Clear profile result from Charge Point " "didn't arrive in time."
+            "Clear profile result from Charge Point didn't arrive in time."
         )
         clear_profile_result = ChargingProfileResult(
             result=ChargingProfileResultType.rejected
@@ -207,7 +196,7 @@ async def send_delete_chargingprofile(
 
     async with httpx.AsyncClient() as client:
         authorization_token = f"Token {encode_string_base64(client_auth_token)}"
-        logger.info("Send request with clear profile result: %s" % response_url)
+        logger.info(f"Send request with clear profile result: {response_url}")
         res = await client.post(
             response_url,
             json=clear_profile_result.dict(),
@@ -215,5 +204,5 @@ async def send_delete_chargingprofile(
         )
         logger.info(
             "POST clear profile result data after receiving result "
-            "from Charge Point status_code: %s" % res.status_code
+            f"from Charge Point status_code: {res.status_code}"
         )

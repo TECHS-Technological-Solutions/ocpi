@@ -60,7 +60,7 @@ async def get_location(
         NotFoundOCPIError: NotFoundOCPIError: If the location is not found.
     """
     logger.info(
-        "Received request to get location with id - `%s`." % location_id
+        f"Received request to get location with id - `{location_id}`."
     )
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
@@ -78,7 +78,7 @@ async def get_location(
             data=[adapter.location_adapter(data, VersionNumber.v_2_1_1).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
         )
-    logger.debug("Location with id `%s` was not found." % location_id)
+    logger.debug(f"Location with id `{location_id}` was not found.")
     raise NotFoundOCPIError
 
 
@@ -115,8 +115,7 @@ async def get_evse(
          or EVSE with the specified UID is not found.
     """
     logger.info(
-        "Received request to get evse by id - `%s` (location id - `%s`)"
-        % (location_id, evse_uid)
+        f"Received request to get evse by id - `{location_id}` (location id - `{evse_uid}`)"
     )
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
@@ -137,8 +136,8 @@ async def get_evse(
                     data=[evse.dict()],
                     **status.OCPI_1000_GENERIC_SUCESS_CODE,
                 )
-        logger.debug("Evse with id `%s` was not found." % evse_uid)
-    logger.debug("Location with id `%s` was not found." % location_id)
+        logger.debug(f"Evse with id `{evse_uid}` was not found.")
+    logger.debug(f"Location with id `{location_id}` was not found.")
     raise NotFoundOCPIError
 
 
@@ -179,9 +178,8 @@ async def get_connector(
          specified UID, or Connector with the specified ID is not found.
     """
     logger.info(
-        "Received request to get connector by id - `%s` "
-        "(location id - `%s`, evse id - `%s`)"
-        % (connector_id, location_id, evse_uid)
+        f"Received request to get connector by id - `{connector_id}` "
+        f"(location id - `{location_id}`, evse id - `{evse_uid}`)"
     )
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
@@ -205,10 +203,10 @@ async def get_connector(
                             **status.OCPI_1000_GENERIC_SUCESS_CODE,
                         )
                 logger.debug(
-                    "Connector with id `%s` was not found." % connector_id
+                    f"Connector with id `{connector_id}` was not found."
                 )
-        logger.debug("Evse with id `%s` was not found." % evse_uid)
-    logger.debug("Location with id `%s` was not found." % location_id)
+        logger.debug(f"Evse with id `{evse_uid}` was not found.")
+    logger.debug(f"Location with id `{location_id}` was not found.")
     raise NotFoundOCPIError
 
 
@@ -245,10 +243,9 @@ async def add_or_update_location(
         NotFoundOCPIError: If the location is not found.
     """
     logger.info(
-        "Received request to add or update location with id - `%s`."
-        % location_id
+        f"Received request to add or update location with id - `{location_id}`."
     )
-    logger.debug("Location data to update - %s" % location.dict())
+    logger.debug(f"Location data to update - {location.dict()}")
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
     data = await crud.get(
@@ -261,7 +258,7 @@ async def add_or_update_location(
         version=VersionNumber.v_2_1_1,
     )
     if data:
-        logger.debug("Update location with id - `%s`." % location_id)
+        logger.debug(f"Update location with id - `{location_id}`.")
         data = await crud.update(
             ModuleID.locations,
             RoleEnum.emsp,
@@ -273,7 +270,7 @@ async def add_or_update_location(
             version=VersionNumber.v_2_1_1,
         )
     else:
-        logger.debug("Create location with id - `%s`." % location_id)
+        logger.debug(f"Create location with id - `{location_id}`.")
         data = await crud.create(
             ModuleID.locations,
             RoleEnum.emsp,
@@ -325,10 +322,10 @@ async def add_or_update_evse(
         NotFoundOCPIError: If the location with the specified ID is not found.
     """
     logger.info(
-        "Received request to add or update evse by id - `%s` "
-        "(location id - `%s`)" % (location_id, evse_uid)
+        f"Received request to add or update evse by id - `{location_id}` "
+        f"(location id - `{evse_uid}`)"
     )
-    logger.debug("Evse data to update - %s" % evse.dict())
+    logger.debug(f"Evse data to update - {evse.dict()}")
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
     old_data = await crud.get(
@@ -346,7 +343,7 @@ async def add_or_update_evse(
 
         for old_evse in old_location.evses:
             if old_evse.uid == evse_uid:
-                logger.debug("Update evse with id - %s" % evse_uid)
+                logger.debug(f"Update evse with id - {evse_uid}")
                 new_location.evses.remove(old_evse)
                 break
 
@@ -367,7 +364,7 @@ async def add_or_update_evse(
             data=[evse.dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
         )
-    logger.debug("Location with id `%s` was not found." % location_id)
+    logger.debug(f"Location with id `{location_id}` was not found.")
     raise NotFoundOCPIError
 
 
@@ -410,11 +407,10 @@ async def add_or_update_connector(
             with the specified UID is not found.
     """
     logger.info(
-        "Received request to get connector by id - `%s` "
-        "(location id - `%s`, evse id - `%s`)"
-        % (connector_id, location_id, evse_uid)
+        f"Received request to get connector by id - `{connector_id}` "
+        f"(location id - `{location_id}`, evse id - `{evse_uid}`)"
     )
-    logger.debug("Connector data to update - %s" % connector.dict())
+    logger.debug(f"Connector data to update - {connector.dict()}")
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
     old_data = await crud.get(
@@ -437,7 +433,7 @@ async def add_or_update_connector(
                 for old_connector in old_evse.connectors:
                     if old_connector.id == connector_id:
                         logger.debug(
-                            "Update connector with id - %s" % connector_id
+                            f"Update connector with id - {connector_id}"
                         )
                         new_evse.connectors.remove(old_connector)
                         break
@@ -459,8 +455,8 @@ async def add_or_update_connector(
                     data=[connector.dict()],
                     **status.OCPI_1000_GENERIC_SUCESS_CODE,
                 )
-        logger.debug("Evse with id `%s` was not found." % evse_uid)
-    logger.debug("Location with id `%s` was not found." % location_id)
+        logger.debug(f"Evse with id `{evse_uid}` was not found.")
+    logger.debug(f"Location with id `{location_id}` was not found.")
     raise NotFoundOCPIError
 
 
@@ -497,10 +493,9 @@ async def partial_update_location(
         NotFoundOCPIError: If the location is not found.
     """
     logger.info(
-        "Received request to partially update location with id - `%s`."
-        % location_id
+        f"Received request to partially update location with id - `{location_id}`."
     )
-    logger.debug("Location data to update - %s" % location.dict())
+    logger.debug(f"Location data to update - {location.dict()}")
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
     old_data = await crud.get(
@@ -536,7 +531,7 @@ async def partial_update_location(
             data=[adapter.location_adapter(data, VersionNumber.v_2_1_1).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
         )
-    logger.debug("Location with id `%s` was not found." % location_id)
+    logger.debug(f"Location with id `{location_id}` was not found.")
     raise NotFoundOCPIError
 
 
@@ -578,10 +573,10 @@ async def partial_update_evse(
          or EVSE with the specified UID is not found.
     """
     logger.info(
-        "Received request to partially update evse by id - `%s` "
-        "(location id - `%s`)" % (location_id, evse_uid)
+        f"Received request to partially update evse by id - `{location_id}` "
+        f"(location id - `{evse_uid}`)"
     )
-    logger.debug("Evse data to update - %s" % evse.dict())
+    logger.debug(f"Evse data to update - {evse.dict()}")
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
     old_data = await crud.get(
@@ -621,8 +616,8 @@ async def partial_update_evse(
                     data=[new_evse.dict()],
                     **status.OCPI_1000_GENERIC_SUCESS_CODE,
                 )
-        logger.debug("Evse with id `%s` was not found." % evse_uid)
-    logger.debug("Location with id `%s` was not found." % location_id)
+        logger.debug(f"Evse with id `{evse_uid}` was not found.")
+    logger.debug(f"Location with id `{location_id}` was not found.")
     raise NotFoundOCPIError
 
 
@@ -667,11 +662,10 @@ async def partial_update_connector(
          the specified UID, or Connector with the specified ID is not found.
     """
     logger.info(
-        "Received request to partially update connector by id - `%s` "
-        "(location id - `%s`, evse id - `%s`)"
-        % (connector_id, location_id, evse_uid)
+        f"Received request to partially update connector by id - `{connector_id}` "
+        f"(location id - `{location_id}`, evse id - `{evse_uid}`)"
     )
-    logger.debug("Connector data to update - %s" % connector.dict())
+    logger.debug(f"Connector data to update - {connector.dict()}")
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
     old_data = await crud.get(
@@ -715,8 +709,8 @@ async def partial_update_connector(
                             **status.OCPI_1000_GENERIC_SUCESS_CODE,
                         )
                 logger.debug(
-                    "Connector with id `%s` was not found." % connector_id
+                    f"Connector with id `{connector_id}` was not found."
                 )
-        logger.debug("Evse with id `%s` was not found." % evse_uid)
-    logger.debug("Location with id `%s` was not found." % location_id)
+        logger.debug(f"Evse with id `{evse_uid}` was not found.")
+    logger.debug(f"Location with id `{location_id}` was not found.")
     raise NotFoundOCPIError

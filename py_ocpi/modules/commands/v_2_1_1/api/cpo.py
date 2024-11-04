@@ -1,3 +1,4 @@
+from typing import Union
 from asyncio import sleep
 
 from fastapi import (
@@ -55,7 +56,7 @@ async def apply_pydantic_schema(command: str, data: dict):
 
 
 async def send_command_result(
-    command_data: StartSession | StopSession | ReserveNow | UnlockConnector,
+    command_data: Union[StartSession, StopSession, ReserveNow, UnlockConnector],
     command: CommandType,
     auth_token: str,
     crud: Crud,
@@ -83,7 +84,7 @@ async def send_command_result(
         )
         if command_result:
             logger.info(
-                "Command result from Charge Point - %s" % command_result
+                f"Command result from Charge Point - {command_result}"
             )
             break
         await sleep(2)
@@ -99,7 +100,7 @@ async def send_command_result(
     async with httpx.AsyncClient() as client:
         authorization_token = f"Token {client_auth_token}"
         logger.info(
-            "Send request with command result: %s" % command_data.response_url
+            f"Send request with command result: {command_data.response_url}"
         )
         res = await client.post(
             command_data.response_url,
@@ -108,7 +109,7 @@ async def send_command_result(
         )
         logger.info(
             "POST command data after receiving result from Charge Point"
-            " status_code: %s" % res.status_code
+            f" status_code: {res.status_code}"
         )
 
 
@@ -140,8 +141,8 @@ async def receive_command(
             if the command action returns without a result.
         - NotFoundOCPIError: If the associated location is not found.
     """
-    logger.info("Received command - `%s`." % command)
-    logger.debug("Command data - %s" % data)
+    logger.info(f"Received command - `{command}`.")
+    logger.debug(f"Command data - {data}")
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
     try:
@@ -211,7 +212,7 @@ async def receive_command(
     # when the location is not found
     except NotFoundOCPIError:
         logger.info(
-            "Location with id `%s` was not found." % command_data.location_id
+            f"Location with id `{command_data.location_id}` was not found."
         )
         command_response = CommandResponse(result=CommandResponseType.rejected)
         return OCPIResponse(

@@ -183,7 +183,7 @@ class Number(float):
     @classmethod
     def validate(cls, v):
         if not any([isinstance(v, float), isinstance(v, int)]):
-            TypeError(f"excpected float but received {type(v)}")
+            raise TypeError(f"excpected float but received {type(v)}")
         return cls(float(v))
 
     def __repr__(self):

@@ -7,9 +7,9 @@ from fastapi import (
     Security,
     status,
     Query,
+    HTTPException
 )
 from fastapi.security import APIKeyHeader
-from starlette.websockets import WebSocketException
 
 from py_ocpi.core.authentication.authenticator import Authenticator
 from py_ocpi.core.config import logger, settings
@@ -252,4 +252,4 @@ class WSPushVerifier:
                     raise AuthorizationOCPIError from exc
             await authenticator.authenticate(token)
         except AuthorizationOCPIError as exc:
-            raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION) from exc
+            raise HTTPException(status_code=status.WS_1008_POLICY_VIOLATION) from exc

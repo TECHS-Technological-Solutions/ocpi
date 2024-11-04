@@ -98,9 +98,9 @@ async def authorize_token(
     **Raises:**
         NotFoundOCPIError: If the token is not found.
     """
-    logger.info("Received request to authorize token with id `%s`" % token_uid)
-    logger.debug("Token type - `%s`" % token_type)
-    logger.debug("Location reference - `%s`" % location_reference)
+    logger.info(f"Received request to authorize token with id `{token_uid}`")
+    logger.debug(f"Token type - `{token_type}`")
+    logger.debug(f"Location reference - `{location_reference}`")
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
     # check if token exists
@@ -148,5 +148,5 @@ async def authorize_token(
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
         )
 
-    logger.debug("Token with id `%s` was not found." % token_uid)
+    logger.debug(f"Token with id `{token_uid}` was not found.")
     raise NotFoundOCPIError

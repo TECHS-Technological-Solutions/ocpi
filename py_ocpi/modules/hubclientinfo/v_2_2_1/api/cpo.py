@@ -45,8 +45,8 @@ async def get_hubclientinfo(
         - NotFoundOCPIError: If the hub client info is not found.
     """
     logger.info(
-        "Received request to get hub client info with country code - `%s` "
-        "and party id - `%s`." % (country_code, party_id)
+        f"Received request to get hub client info with country code - `{country_code}` "
+        f"and party id - `{party_id}`."
     )
     auth_token = get_auth_token(request)
 
@@ -97,10 +97,9 @@ async def add_or_update_clienthubinfo(
     """
     logger.info(
         "Received request to add or update hub client info "
-        "with country code - `%s` and party id - `%s`."
-        % (country_code, party_id)
+        f"with country code - `{country_code}` and party id - `{party_id}`."
     )
-    logger.debug("Client hub info data to update - %s" % client_hub_info.dict())
+    logger.debug(f"Client hub info data to update - {client_hub_info.dict()}")
     auth_token = get_auth_token(request)
 
     data = await crud.get(

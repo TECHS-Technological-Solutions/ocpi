@@ -57,10 +57,7 @@ async def get_chargingprofile(
     **Raises:**
         - NotFoundOCPIError: If the specified charging session is not found.
     """
-    logger.info(
-        "Received request to get charging profile with session_id - `%s`."
-        % session_id
-    )
+    logger.info(f"Received request to get charging profile with session_id - `{session_id}`.")
     auth_token = get_auth_token(request)
 
     session = await crud.get(
@@ -117,7 +114,7 @@ async def get_chargingprofile(
             **status.OCPI_3000_GENERIC_SERVER_ERROR,
         )
 
-    logger.info("Session with id `%s` was not found." % session_id)
+    logger.info(f"Session with id `{session_id}` was not found.")
     charging_profile_response = ChargingProfileResponse(
         result=ChargingProfileResponseType.rejected, timeout=0
     )
@@ -153,11 +150,8 @@ async def add_or_update_chargingprofile(
     **Raises:**
         - NotFoundOCPIError: If the specified charging session is not found.
     """
-    logger.info(
-        "Received request to get charging profile with session_id - `%s`."
-        % session_id
-    )
-    logger.debug("Set charging profile data - `%s`" % charging_profile.dict())
+    logger.info(f"Received request to get charging profile with session_id - `{session_id}`.")
+    logger.debug(f"Set charging profile data - `{charging_profile.dict()}`")
     auth_token = get_auth_token(request)
 
     session = await crud.get(
@@ -214,7 +208,7 @@ async def add_or_update_chargingprofile(
             **status.OCPI_3000_GENERIC_SERVER_ERROR,
         )
 
-    logger.info("Session with id `%s` was not found." % session_id)
+    logger.info(f"Session with id `{session_id}` was not found.")
     charging_profile_response = ChargingProfileResponse(
         result=ChargingProfileResponseType.rejected, timeout=0
     )
@@ -250,10 +244,7 @@ async def delete_chargingprofile(
     **Raises:**
         - NotFoundOCPIError: If the specified charging session is not found.
     """
-    logger.info(
-        "Received request to get charging profile with session_id - `%s`."
-        % session_id
-    )
+    logger.info(f"Received request to get charging profile with session_id - `{session_id}`.")
     auth_token = get_auth_token(request)
 
     session = await crud.get(
@@ -308,7 +299,7 @@ async def delete_chargingprofile(
             **status.OCPI_3000_GENERIC_SERVER_ERROR,
         )
 
-    logger.info("Session with id `%s` was not found." % session_id)
+    logger.info(f"Session with id `{session_id}` was not found.")
     charging_profile_response = ChargingProfileResponse(
         result=ChargingProfileResponseType.rejected, timeout=0
     )

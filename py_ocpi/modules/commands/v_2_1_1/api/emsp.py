@@ -42,8 +42,8 @@ async def receive_command_result(
         The OCPIResponse indicating the success or failure of processing
             the command result.
     """
-    logger.info("Received command result with uid - `%s`." % uid)
-    logger.debug("Command response data - %s" % command_response.dict())
+    logger.info(f"Received command result with uid - `{uid}`.")
+    logger.debug(f"Command response data - {command_response.dict()}")
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
     await crud.update(

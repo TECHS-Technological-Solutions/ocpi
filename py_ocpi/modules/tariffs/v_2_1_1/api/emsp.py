@@ -52,7 +52,7 @@ async def get_tariff(
     **Raises:**
         NotFoundOCPIError: If the tariff is not found.
     """
-    logger.info("Received request to get tariff with id - `%s`." % tariff_id)
+    logger.info(f"Received request to get tariff with id - `{tariff_id}`.")
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
     data = await crud.get(
@@ -69,7 +69,7 @@ async def get_tariff(
             data=[adapter.tariff_adapter(data, VersionNumber.v_2_1_1).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
         )
-    logger.debug("Tariff with id `%s` was not found." % tariff_id)
+    logger.debug(f"Tariff with id `{tariff_id}` was not found.")
     raise NotFoundOCPIError
 
 
@@ -102,9 +102,9 @@ async def add_or_update_tariff(
         The OCPIResponse containing the tariff data.
     """
     logger.info(
-        "Received request to add or update tariff with id - `%s`." % tariff_id
+        f"Received request to add or update tariff with id - `{tariff_id}`."
     )
-    logger.debug("Tariff data to update - %s" % tariff.dict())
+    logger.debug(f"Tariff data to update - {tariff.dict()}")
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
     data = await crud.get(
@@ -117,7 +117,7 @@ async def add_or_update_tariff(
         version=VersionNumber.v_2_1_1,
     )
     if data:
-        logger.debug("Update tariff with id - `%s`." % tariff_id)
+        logger.debug(f"Update tariff with id - `{tariff_id}`.")
         data = await crud.update(
             ModuleID.tariffs,
             RoleEnum.emsp,
@@ -129,7 +129,7 @@ async def add_or_update_tariff(
             version=VersionNumber.v_2_1_1,
         )
     else:
-        logger.debug("Create tariff with id - `%s`." % tariff_id)
+        logger.debug(f"Create tariff with id - `{tariff_id}`.")
         data = await crud.create(
             ModuleID.tariffs,
             RoleEnum.emsp,
@@ -178,10 +178,9 @@ async def partial_update_tariff(
         NotFoundOCPIError: If the tariff is not found.
     """
     logger.info(
-        "Received request to partially update tariff with id - `%s`."
-        % tariff_id
+        f"Received request to partially update tariff with id - `{tariff_id}`."
     )
-    logger.debug("Tariff data to update - %s" % tariff.dict())
+    logger.debug(f"Tariff data to update - {tariff.dict()}")
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
     old_data = await crud.get(
@@ -216,7 +215,7 @@ async def partial_update_tariff(
             data=[adapter.tariff_adapter(data, VersionNumber.v_2_1_1).dict()],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
         )
-    logger.debug("Tariff with id `%s` was not found." % tariff_id)
+    logger.debug(f"Tariff with id `{tariff_id}` was not found.")
     raise NotFoundOCPIError
 
 
@@ -247,7 +246,7 @@ async def delete_tariff(
     **Raises:**
         NotFoundOCPIError: If the tariff is not found.
     """
-    logger.info("Received request to delete tariff with id - `%s`." % tariff_id)
+    logger.info(f"Received request to delete tariff with id - `{tariff_id}`.")
     auth_token = get_auth_token(request, VersionNumber.v_2_1_1)
 
     tariff = await crud.get(
@@ -274,5 +273,5 @@ async def delete_tariff(
             data=[],
             **status.OCPI_1000_GENERIC_SUCESS_CODE,
         )
-    logger.debug("Tariff with id `%s` was not found." % tariff_id)
+    logger.debug(f"Tariff with id `{tariff_id}` was not found.")
     raise NotFoundOCPIError

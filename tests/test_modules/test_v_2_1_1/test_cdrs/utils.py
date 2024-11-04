@@ -32,7 +32,7 @@ CDRS = [
                 "elements": [
                     {
                         "price_components": [
-                            {"type": "TIME", "price": "2.00", "step_size": 300}
+                            {"type": "TIME", "price": 2.00, "step_size": 300}
                         ]
                     }
                 ],

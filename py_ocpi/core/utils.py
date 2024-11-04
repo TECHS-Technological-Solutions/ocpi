@@ -50,7 +50,7 @@ async def get_list(
     )
 
     link = ""
-    params = dict(**filters)
+    params = {**filters}
     params["offset"] = filters["offset"] + filters["limit"]
     if not is_last_page:
         link = (
