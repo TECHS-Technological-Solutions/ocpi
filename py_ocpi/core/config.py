@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     COMMAND_AWAIT_TIME: int = 5
     GET_ACTIVE_PROFILE_AWAIT_TIME: int = 5
     TRAILING_SLASH: bool = True
+    ENAPI_HUB_URL: str = "https://hub.enapi.com/ocpi"
+    ENAPI_HUB_TOKEN = "your_auth_token"  # nosec
 
     @classmethod
     @validator("BACKEND_CORS_ORIGINS", pre=True)
