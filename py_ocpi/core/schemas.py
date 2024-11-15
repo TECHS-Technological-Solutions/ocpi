@@ -1,9 +1,9 @@
 from datetime import datetime, timezone
 from typing import List, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from py_ocpi.core.data_types import String, DateTime, URL
+from py_ocpi.core.data_types import String, URL
 from py_ocpi.core.enums import ModuleID
 
 
@@ -14,7 +14,7 @@ class OCPIResponse(BaseModel):
     data: Union[list, dict]
     status_code: int
     status_message: String(255)
-    timestamp: DateTime = str(datetime.now(timezone.utc))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class Receiver(BaseModel):
