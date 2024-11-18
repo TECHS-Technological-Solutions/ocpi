@@ -72,7 +72,6 @@ class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
                     **status.OCPI_3000_GENERIC_SERVER_ERROR,
                 ).dict()
             )
-
         logger.debug(f"Response status_code -> {response.status_code}.")
         return response
 

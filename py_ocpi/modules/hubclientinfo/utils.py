@@ -11,6 +11,16 @@ class HubTopologyHandler:
         self.token = token
         self.headers = {"Authorization": f"Token {self.token}"}
 
+    def handshake_with_hub(self):
+        url = f"{self.hub_url}/versions"
+        response = requests.get(
+            url,
+            headers=self.headers,
+            timeout=30
+        )
+        print(url, response)
+        return response.json() if response.status_code == 200 else None
+
     def register_with_hub(self):
         """Register this EMSP with the OCPI Hub."""
         registration_data = {
