@@ -3,8 +3,21 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from py_ocpi.modules.locations.v_2_2_1.schemas import EnergyMix
-from py_ocpi.modules.tariffs.v_2_2_1.enums import DayOfWeek, ReservationRestrictionType, TariffDimensionType, TariffType
-from py_ocpi.core.data_types import URL, CiString, DisplayText, Number, Price, String, DateTime
+from py_ocpi.modules.tariffs.v_2_2_1.enums import (
+    DayOfWeek,
+    ReservationRestrictionType,
+    TariffDimensionType,
+    TariffType,
+)
+from py_ocpi.core.data_types import (
+    URL,
+    CiString,
+    DisplayText,
+    Number,
+    Price,
+    String,
+    DateTime,
+)
 
 
 class PriceComponent(BaseModel):

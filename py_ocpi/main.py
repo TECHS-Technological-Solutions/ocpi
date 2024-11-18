@@ -1,59 +1,116 @@
 from typing import Any, List
 
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, status as fastapistatus
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.middleware.base import (
+    BaseHTTPMiddleware,
+    RequestResponseEndpoint,
+)
 from py_ocpi.core.endpoints import ENDPOINTS
 
-from py_ocpi.modules.versions.api import router as versions_router, versions_v_2_2_1_router
+from py_ocpi.modules.versions.main import router as versions_router
 from py_ocpi.modules.versions.enums import VersionNumber
 from py_ocpi.modules.versions.schemas import Version
-from py_ocpi.core.dependencies import get_crud, get_adapter, get_versions, get_endpoints
+from py_ocpi.core.dependencies import (
+    get_crud,
+    get_adapter,
+    get_versions,
+    get_endpoints,
+    get_modules,
+    get_authenticator,
+)
 from py_ocpi.core import status
-from py_ocpi.core.enums import RoleEnum
-from py_ocpi.core.config import settings
+from py_ocpi.core.adapter import BaseAdapter
+from py_ocpi.core.enums import RoleEnum, ModuleID
+from py_ocpi.core.config import settings, logger
 from py_ocpi.core.data_types import URL
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.exceptions import AuthorizationOCPIError, NotFoundOCPIError
-from py_ocpi.core.push import http_router as http_push_router, websocket_router as websocket_push_router
-from py_ocpi.routers import v_2_2_1_cpo_router, v_2_2_1_emsp_router
+from py_ocpi.core.push import (
+    http_router as http_push_router,
+    websocket_router as websocket_push_router,
+)
+from py_ocpi.core.routers import ROUTERS
 
 
 class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
-
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ):
+        logger.debug(f"{request.method}: {request.url}")
+        logger.debug(f"Request headers - {request.headers}")
+
         try:
             response = await call_next(request)
         except AuthorizationOCPIError as e:
-            raise HTTPException(403, str(e)) from e
+            logger.warning("OCPI middleware AuthorizationOCPIError exception.")
+            response = JSONResponse(
+                content={"detail": str(e)},
+                status_code=fastapistatus.HTTP_403_FORBIDDEN,
+            )
         except NotFoundOCPIError as e:
-            raise HTTPException(404, str(e)) from e
+            logger.warning("OCPI middleware NotFoundOCPIError exception.")
+            response = JSONResponse(
+                content={"detail": str(e)},
+                status_code=fastapistatus.HTTP_404_NOT_FOUND,
+            )
         except ValidationError:
+            logger.warning("OCPI middleware ValidationError exception.")
             response = JSONResponse(
                 OCPIResponse(
                     data=[],
                     **status.OCPI_3000_GENERIC_SERVER_ERROR,
                 ).dict()
             )
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.warning(f"Unknown exception: {str(e)}.")
+            response = JSONResponse(
+                OCPIResponse(
+                    data=[],
+                    **status.OCPI_3000_GENERIC_SERVER_ERROR,
+                ).dict()
+            )
+
+        logger.debug(f"Response status_code -> {response.status_code}.")
         return response
 
 
-def get_application(
+def get_application(  # noqa: MC0001
     version_numbers: List[VersionNumber],
     roles: List[RoleEnum],
     crud: Any,
-    adapter: Any,
+    modules: List[ModuleID],
+    authenticator: Any,
+    adapter: Any = BaseAdapter,
     http_push: bool = False,
     websocket_push: bool = False,
 ) -> FastAPI:
+    """
+    OCPI application initializer.
+
+    :param version_numbers: List of version numbers which are supported.
+    :param roles: Roles which are supported.
+    :param crud: Class with crud methods which should contain business logic
+      and db methods.
+    :param modules: OCPI modules which should be supported. [Some modules are
+      related, make sure to check OCPI documentation first.]
+    :param authenticator: Authenticator class, which would check validity of
+      authentication tokens.
+    :param adapter: Model to dict data transformer.
+    :param http_push: If True, add endpoint where the command to send to
+      corresponding client data update could be made.
+    :param websocket_push: If True, add websocket endpoint where data updates
+      will be shared.
+
+    :return: FastApi application.
+    """
     _app = FastAPI(
         title=settings.PROJECT_NAME,
-        docs_url=f'/{settings.OCPI_PREFIX}/docs',
-        openapi_url=f"/{settings.OCPI_PREFIX}/openapi.json"
+        docs_url=f"/{settings.OCPI_PREFIX}/docs",
+        redoc_url=f"/{settings.OCPI_PREFIX}/redoc",
+        openapi_url=f"/{settings.OCPI_PREFIX}/openapi.json",
     )
 
     _app.add_middleware(
@@ -67,54 +124,71 @@ def get_application(
 
     _app.include_router(
         versions_router,
-        prefix=f'/{settings.OCPI_PREFIX}',
+        prefix=f"/{settings.OCPI_PREFIX}",
     )
 
     if http_push:
         _app.include_router(
             http_push_router,
-            prefix=f'/{settings.PUSH_PREFIX}',
+            prefix=f"/{settings.PUSH_PREFIX}",
         )
 
     if websocket_push:
         _app.include_router(
             websocket_push_router,
-            prefix=f'/{settings.PUSH_PREFIX}',
+            prefix=f"/{settings.PUSH_PREFIX}",
         )
 
     versions = []
-    version_endpoints = {}
+    version_endpoints: dict[str, list] = {}
 
-    if VersionNumber.v_2_2_1 in version_numbers:
+    for version in version_numbers:
+        mapped_version = ROUTERS.get(version)
+        if not mapped_version:
+            raise ValueError("Version isn't supported yet.")
+
         _app.include_router(
-            versions_v_2_2_1_router,
-            prefix=f'/{settings.OCPI_PREFIX}',
+            mapped_version["version_router"],
+            prefix=f"/{settings.OCPI_PREFIX}",
         )
 
         versions.append(
             Version(
-                version=VersionNumber.v_2_2_1,
-                url=URL(f'https://{settings.OCPI_HOST}/{settings.OCPI_PREFIX}/{VersionNumber.v_2_2_1.value}/details')
+                version=version,
+                url=URL(
+                    f"{settings.PROTOCOL}://{settings.OCPI_HOST}/"
+                    f"{settings.OCPI_PREFIX}/{version.value}/details"
+                ),
             ).dict(),
         )
 
-        version_endpoints[VersionNumber.v_2_2_1] = []
+        version_endpoints[version] = []
 
         if RoleEnum.cpo in roles:
-            _app.include_router(
-                v_2_2_1_cpo_router,
-                prefix=f'/{settings.OCPI_PREFIX}/cpo/{VersionNumber.v_2_2_1.value}',
-                tags=['CPO']
-            )
-            version_endpoints[VersionNumber.v_2_2_1] += ENDPOINTS[VersionNumber.v_2_2_1][RoleEnum.cpo]
+            for module in modules:
+                cpo_router = mapped_version["cpo_router"].get(module)
+                if cpo_router:
+                    _app.include_router(
+                        cpo_router,
+                        prefix=f"/{settings.OCPI_PREFIX}/cpo/{version.value}",
+                        tags=[f"CPO {version.value}"],
+                    )
+                    endpoint = ENDPOINTS[version][RoleEnum.cpo].get(module)
+                    if endpoint:
+                        version_endpoints[version].append(endpoint)
 
         if RoleEnum.emsp in roles:
-            _app.include_router(
-                v_2_2_1_emsp_router,
-                prefix=f'/{settings.OCPI_PREFIX}/emsp/{VersionNumber.v_2_2_1.value}',
-                tags=['EMSP']
-            )
-            version_endpoints[VersionNumber.v_2_2_1] += ENDPOINTS[VersionNumber.v_2_2_1][RoleEnum.emsp]
+            for module in modules:
+                emsp_router = mapped_version["emsp_router"].get(module)
+                if emsp_router:
+                    _app.include_router(
+                        emsp_router,
+                        prefix=f"/{settings.OCPI_PREFIX}/emsp/{version.value}",
+                        tags=[f"EMSP {version.value}"],
+                    )
+                    endpoint = ENDPOINTS[version][RoleEnum.emsp].get(module)
+                    if endpoint:
+                        version_endpoints[version].append(endpoint)
 
     def override_get_crud():
         return crud
@@ -135,5 +209,15 @@ def get_application(
         return version_endpoints
 
     _app.dependency_overrides[get_endpoints] = override_get_endpoints
+
+    def override_get_modules():
+        return modules
+
+    _app.dependency_overrides[get_modules] = override_get_modules()
+
+    def override_get_authenticator():
+        return authenticator
+
+    _app.dependency_overrides[get_authenticator] = override_get_authenticator()
 
     return _app

@@ -43,9 +43,13 @@ pylint:
     - assignment-from-none
     - redefined-outer-name
     - no-self-argument
+    - unnecessary-pass
+    - logging-fstring-interpolation
+    - import-self
   options:
     max-locals: 25
     max-line-length: 120
+    max-positional-arguments: 10
 
 pycodestyle:
   disable:

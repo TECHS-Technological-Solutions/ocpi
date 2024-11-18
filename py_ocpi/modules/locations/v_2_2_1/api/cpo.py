@@ -5,30 +5,61 @@ from py_ocpi.core.utils import get_list, get_auth_token
 from py_ocpi.core import status
 from py_ocpi.core.schemas import OCPIResponse
 from py_ocpi.core.adapter import Adapter
+from py_ocpi.core.authentication.verifier import AuthorizationVerifier
 from py_ocpi.core.crud import Crud
+from py_ocpi.core.config import logger
 from py_ocpi.core.data_types import CiString
 from py_ocpi.core.enums import ModuleID, RoleEnum
+from py_ocpi.core.exceptions import NotFoundOCPIError
 from py_ocpi.core.dependencies import get_crud, get_adapter, pagination_filters
 
 router = APIRouter(
-    prefix='/locations',
+    prefix="/locations",
+    dependencies=[Depends(AuthorizationVerifier(VersionNumber.v_2_2_1))],
 )
 
 
 @router.get("/", response_model=OCPIResponse)
-async def get_locations(request: Request,
-                        response: Response,
-                        crud: Crud = Depends(get_crud),
-                        adapter: Adapter = Depends(get_adapter),
-                        filters: dict = Depends(pagination_filters)):
+async def get_locations(
+    request: Request,
+    response: Response,
+    crud: Crud = Depends(get_crud),
+    adapter: Adapter = Depends(get_adapter),
+    filters: dict = Depends(pagination_filters),
+):
+    """
+    Get locations.
+
+    Retrieves a list of locations based on the specified filters.
+
+    **Query parameters:**
+        - limit (int): Maximum number of objects to GET (default=50).
+        - offset (int): The offset of the first object returned (default=0).
+        - date_from (datetime): Only return Locations that have
+            last_updated after this Date/Time (default=None).
+        - date_to (datetime): Only return Locations that have
+            last_updated before this Date/Time (default=None).
+
+    **Returns:**
+        The OCPIResponse containing the list of locations.
+    """
+    logger.info("Received request to get locations.")
     auth_token = get_auth_token(request)
 
-    data_list = await get_list(response,  filters, ModuleID.locations, RoleEnum.cpo,
-                               VersionNumber.v_2_2_1, crud, auth_token=auth_token)
+    data_list = await get_list(
+        response,
+        filters,
+        ModuleID.locations,
+        RoleEnum.cpo,
+        VersionNumber.v_2_2_1,
+        crud,
+        auth_token=auth_token,
+    )
 
     locations = []
     for data in data_list:
         locations.append(adapter.location_adapter(data).dict())
+    logger.debug(f"Amount of locations in response: {len(locations)}")
     return OCPIResponse(
         data=locations,
         **status.OCPI_1000_GENERIC_SUCESS_CODE,
@@ -36,47 +67,154 @@ async def get_locations(request: Request,
 
 
 @router.get("/{location_id}", response_model=OCPIResponse)
-async def get_location(request: Request, location_id: CiString(36),
-                       crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
+async def get_location(
+    request: Request,
+    location_id: CiString(36),  # type: ignore
+    crud: Crud = Depends(get_crud),
+    adapter: Adapter = Depends(get_adapter),
+):
+    """
+    Get location by ID.
+
+    Retrieves location details based on the specified ID.
+
+    **Path parameters:**
+        - location_id (str): The ID of the location to retrieve (36 characters).
+
+    **Returns:**
+        The OCPIResponse containing the location details.
+
+    **Raises:**
+        NotFoundOCPIError: If the location with the specified ID is not found.
+    """
+    logger.info(f"Received request to get location by id - `{location_id}`.")
     auth_token = get_auth_token(request)
 
-    data = await crud.get(ModuleID.locations, RoleEnum.cpo, location_id, auth_token=auth_token,
-                          version=VersionNumber.v_2_2_1)
-    return OCPIResponse(
-        data=[adapter.location_adapter(data).dict()],
-        **status.OCPI_1000_GENERIC_SUCESS_CODE,
+    data = await crud.get(
+        ModuleID.locations,
+        RoleEnum.cpo,
+        location_id,
+        auth_token=auth_token,
+        version=VersionNumber.v_2_2_1,
     )
+    if data:
+        return OCPIResponse(
+            data=[adapter.location_adapter(data).dict()],
+            **status.OCPI_1000_GENERIC_SUCESS_CODE,
+        )
+    logger.debug(f"Location with id `{location_id}` was not found.")
+    raise NotFoundOCPIError
 
 
 @router.get("/{location_id}/{evse_uid}", response_model=OCPIResponse)
-async def get_evse(request: Request, location_id: CiString(36), evse_uid: CiString(48),
-                   crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
+async def get_evse(
+    request: Request,
+    location_id: CiString(36),  # type: ignore
+    evse_uid: CiString(48),  # type: ignore
+    crud: Crud = Depends(get_crud),
+    adapter: Adapter = Depends(get_adapter),
+):
+    """
+    Get EVSE by ID.
+
+    Retrieves Electric Vehicle Supply Equipment (EVSE) details
+     based on the specified Location ID and EVSE UID.
+
+    **Path parameters:**
+        - location_id (str): The ID of the location containing
+            the EVSE (36 characters).
+        - evse_uid (str): The UID of the EVSE to retrieve (48 characters).
+
+    **Returns:**
+        The OCPIResponse containing the EVSE details.
+
+    **Raises:**
+        NotFoundOCPIError: If the location with the specified ID
+            or EVSE with the specified UID is not found.
+    """
+    logger.info(
+        f"Received request to get evse by id - `{location_id}` (location id - `{evse_uid}`)"
+    )
     auth_token = get_auth_token(request)
 
-    data = await crud.get(ModuleID.locations, RoleEnum.cpo, location_id, auth_token=auth_token,
-                          version=VersionNumber.v_2_2_1)
-    location = adapter.location_adapter(data)
-    for evse in location.evses:
-        if evse.uid == evse_uid:
-            return OCPIResponse(
-                data=[evse.dict()],
-                **status.OCPI_1000_GENERIC_SUCESS_CODE,
-            )
+    data = await crud.get(
+        ModuleID.locations,
+        RoleEnum.cpo,
+        location_id,
+        auth_token=auth_token,
+        version=VersionNumber.v_2_2_1,
+    )
+    if data:
+        location = adapter.location_adapter(data)
+        for evse in location.evses:
+            if evse.uid == evse_uid:
+                return OCPIResponse(
+                    data=[evse.dict()],
+                    **status.OCPI_1000_GENERIC_SUCESS_CODE,
+                )
+        logger.debug(f"Evse with id `{evse_uid}` was not found.")
+    logger.debug(f"Location with id `{location_id}` was not found.")
+    raise NotFoundOCPIError
 
 
-@router.get("/{location_id}/{evse_uid}/{connector_id}", response_model=OCPIResponse)
-async def get_connector(request: Request, location_id: CiString(36), evse_uid: CiString(48), connector_id: CiString(36),
-                        crud: Crud = Depends(get_crud), adapter: Adapter = Depends(get_adapter)):
+@router.get(
+    "/{location_id}/{evse_uid}/{connector_id}", response_model=OCPIResponse
+)
+async def get_connector(
+    request: Request,
+    location_id: CiString(36),  # type: ignore
+    evse_uid: CiString(48),  # type: ignore
+    connector_id: CiString(36),  # type: ignore
+    crud: Crud = Depends(get_crud),
+    adapter: Adapter = Depends(get_adapter),
+):
+    """
+    Get Connector by ID.
+
+    Retrieves Connector details based on the specified Location ID,
+     EVSE UID, and Connector ID.
+
+    **Path parameters:**
+        - location_id (str): The ID of the location containing
+            the EVSE (36 characters).
+        - evse_uid (str): The UID of the EVSE to retrieve (48 characters).
+        - connector_id (str): The ID of the connector
+            to retrieve (36 characters).
+
+    **Returns:**
+        The OCPIResponse containing the Connector details.
+
+    **Raises:**
+        NotFoundOCPIError: If the location with the specified ID,
+            EVSE with the specified UID, or Connector with
+            the specified ID is not found.
+    """
+    logger.info(
+        f"Received request to get connector by id - `{connector_id}` "
+        f"(location id - `{location_id}`, evse id - `{evse_uid}`)"
+    )
     auth_token = get_auth_token(request)
 
-    data = await crud.get(ModuleID.locations, RoleEnum.cpo, location_id, auth_token=auth_token,
-                          version=VersionNumber.v_2_2_1)
-    location = adapter.location_adapter(data)
-    for evse in location.evses:
-        if evse.uid == evse_uid:
-            for connector in evse.connectors:
-                if connector.id == connector_id:
-                    return OCPIResponse(
-                        data=[connector.dict()],
-                        **status.OCPI_1000_GENERIC_SUCESS_CODE,
-                    )
+    data = await crud.get(
+        ModuleID.locations,
+        RoleEnum.cpo,
+        location_id,
+        auth_token=auth_token,
+        version=VersionNumber.v_2_2_1,
+    )
+    if data:
+        location = adapter.location_adapter(data)
+        for evse in location.evses:
+            if evse.uid == evse_uid:
+                for connector in evse.connectors:
+                    if connector.id == connector_id:
+                        return OCPIResponse(
+                            data=[connector.dict()],
+                            **status.OCPI_1000_GENERIC_SUCESS_CODE,
+                        )
+                logger.debug(
+                    f"Connector with id `{connector_id}` was not found."
+                )
+        logger.debug(f"Evse with id `{evse_uid}` was not found.")
+    logger.debug(f"Location with id `{location_id}` was not found.")
+    raise NotFoundOCPIError
