@@ -1,5 +1,7 @@
 import requests
 
+from py_ocpi.core.config import logger, settings
+
 
 class HubTopologyHandler:
     def __init__(self, hub_url, party_id, country_code, token):
@@ -65,3 +67,42 @@ class HubTopologyHandler:
         session_id = payload.get("session_id")
         # Placeholder response
         return {"status": f"Session {session_id} stopped successfully"}
+
+
+def register_enapi_emsp_with_hub():
+    """Register the EMSP with the hub and log the process."""
+    logger.info("Starting registration with the hub...")
+    handler = HubTopologyHandler(
+        hub_url=settings.ENAPI_HUB_URL,
+        party_id=settings.PARTY_ID,
+        country_code=settings.COUNTRY_CODE,
+        token=settings.ENAPI_HUB_TOKEN
+    )
+    response = handler.register_with_hub()
+    if response:
+        logger.info("Registration successful.")
+    else:
+        logger.error("Registration failed.")
+    return response
+
+
+def handle_incoming_command(handler, payload):
+    """Handle an incoming command and log the outcome."""
+    logger.info("Handling incoming command...")
+    response = handler.handle_incoming_message(payload)
+    if response.get("status") == "Unknown message type":
+        logger.warning("Received unknown message type.")
+    else:
+        logger.info(f"Processed command successfully: {response}")
+    return response
+
+
+def send_message_via_hub(handler, endpoint, payload):
+    """Send a message via the hub and log the outcome."""
+    logger.info(f"Sending message to endpoint '{endpoint}'...")
+    response = handler.route_message(endpoint, payload)
+    if response:
+        logger.info(f"Message sent successfully: {response}")
+    else:
+        logger.error("Failed to send message.")
+    return response
