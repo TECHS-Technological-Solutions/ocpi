@@ -33,7 +33,7 @@ def get_endpoints():
 
 def pagination_filters(
     date_from: datetime = Query(default=None),
-    date_to: datetime = Query(default=datetime.now()),
+    date_to: datetime = Query(default=None),
     offset: int = Query(default=0),
     limit: int = Query(default=50),
 ):
