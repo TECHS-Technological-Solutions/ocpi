@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 from py_ocpi.modules.tokens.v_2_2_1.enums import TokenType
 from py_ocpi.modules.locations.v_2_2_1.enums import (
@@ -92,7 +92,7 @@ class EVSE(BaseModel):
     uid: CiString(max_length=36)
     evse_id: Optional[CiString(max_length=48)]
     status: Status
-    status_schedule: Optional[StatusSchedule]
+    status_schedule: List[StatusSchedule] = []
     capabilities: List[Capability] = []
     connectors: List[Connector]
     floor_level: Optional[String(max_length=4)]
@@ -214,6 +214,13 @@ class Location(BaseModel):
     energy_mix: Optional[EnergyMix]
     last_updated: DateTime
 
+    @validator('country_code')
+    def country_code_to_upper(cls, v):
+        return v.upper()
+    
+    @validator('party_id')
+    def party_id_to_upper(cls, v):
+        return v.upper()
 
 class LocationPartialUpdate(BaseModel):
     country_code: Optional[CiString(max_length=2)]

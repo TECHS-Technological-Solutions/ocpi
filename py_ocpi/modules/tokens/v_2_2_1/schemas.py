@@ -1,5 +1,5 @@
 from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 from py_ocpi.core.data_types import String, CiString, DisplayText, DateTime
 from py_ocpi.modules.tokens.v_2_2_1.enums import AllowedType, TokenType, WhitelistType
@@ -41,6 +41,13 @@ class Token(BaseModel):
     energy_contract: Optional[EnergyContract]
     last_updated: DateTime
 
+    @validator('country_code')
+    def country_code_to_upper(cls, v):
+        return v.upper()
+    
+    @validator('party_id')
+    def party_id_to_upper(cls, v):
+        return v.upper()
 
 class TokenPartialUpdate(BaseModel):
     country_code: Optional[CiString(2)]

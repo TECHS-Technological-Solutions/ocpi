@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from py_ocpi.modules.cdrs.v_2_2_1.enums import AuthMethod, CdrDimensionType
 
 from py_ocpi.core.data_types import CiString, Number, Price, String, DateTime
@@ -16,7 +16,7 @@ class SignedValue(BaseModel):
     """
     nature: CiString(32)
     plain_data: String(512)
-    singed_data: String(5000)
+    signed_data: String(5000)
 
 
 class SignedData(BaseModel):
@@ -26,7 +26,7 @@ class SignedData(BaseModel):
     encoding_method: CiString(36)
     encoding_method_version: Optional[int]
     public_key: Optional[String(512)]
-    signed_value: List[SignedValue]
+    signed_values: List[SignedValue]
     url: Optional[String(512)]
 
 
@@ -57,6 +57,14 @@ class CdrToken(BaseModel):
     type: TokenType
     contract_id: CiString(36)
 
+    @validator('country_code')
+    def country_code_to_upper(cls, v):
+        return v.upper()
+    
+    @validator('party_id')
+    def party_id_to_upper(cls, v):
+        return v.upper()
+
 
 class CdrLocation(BaseModel):
     """
@@ -70,6 +78,7 @@ class CdrLocation(BaseModel):
     state: Optional[String(20)]
     country: String(3)
     coordinates: GeoLocation
+    evse_uid: CiString(36)
     evse_id: CiString(48)
     connector_id: CiString(36)
     connector_standard: ConnectorType
@@ -111,3 +120,11 @@ class Cdr(BaseModel):
     credit_reference_id: Optional[CiString(39)]
     home_charging_compensation: Optional[bool]
     last_updated: DateTime
+
+    @validator('country_code')
+    def country_code_to_upper(cls, v):
+        return v.upper()
+    
+    @validator('party_id')
+    def party_id_to_upper(cls, v):
+        return v.upper()

@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 from py_ocpi.modules.locations.v_2_2_1.schemas import EnergyMix
 from py_ocpi.modules.tariffs.v_2_2_1.enums import DayOfWeek, ReservationRestrictionType, TariffDimensionType, TariffType
@@ -63,3 +63,11 @@ class Tariff(BaseModel):
     end_date_time: Optional[DateTime]
     energy_mix: Optional[EnergyMix]
     last_updated: DateTime
+
+    @validator('country_code')
+    def country_code_to_upper(cls, v):
+        return v.upper()
+    
+    @validator('party_id')
+    def party_id_to_upper(cls, v):
+        return v.upper()

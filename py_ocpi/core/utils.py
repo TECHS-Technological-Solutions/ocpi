@@ -8,6 +8,15 @@ from py_ocpi.core.enums import ModuleID, RoleEnum
 from py_ocpi.core.config import settings
 from py_ocpi.modules.versions.enums import VersionNumber
 
+class AuthorizationMissingError(Exception):
+    """Raised when the Authorization header is missing or malformed."""
+    pass
+
+
+class AuthorizationTokenError(Exception):
+    """Raised when the Authorization token cannot be decoded."""
+    pass
+
 
 def set_pagination_headers(response: Response, link: str, total: int, limit: int):
     response.headers['Link'] = link
@@ -18,11 +27,17 @@ def set_pagination_headers(response: Response, link: str, total: int, limit: int
 
 def get_auth_token(request: Request) -> str:
     headers = request.headers
-    headers_token = headers.get('authorization', 'Token Null')
-    token = headers_token.split()[1]
-    if token == 'Null':  # nosec
-        return None
-    return decode_string_base64(token)
+    headers_token = headers.get('authorization', '')
+    if not headers_token:
+        raise AuthorizationMissingError("Authorization header missing")
+    parts = headers_token.split()
+    if len(parts) < 2:
+        raise AuthorizationMissingError("Authorization header malformed")
+    token = parts[1]
+    try:
+        return decode_string_base64(token)
+    except Exception:
+        raise AuthorizationTokenError("Authorization token could not be decoded")
 
 
 async def get_list(response: Response, filters: dict, module: ModuleID, role: RoleEnum,

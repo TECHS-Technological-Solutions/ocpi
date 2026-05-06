@@ -2,7 +2,7 @@
 OCPI data types based on https://github.com/ocpi/ocpi/blob/2.2.1/types.asciidoc
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Type
 
 from pydantic.fields import ModelField
@@ -71,7 +71,7 @@ class CiStringBase(str):
             raise ValueError('invalid cistring format')
         if len(v) > cls.max_length:
             raise ValueError(f'{field.name} length must be lower or equal to {cls.max_length}')
-        return cls(v.lower())
+        return cls(v)
 
     def __repr__(self):
         return f'CiString({super().__repr__()})'
@@ -119,16 +119,31 @@ class DateTime(str):
     @classmethod
     def __modify_schema__(cls, field_schema):
         field_schema.update(
-            examples=[str(datetime.now())],
+            examples=[str(datetime.now(timezone.utc).isoformat() + 'Z')],
         )
 
     @classmethod
     def validate(cls, v):
-        formated_v = datetime.fromisoformat(v)
-        return cls(formated_v)
+        # Use OCPIDateTime.validate(str(datetime)) outside a pydantic model
+        try:
+            # Parse the input value
+            dt = datetime.fromisoformat(v)
+        except ValueError:
+            raise ValueError(f"Invalid datetime format: {v}")
+
+        # Ensure the datetime is in UTC
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        else:
+            dt = dt.astimezone(timezone.utc)
+
+        # Format to RFC 3339 with 'T' separator and ending with 'Z'
+        # Remove fractional seconds
+        formatted_v = dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+        return formatted_v  # Return a plain string
 
     def __repr__(self):
-        return f'DateTime({super().__repr__()})'
+        return str(self)
 
 
 class DisplayText(dict):

@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 from py_ocpi.modules.cdrs.v_2_2_1.enums import AuthMethod
 from py_ocpi.modules.cdrs.v_2_2_1.schemas import CdrToken, ChargingPeriod
@@ -29,6 +29,14 @@ class Session(BaseModel):
     total_cost: Optional[Price]
     status: SessionStatus
     last_updated: DateTime
+
+    @validator('country_code')
+    def country_code_to_upper(cls, v):
+        return v.upper()
+    
+    @validator('party_id')
+    def party_id_to_upper(cls, v):
+        return v.upper()
 
 
 class SessionPartialUpdate(BaseModel):
